@@ -1,0 +1,62 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+
+export default function NewProductPage() {
+  const [form, setForm] = useState({ name: "", description: "", price: 0 });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function save() {
+    setLoading(true);
+    const res = await fetch(`/api/products`, {
+      method: "POST",
+      body: JSON.stringify(form),
+    });
+    setLoading(false);
+    if (res.ok) {
+      router.push("/products");
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <h1 className="text-xl font-semibold">New product</h1>
+      <div className="grid gap-2">
+        <label className="text-sm">Name</label>
+        <input
+          className="h-10 rounded-md border px-3 bg-background"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
+        <label className="text-sm">Description</label>
+        <textarea
+          className="min-h-20 rounded-md border px-3 py-2 bg-background"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
+        <label className="text-sm">Price</label>
+        <input
+          type="number"
+          step="0.01"
+          min={0}
+          className="h-10 rounded-md border px-3 bg-background"
+          value={form.price}
+          onChange={(e) =>
+            setForm({ ...form, price: parseFloat(e.target.value) || 0 })
+          }
+        />
+      </div>
+      <div className="flex gap-2">
+        <Button onClick={save} disabled={loading}>
+          {loading ? "Saving…" : "Create"}
+        </Button>
+      </div>
+    </div>
+  );
+}
