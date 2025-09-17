@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function NewClientPage() {
   const [form, setForm] = useState({
@@ -30,17 +32,15 @@ export default function NewClientPage() {
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">New client</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Name</label>
-        <input
-          className="h-10 rounded-md border px-3 bg-background"
+        <Label>Name</Label>
+        <Input
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Email</label>
-        <input
-          className="h-10 rounded-md border px-3 bg-background"
+        <Label>Email</Label>
+        <Input
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />

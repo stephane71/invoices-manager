@@ -3,6 +3,8 @@ import { FormEvent, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -49,13 +51,10 @@ export default function SignInPage() {
       </h1>
       <form onSubmit={onSubmit} className="space-y-3">
         <div className="grid gap-1">
-          <label className="text-sm" htmlFor="email">
-            Email
-          </label>
-          <input
+          <Label htmlFor="email">Email</Label>
+          <Input
             id="email"
             type="email"
-            className="h-10 rounded-md border px-3 bg-background"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -63,13 +62,10 @@ export default function SignInPage() {
           />
         </div>
         <div className="grid gap-1">
-          <label className="text-sm" htmlFor="password">
-            Password
-          </label>
-          <input
+          <Label htmlFor="password">Password</Label>
+          <Input
             id="password"
             type="password"
-            className="h-10 rounded-md border px-3 bg-background"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -85,13 +81,13 @@ export default function SignInPage() {
       </form>
       <div className="mt-4 text-sm">
         {mode === "signin" ? (
-          <button className="underline" onClick={() => setMode("signup")}>
+          <Button variant="link" onClick={() => setMode("signup")}>
             Create an account
-          </button>
+          </Button>
         ) : (
-          <button className="underline" onClick={() => setMode("signin")}>
+          <Button variant="link" onClick={() => setMode("signin")}>
             Have an account? Sign in
-          </button>
+          </Button>
         )}
       </div>
     </div>
