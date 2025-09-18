@@ -26,35 +26,36 @@ async function InvoicesList() {
           const total = inv.total_amount.toFixed(2);
 
           return (
-            <div
-              key={inv.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-lg text-gray-900">
-                      {invoiceNumber}
-                    </h3>
-                  </div>
-                  <p className="text-gray-700 font-medium mb-1">{clientName}</p>
-                  <p className="text-gray-500 text-sm">
-                    Émise: {inv.issue_date}
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Échéance: {inv.due_date}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <p className="font-semibold text-lg text-gray-900">
-                      €{total}
+            <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold text-lg text-gray-900">
+                        {invoiceNumber}
+                      </h3>
+                    </div>
+                    <p className="text-gray-700 font-medium mb-1">
+                      {clientName}
                     </p>
+                    <p className="text-gray-500 text-sm">
+                      Émise: {inv.issue_date}
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      Échéance: {inv.due_date}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="font-semibold text-lg text-gray-900">
+                        €{total}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         },
       )}
