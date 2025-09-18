@@ -29,6 +29,7 @@ export default function NewInvoicePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [number, setNumber] = useState("");
   const [clientId, setClientId] = useState("");
   const [issueDate, setIssueDate] = useState(todayISO());
   const [dueDate, setDueDate] = useState(addDaysISO(30));
@@ -55,7 +56,7 @@ export default function NewInvoicePage() {
 
   const totalAmount = useMemo(
     () => items.reduce((sum, it) => sum + (Number(it.total) || 0), 0),
-    [items]
+    [items],
   );
 
   function addItem() {
@@ -93,7 +94,11 @@ export default function NewInvoicePage() {
       const item = next[index];
       const quantity = qty > 0 ? Math.floor(qty) : 1;
       const price = Number(item.price) || 0;
-      next[index] = { ...item, quantity, total: +(price * quantity).toFixed(2) };
+      next[index] = {
+        ...item,
+        quantity,
+        total: +(price * quantity).toFixed(2),
+      };
       return next;
     });
   }
@@ -111,6 +116,10 @@ export default function NewInvoicePage() {
 
   async function save() {
     setError(null);
+    if (!number.trim()) {
+      setError("Please enter an invoice number");
+      return;
+    }
     if (!clientId) {
       setError("Please select a client");
       return;
@@ -120,7 +129,9 @@ export default function NewInvoicePage() {
       return;
     }
     // validate all items
-    const valid = items.every((it) => it.product_id && it.name && it.quantity > 0);
+    const valid = items.every(
+      (it) => it.product_id && it.name && it.quantity > 0,
+    );
     if (!valid) {
       setError("Please complete all item fields");
       return;
@@ -132,6 +143,7 @@ export default function NewInvoicePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          number: number.trim(),
           client_id: clientId,
           items,
           total_amount: +totalAmount.toFixed(2),
@@ -146,7 +158,8 @@ export default function NewInvoicePage() {
       }
       router.push("/invoices");
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Failed to create invoice";
+      const message =
+        e instanceof Error ? e.message : "Failed to create invoice";
       setError(message);
     } finally {
       setSaving(false);
@@ -162,6 +175,18 @@ export default function NewInvoicePage() {
       <h1 className="text-xl font-semibold">New invoice</h1>
 
       <div className="grid gap-2">
+        <label className="text-sm">Invoice number</label>
+        <input
+          type="text"
+          className="h-10 rounded-md border px-3 bg-background"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          placeholder="Enter invoice number"
+          required
+        />
+      </div>
+
+      <div className="grid gap-2">
         <label className="text-sm">Client</label>
         <select
           className="h-10 rounded-md border px-3 bg-background"
@@ -170,7 +195,9 @@ export default function NewInvoicePage() {
         >
           <option value="">Select a client</option>
           {clients.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
           ))}
         </select>
       </div>
@@ -199,14 +226,21 @@ export default function NewInvoicePage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h2 className="font-medium">Items</h2>
-          <Button size="sm" onClick={addItem}>Add item</Button>
+          <Button size="sm" onClick={addItem}>
+            Add item
+          </Button>
         </div>
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No items. Click &quot;Add item&quot; to begin.</p>
+          <p className="text-sm text-muted-foreground">
+            No items. Click &quot;Add item&quot; to begin.
+          </p>
         ) : (
           <div className="space-y-3">
             {items.map((it, idx) => (
-              <div key={idx} className="grid grid-cols-[1fr_90px_110px_110px_80px] items-center gap-2">
+              <div
+                key={idx}
+                className="grid grid-cols-[1fr_90px_110px_110px_80px] items-center gap-2"
+              >
                 <select
                   className="h-10 rounded-md border px-2 bg-background"
                   value={it.product_id}
@@ -214,7 +248,9 @@ export default function NewInvoicePage() {
                 >
                   <option value="">Product…</option>
                   {products.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
                   ))}
                 </select>
                 <input
@@ -222,7 +258,9 @@ export default function NewInvoicePage() {
                   min={1}
                   className="h-10 rounded-md border px-2 bg-background"
                   value={it.quantity}
-                  onChange={(e) => onChangeQty(idx, parseInt(e.target.value || "1", 10))}
+                  onChange={(e) =>
+                    onChangeQty(idx, parseInt(e.target.value || "1", 10))
+                  }
                 />
                 <input
                   type="number"
@@ -230,10 +268,18 @@ export default function NewInvoicePage() {
                   min={0}
                   className="h-10 rounded-md border px-2 bg-background"
                   value={it.price}
-                  onChange={(e) => onChangePrice(idx, parseFloat(e.target.value || "0"))}
+                  onChange={(e) =>
+                    onChangePrice(idx, parseFloat(e.target.value || "0"))
+                  }
                 />
                 <div className="text-sm">${it.total.toFixed(2)}</div>
-                <Button size="sm" variant="destructive" onClick={() => removeItem(idx)}>Remove</Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => removeItem(idx)}
+                >
+                  Remove
+                </Button>
               </div>
             ))}
           </div>
@@ -241,10 +287,20 @@ export default function NewInvoicePage() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-lg font-medium">Total: ${totalAmount.toFixed(2)}</div>
+        <div className="text-lg font-medium">
+          Total: ${totalAmount.toFixed(2)}
+        </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.push("/invoices")} disabled={saving}>Cancel</Button>
-          <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Create"}</Button>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/invoices")}
+            disabled={saving}
+          >
+            Cancel
+          </Button>
+          <Button onClick={save} disabled={saving}>
+            {saving ? "Saving…" : "Create"}
+          </Button>
         </div>
       </div>
 

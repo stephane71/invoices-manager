@@ -32,6 +32,7 @@ export const invoiceSchema = z.object({
   issue_date: z.string(),
   due_date: z.string(),
   pdf_url: z.string().url().optional().nullable(),
+  number: z.string(),
 });
 
 export type ProductInput = z.infer<typeof productSchema>;
