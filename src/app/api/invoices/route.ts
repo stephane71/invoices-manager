@@ -26,8 +26,22 @@ export async function POST(req: NextRequest) {
     const parsed = invoiceSchema.partial({ id: true }).parse(json);
     const created = await createInvoiceWithItems(parsed as any);
     return NextResponse.json(created, { status: 201 });
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 400 });
+  } catch (e: any) {
+    // Supabase/Postgres unique violation typically uses code "23505"
+    const code = e?.code;
+    const rawMessage =
+      e?.message || (e instanceof Error ? e.message : "Unknown error");
+    const isDuplicate =
+      code === "23505" ||
+      /duplicate key|unique constraint|already exists/i.test(
+        String(rawMessage),
+      );
+    const message = isDuplicate
+      ? "The invoice number already exists. Please choose a different number."
+      : rawMessage || "Unknown error";
+    return NextResponse.json(
+      { error: message },
+      { status: isDuplicate ? 409 : 400 },
+    );
   }
 }

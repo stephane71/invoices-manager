@@ -153,8 +153,18 @@ export default function NewInvoicePage() {
         }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err?.error || "Failed to create invoice");
+        const err = await res.json().catch(() => ({}) as any);
+        const serverMessage: string | undefined = err?.error || err?.message;
+        // If the backend signals a duplicate number (409), or the message suggests it
+        if (
+          res.status === 409 ||
+          /duplicate|exists|unique/i.test(String(serverMessage))
+        ) {
+          throw new Error(
+            "The invoice number already exists. Please choose a different number.",
+          );
+        }
+        throw new Error(serverMessage || "Failed to create invoice");
       }
       router.push("/invoices");
     } catch (e: unknown) {
