@@ -6,7 +6,7 @@ export function db() {
 }
 
 export async function listClients() {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("clients")
     .select("*")
@@ -18,7 +18,7 @@ export async function listClients() {
 }
 
 export async function getClient(id: string) {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("clients")
     .select("*")
@@ -31,7 +31,7 @@ export async function getClient(id: string) {
 }
 
 export async function upsertClient(payload: Partial<Client>) {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("clients")
     .upsert(payload)
@@ -44,7 +44,7 @@ export async function upsertClient(payload: Partial<Client>) {
 }
 
 export async function deleteClient(id: string) {
-  const supabase = db();
+  const supabase = await db();
   const { error } = await supabase.from("clients").delete().eq("id", id);
   if (error) {
     throw error;
@@ -52,7 +52,7 @@ export async function deleteClient(id: string) {
 }
 
 export async function listProducts() {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -65,7 +65,7 @@ export async function listProducts() {
 }
 
 export async function getProduct(id: string) {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -78,7 +78,7 @@ export async function getProduct(id: string) {
 }
 
 export async function upsertProduct(payload: Partial<Product>) {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("products")
     .upsert(payload)
@@ -91,7 +91,7 @@ export async function upsertProduct(payload: Partial<Product>) {
 }
 
 export async function deleteProduct(id: string) {
-  const supabase = db();
+  const supabase = await db();
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) {
     throw error;
@@ -103,7 +103,7 @@ export async function listInvoices(params?: {
   status?: string;
   sort?: string;
 }) {
-  const supabase = db();
+  const supabase = await db();
   let query = supabase.from("invoices").select("*");
   if (params?.status) {
     query = query.eq("status", params.status);
@@ -127,7 +127,7 @@ export async function listInvoices(params?: {
 }
 
 export async function getInvoice(id: string) {
-  const supabase = db();
+  const supabase = await db();
   const { data, error } = await supabase
     .from("invoices")
     .select("*")
@@ -140,7 +140,7 @@ export async function getInvoice(id: string) {
 }
 
 export async function upsertInvoice(payload: Partial<Invoice>) {
-  const supabase = db();
+  const supabase = await db();
   // Ensure we never try to upsert the legacy `items` column (moved to invoice_items table)
   const { items, ...rest } = payload as any;
   const { data, error } = await supabase
@@ -155,7 +155,7 @@ export async function upsertInvoice(payload: Partial<Invoice>) {
 }
 
 export async function deleteInvoice(id: string) {
-  const supabase = db();
+  const supabase = await db();
   const { error } = await supabase.from("invoices").delete().eq("id", id);
   if (error) {
     throw error;
@@ -174,7 +174,7 @@ export async function createInvoiceWithItems(
     }>;
   },
 ) {
-  const supabase = db();
+  const supabase = await db();
 
   // 1) Insert the invoice without items
   const { items, ...invoiceFields } = payload as any;

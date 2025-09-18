@@ -13,11 +13,13 @@ import { SidebarMenuLinks } from "@/components/sidebar-menu-links";
 import { Separator } from "@/components/ui/separator";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  console.log(user);
 
   if (!user) {
     redirect("/sign-in");
