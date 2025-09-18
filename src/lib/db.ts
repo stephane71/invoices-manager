@@ -1,5 +1,5 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import type { Client, Product, Invoice } from "@/types/models";
+import type { Client, Invoice, Product } from "@/types/models";
 
 export function db() {
   return getSupabaseServerClient();
@@ -141,9 +141,11 @@ export async function getInvoice(id: string) {
 
 export async function upsertInvoice(payload: Partial<Invoice>) {
   const supabase = db();
+  // Ensure we never try to upsert the legacy `items` column (moved to invoice_items table)
+  const { items, ...rest } = payload as any;
   const { data, error } = await supabase
     .from("invoices")
-    .upsert(payload)
+    .upsert(rest)
     .select()
     .single();
   if (error) {
@@ -158,4 +160,53 @@ export async function deleteInvoice(id: string) {
   if (error) {
     throw error;
   }
+}
+
+// Creates an invoice and its items into the new `invoice_items` table
+export async function createInvoiceWithItems(
+  payload: Partial<Invoice> & {
+    items: Array<{
+      product_id: string;
+      name: string;
+      quantity: number;
+      price: number;
+      total: number;
+    }>;
+  },
+) {
+  const supabase = db();
+
+  // 1) Insert the invoice without items
+  const { items, ...invoiceFields } = payload as any;
+
+  const { data: invoice, error } = await supabase
+    .from("invoices")
+    .upsert(invoiceFields)
+    .select()
+    .single();
+  if (error) {
+    throw error;
+  }
+
+  // 2) Map and bulk insert invoice items
+  const rows = (items || []).map((it: any) => ({
+    invoice_id: invoice.id,
+    product_id: it.product_id || null,
+    description: it.name,
+    quantity: it.quantity,
+    unit_price: it.price,
+    tax_rate: 20.0,
+    line_total: it.total,
+  }));
+
+  if (rows.length > 0) {
+    const { error: itemsError } = await supabase
+      .from("invoice_items")
+      .insert(rows);
+    if (itemsError) {
+      throw itemsError;
+    }
+  }
+
+  return invoice as Invoice;
 }
