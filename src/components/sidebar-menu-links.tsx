@@ -11,7 +11,7 @@ import {
 
 export function SidebarMenuLinks() {
   const pathname = usePathname();
-  const { isMobile, setOpen, setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   const isActive = (href: string) => {
     if (!pathname) {
@@ -26,8 +26,6 @@ export function SidebarMenuLinks() {
   const handleItemClick = () => {
     if (isMobile) {
       setOpenMobile(false);
-    } else {
-      setOpen(false);
     }
   };
 
