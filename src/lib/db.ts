@@ -132,7 +132,7 @@ export async function getInvoice(id: string) {
   // 1) Fetch the invoice row
   const { data: invoice, error } = await supabase
     .from("invoices")
-    .select("*")
+    .select("*, clients(name)")
     .eq("id", id)
     .single();
   if (error) {
@@ -155,7 +155,7 @@ export async function getInvoice(id: string) {
     total: it.line_total,
   }));
   // 3) Return the enriched invoice
-  return { ...(invoice as any), items } as Invoice;
+  return { ...invoice, items } as Invoice & { clients: Pick<Client, "name"> };
 }
 
 export async function upsertInvoice(payload: Partial<Invoice>) {

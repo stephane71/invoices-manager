@@ -1,7 +1,7 @@
 "use client";
 import { use, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { Invoice, InvoiceItem } from "@/types/models";
+import { Client, Invoice, InvoiceItem } from "@/types/models";
 
 export default function InvoiceDetailPage({
   params,
@@ -9,7 +9,9 @@ export default function InvoiceDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [invoice, setInvoice] = useState<
+    (Invoice & { clients: Pick<Client, "name"> }) | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export default function InvoiceDetailPage({
     if (!invoice) {
       return 0;
     }
-    return typeof invoice.total_amount === "number" ? invoice.total_amount : 0;
+    return invoice.total_amount;
   }, [invoice]);
 
   async function handleDownload() {
@@ -105,7 +107,7 @@ export default function InvoiceDetailPage({
             <div className="space-y-1 text-sm text-gray-700">
               <p>
                 <span className="text-gray-500">Client:</span>{" "}
-                {invoice.client_id}
+                {invoice.clients?.name}
               </p>
               <p>
                 <span className="text-gray-500">Émise:</span>{" "}
@@ -114,9 +116,6 @@ export default function InvoiceDetailPage({
               <p>
                 <span className="text-gray-500">Échéance:</span>{" "}
                 {invoice.due_date}
-              </p>
-              <p>
-                <span className="text-gray-500">Statut:</span> {invoice.status}
               </p>
             </div>
           </div>
