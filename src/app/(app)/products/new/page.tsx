@@ -22,9 +22,9 @@ export default function NewProductPage() {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">New product</h1>
+      <h1 className="text-xl font-semibold">Nouveau Produit</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Name</label>
+        <label className="text-sm">Nom</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.name}
@@ -40,7 +40,7 @@ export default function NewProductPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Price</label>
+        <label className="text-sm">Prix</label>
         <input
           type="number"
           step="0.01"
@@ -54,7 +54,7 @@ export default function NewProductPage() {
       </div>
       <div className="flex gap-2">
         <Button onClick={save} disabled={loading}>
-          {loading ? "Saving…" : "Create"}
+          {loading ? "Enregistrement…" : "Créer le produit"}
         </Button>
       </div>
     </div>

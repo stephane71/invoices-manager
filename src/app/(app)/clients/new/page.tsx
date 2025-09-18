@@ -30,9 +30,9 @@ export default function NewClientPage() {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">New client</h1>
+      <h1 className="text-xl font-semibold">Nouveau client</h1>
       <div className="grid gap-2">
-        <Label>Name</Label>
+        <Label>Nom</Label>
         <Input
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -46,7 +46,7 @@ export default function NewClientPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Phone</label>
+        <label className="text-sm">Numéro de télephone</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.phone}
@@ -54,7 +54,7 @@ export default function NewClientPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Address</label>
+        <label className="text-sm">Adresse</label>
         <textarea
           className="min-h-20 rounded-md border px-3 py-2 bg-background"
           value={form.address}
@@ -63,7 +63,7 @@ export default function NewClientPage() {
       </div>
       <div className="flex gap-2">
         <Button onClick={save} disabled={loading}>
-          {loading ? "Saving…" : "Create"}
+          {loading ? "Enregistrement…" : "Créer le client"}
         </Button>
       </div>
     </div>

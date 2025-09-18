@@ -30,9 +30,9 @@ export default function ClientsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Clients</h1>
+        <h1 className="text-xl font-semibold">Vos Clients</h1>
         <Link href="/clients/new">
-          <Button size="sm">Add</Button>
+          <Button>+ Nouveau client</Button>
         </Link>
       </div>
 

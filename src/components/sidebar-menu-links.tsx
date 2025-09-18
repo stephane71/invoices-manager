@@ -37,7 +37,7 @@ export function SidebarMenuLinks() {
           isActive={isActive("/invoices")}
           onClick={handleItemClick}
         >
-          <Link href="/invoices">Invoices</Link>
+          <Link href="/invoices">Factures</Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
@@ -55,7 +55,7 @@ export function SidebarMenuLinks() {
           isActive={isActive("/products")}
           onClick={handleItemClick}
         >
-          <Link href="/products">Products</Link>
+          <Link href="/products">Produits</Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

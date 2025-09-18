@@ -59,9 +59,9 @@ export default function ProductDetailPage({
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">Edit product</h1>
+      <h1 className="text-xl font-semibold">Éditer un produit</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Name</label>
+        <label className="text-sm">Nom</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.name}
@@ -77,7 +77,7 @@ export default function ProductDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Price</label>
+        <label className="text-sm">Prix</label>
         <input
           type="number"
           step="0.01"
@@ -89,9 +89,9 @@ export default function ProductDetailPage({
         />
       </div>
       <div className="flex gap-2">
-        <Button onClick={save}>Save</Button>
+        <Button onClick={save}>Enregistrer</Button>
         <Button variant="destructive" onClick={remove}>
-          Delete
+          Supprimer
         </Button>
       </div>
     </div>

@@ -182,10 +182,10 @@ export default function NewInvoicePage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">New invoice</h1>
+      <h1 className="text-xl font-semibold">Nouvelle Facture</h1>
 
       <div className="grid gap-2">
-        <label className="text-sm">Invoice number</label>
+        <label className="text-sm">Numéro (unique)</label>
         <input
           type="text"
           className="h-10 rounded-md border px-3 bg-background"
@@ -203,7 +203,7 @@ export default function NewInvoicePage() {
           value={clientId}
           onChange={(e) => setClientId(e.target.value)}
         >
-          <option value="">Select a client</option>
+          <option value="">Sélectionner un client</option>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -214,7 +214,7 @@ export default function NewInvoicePage() {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="grid gap-2">
-          <label className="text-sm">Issue date</label>
+          <label className="text-sm">Date émission</label>
           <input
             type="date"
             className="h-10 rounded-md border px-3 bg-background"
@@ -223,7 +223,7 @@ export default function NewInvoicePage() {
           />
         </div>
         <div className="grid gap-2">
-          <label className="text-sm">Due date</label>
+          <label className="text-sm">Date échéance</label>
           <input
             type="date"
             className="h-10 rounded-md border px-3 bg-background"
@@ -237,12 +237,12 @@ export default function NewInvoicePage() {
         <div className="flex items-center justify-between">
           <h2 className="font-medium">Items</h2>
           <Button size="sm" onClick={addItem}>
-            Add item
+            Ajouter un article
           </Button>
         </div>
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No items. Click &quot;Add item&quot; to begin.
+            {`Pas d'article. Cliquez "Add item" pour commencer.`}
           </p>
         ) : (
           <div className="space-y-3">
@@ -253,10 +253,10 @@ export default function NewInvoicePage() {
               >
                 <select
                   className="h-10 rounded-md border px-2 bg-background"
-                  value={it.product_id}
+                  value={it.product_id || "Product…"}
                   onChange={(e) => onChangeProduct(idx, e.target.value)}
                 >
-                  <option value="">Product…</option>
+                  <option value="" />
                   {products.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name}
@@ -288,7 +288,7 @@ export default function NewInvoicePage() {
                   variant="destructive"
                   onClick={() => removeItem(idx)}
                 >
-                  Remove
+                  Supprimer
                 </Button>
               </div>
             ))}
@@ -306,10 +306,10 @@ export default function NewInvoicePage() {
             onClick={() => router.push("/invoices")}
             disabled={saving}
           >
-            Cancel
+            Annuler
           </Button>
           <Button onClick={save} disabled={saving}>
-            {saving ? "Saving…" : "Create"}
+            {saving ? "Enregistrement…" : "Créer la facture"}
           </Button>
         </div>
       </div>

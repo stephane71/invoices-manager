@@ -32,9 +32,9 @@ export default function ProductsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Products</h1>
+        <h1 className="text-xl font-semibold">Vos Produits</h1>
         <Link href="/products/new">
-          <Button size="sm">Add</Button>
+          <Button>+ Nouveau produit</Button>
         </Link>
       </div>
 

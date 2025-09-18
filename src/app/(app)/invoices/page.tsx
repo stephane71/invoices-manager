@@ -68,7 +68,7 @@ export default function InvoicesPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Vos Factures</h1>
         <Link href="/invoices/new">
-          <Button size="sm">+ Nouvelle Facture</Button>
+          <Button>+ Nouvelle Facture</Button>
         </Link>
       </div>
       <InvoicesList />

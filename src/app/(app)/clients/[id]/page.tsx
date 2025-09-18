@@ -64,9 +64,9 @@ export default function ClientDetailPage({
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">Edit client</h1>
+      <h1 className="text-xl font-semibold">Éditer un client</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Name</label>
+        <label className="text-sm">Nom complet</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.name}
@@ -82,7 +82,7 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Phone</label>
+        <label className="text-sm">Numéro de téléphone</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.phone}
@@ -90,7 +90,7 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Address</label>
+        <label className="text-sm">Adresse</label>
         <textarea
           className="min-h-20 rounded-md border px-3 py-2 bg-background"
           value={form.address}
@@ -98,9 +98,9 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="flex gap-2">
-        <Button onClick={save}>Save</Button>
+        <Button onClick={save}>Enregistrer</Button>
         <Button variant="destructive" onClick={remove}>
-          Delete
+          Supprimer
         </Button>
       </div>
     </div>
