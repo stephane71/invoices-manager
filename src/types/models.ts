@@ -37,4 +37,5 @@ export type Invoice = {
   due_date: string; // ISO date
   pdf_url?: string | null;
   created_at?: string;
+  number: string;
 };

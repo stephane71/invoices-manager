@@ -96,7 +96,7 @@ export default function InvoiceDetailPage({
     <div className="pb-24">
       {/* padding bottom so content not hidden by fixed bar */}
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold">Facture #{invoice.id}</h1>
+        <h1 className="text-xl font-semibold">Facture {invoice.number}</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-lg border bg-white p-4">
             <h2 className="text-sm font-semibold text-gray-700 mb-2">

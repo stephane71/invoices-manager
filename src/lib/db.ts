@@ -129,7 +129,8 @@ export async function listInvoices(params?: {
 
 export async function getInvoice(id: string) {
   const supabase = await db();
-  const { data, error } = await supabase
+  // 1) Fetch the invoice row
+  const { data: invoice, error } = await supabase
     .from("invoices")
     .select("*")
     .eq("id", id)
@@ -137,7 +138,24 @@ export async function getInvoice(id: string) {
   if (error) {
     throw error;
   }
-  return data as Invoice;
+  // 2) Fetch related items from the normalized table and map to InvoiceItem shape
+  const { data: rawItems, error: itemsError } = await supabase
+    .from("invoice_items")
+    .select("product_id, description, quantity, unit_price, line_total")
+    .eq("invoice_id", id)
+    .order("created_at", { ascending: true });
+  if (itemsError) {
+    throw itemsError;
+  }
+  const items = (rawItems || []).map((it: any) => ({
+    product_id: it.product_id,
+    name: it.description,
+    quantity: it.quantity,
+    price: it.unit_price,
+    total: it.line_total,
+  }));
+  // 3) Return the enriched invoice
+  return { ...(invoice as any), items } as Invoice;
 }
 
 export async function upsertInvoice(payload: Partial<Invoice>) {
