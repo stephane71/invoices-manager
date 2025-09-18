@@ -104,7 +104,8 @@ export async function listInvoices(params?: {
   sort?: string;
 }) {
   const supabase = await db();
-  let query = supabase.from("invoices").select("*");
+  // Include related client name for better list rendering
+  let query = supabase.from("invoices").select("*, clients(name)");
   if (params?.status) {
     query = query.eq("status", params.status);
   }
@@ -123,7 +124,7 @@ export async function listInvoices(params?: {
   if (error) {
     throw error;
   }
-  return data as Invoice[];
+  return data as any[];
 }
 
 export async function getInvoice(id: string) {

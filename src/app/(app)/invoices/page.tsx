@@ -6,19 +6,34 @@ async function InvoicesList() {
   const invoices = await listInvoices();
   return (
     <ul className="divide-y">
-      {invoices.map((inv) => (
-        <li key={inv.id} className="py-3 flex items-center justify-between">
-          <div>
-            <p className="font-medium">Invoice {inv.id}</p>
-            <p className="text-sm text-muted-foreground">
-              {inv.issue_date} → {inv.due_date} • {inv.status} • Total $
-              {inv.total_amount?.toFixed(2)}
-            </p>
-          </div>
-          {/* Placeholder for future detail page */}
-          {/* <Link className="text-sm underline" href={`/invoices/${inv.id}`}>View</Link> */}
-        </li>
-      ))}
+      {invoices.map((inv: any) => {
+        const invoiceNumber = inv.number || inv.id;
+        const clientName =
+          inv?.clients?.name ||
+          inv.client_name ||
+          inv.clientId ||
+          inv.client_id;
+        const total =
+          typeof inv.total_amount === "number"
+            ? inv.total_amount.toFixed(2)
+            : "0.00";
+        return (
+          <li key={inv.id} className="py-3 flex items-center justify-between">
+            <div>
+              {/* Title: <invoice number> <client name> */}
+              <p className="font-medium">
+                {invoiceNumber} • {clientName}
+              </p>
+              {/* Description: "due date" - total */}
+              <p className="text-sm text-muted-foreground">
+                {inv.due_date} - ${total}
+              </p>
+            </div>
+            {/* Placeholder for future detail page */}
+            {/* <Link className="text-sm underline" href={`/invoices/${inv.id}`}>View</Link> */}
+          </li>
+        );
+      })}
     </ul>
   );
 }
