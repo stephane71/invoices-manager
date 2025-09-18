@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { productSchema } from "@/lib/validation";
 import { deleteProduct, getProduct, upsertProduct } from "@/lib/db";
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  _: NextRequest,
+  { params }: RouteContext<"/api/products/[id]">,
+) {
   try {
-    const data = await getProduct(params.id);
+    const { id } = await params;
+    const data = await getProduct(id);
     return NextResponse.json(data);
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Unknown error";
@@ -12,11 +16,15 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: RouteContext<"/api/products/[id]">,
+) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const parsed = productSchema.partial().parse(body);
-    const updated = await upsertProduct({ ...parsed, id: params.id });
+    const updated = await upsertProduct({ ...parsed, id });
     return NextResponse.json(updated);
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Unknown error";
@@ -24,9 +32,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  _: NextRequest,
+  { params }: RouteContext<"/api/products/[id]">,
+) {
   try {
-    await deleteProduct(params.id);
+    const { id } = await params;
+    await deleteProduct(id);
     return new NextResponse(null, { status: 204 });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Unknown error";
