@@ -3,9 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-
-const BUCKET_URL = process.env.NEXT_PUBLIC_SUPABASE_PRODUCTS_BUCKET || "";
+import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 
 export default function NewProductPage() {
   const [form, setForm] = useState({
@@ -14,40 +12,11 @@ export default function NewProductPage() {
     price: 0,
     image_url: "" as string | null,
   });
-  const [uploading, setUploading] = useState(false);
+  const { uploading, onSelectImage } = useProductImageUpload((url) =>
+    setForm((f) => ({ ...f, image_url: url })),
+  );
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  async function onSelectImage(file?: File | null) {
-    if (!file) {
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const supabase = createSupabaseBrowserClient();
-      const path = `${crypto.randomUUID()}-${file.name}`;
-      const { error } = await supabase.storage
-        .from(BUCKET_URL)
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: true,
-          contentType: file.type || "image/jpeg",
-        });
-      if (error) {
-        throw error;
-      }
-      const { data: pub } = supabase.storage
-        .from(BUCKET_URL)
-        .getPublicUrl(path);
-      setForm((f) => ({ ...f, image_url: pub.publicUrl }));
-    } catch (e) {
-      console.error(e);
-      alert("Erreur lors du téléversement de l'image");
-    } finally {
-      setUploading(false);
-    }
-  }
 
   async function save() {
     setLoading(true);
