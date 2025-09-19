@@ -3,10 +3,51 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+
+const BUCKET_URL = process.env.NEXT_PUBLIC_SUPABASE_PRODUCTS_BUCKET || "";
+
 export default function NewProductPage() {
-  const [form, setForm] = useState({ name: "", description: "", price: 0 });
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    price: 0,
+    image_url: "" as string | null,
+  });
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  async function onSelectImage(file?: File | null) {
+    if (!file) {
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const path = `${crypto.randomUUID()}-${file.name}`;
+      const { error } = await supabase.storage
+        .from(BUCKET_URL)
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: file.type || "image/jpeg",
+        });
+      if (error) {
+        throw error;
+      }
+      const { data: pub } = supabase.storage
+        .from(BUCKET_URL)
+        .getPublicUrl(path);
+      setForm((f) => ({ ...f, image_url: pub.publicUrl }));
+    } catch (e) {
+      console.error(e);
+      alert("Erreur lors du téléversement de l'image");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function save() {
     setLoading(true);
@@ -52,9 +93,30 @@ export default function NewProductPage() {
           }
         />
       </div>
+      <div className="grid gap-2">
+        <label className="text-sm">Image</label>
+        <input
+          type="file"
+          accept="image/*"
+          className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
+          onChange={(e) => onSelectImage(e.target.files?.[0])}
+          disabled={uploading}
+        />
+        {form.image_url ? (
+          <img
+            src={form.image_url}
+            alt="Preview"
+            className="h-16 w-16 object-cover rounded"
+          />
+        ) : null}
+      </div>
       <div className="flex gap-2">
-        <Button onClick={save} disabled={loading}>
-          {loading ? "Enregistrement…" : "Créer le produit"}
+        <Button onClick={save} disabled={loading || uploading}>
+          {loading
+            ? "Enregistrement…"
+            : uploading
+              ? "Téléversement…"
+              : "Créer le produit"}
         </Button>
       </div>
     </div>

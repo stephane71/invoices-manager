@@ -3,13 +3,23 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+
+const BUCKET_URL = process.env.NEXT_PUBLIC_SUPABASE_PRODUCTS_BUCKET || "";
+
 export default function ProductDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const [form, setForm] = useState({ name: "", description: "", price: 0 });
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    price: 0,
+    image_url: "" as string | null,
+  });
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -25,6 +35,7 @@ export default function ProductDetailPage({
         name: d.name || "",
         description: d.description || "",
         price: d.price || 0,
+        image_url: d.image_url || null,
       });
       setLoading(false);
     });
@@ -32,6 +43,37 @@ export default function ProductDetailPage({
       active = false;
     };
   }, [id]);
+
+  async function onSelectImage(file?: File | null) {
+    if (!file) {
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const path = `${crypto.randomUUID()}-${file.name}`;
+      const { error } = await supabase.storage
+        .from(BUCKET_URL)
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: file.type || "image/jpeg",
+        });
+      if (error) {
+        throw error;
+      }
+      const { data: pub } = supabase.storage
+        .from(BUCKET_URL)
+        .getPublicUrl(path);
+      setForm((f) => ({ ...f, image_url: pub.publicUrl }));
+    } catch (e) {
+      console.error(e);
+      alert("Erreur lors du téléversement de l'image");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function save() {
     const res = await fetch(`/api/products/${id}`, {
@@ -88,8 +130,27 @@ export default function ProductDetailPage({
           }
         />
       </div>
+      <div className="grid gap-2">
+        <label className="text-sm">Image</label>
+        <input
+          type="file"
+          accept="image/*"
+          className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
+          onChange={(e) => onSelectImage(e.target.files?.[0])}
+          disabled={uploading}
+        />
+        {form.image_url ? (
+          <img
+            src={form.image_url}
+            alt="Preview"
+            className="h-16 w-16 object-cover rounded"
+          />
+        ) : null}
+      </div>
       <div className="flex gap-2">
-        <Button onClick={save}>Enregistrer</Button>
+        <Button onClick={save} disabled={uploading}>
+          Enregistrer
+        </Button>
         <Button variant="destructive" onClick={remove}>
           Supprimer
         </Button>

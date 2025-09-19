@@ -5,6 +5,7 @@ export type Product = {
   name: string;
   description?: string | null;
   price: number; // in major currency units
+  image_url?: string | null;
   created_at?: string;
 };
 
