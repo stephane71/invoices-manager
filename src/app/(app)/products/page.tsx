@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listProducts } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 async function ProductsList() {
   const products = await listProducts();
@@ -14,7 +15,7 @@ async function ProductsList() {
           >
             <div className="flex items-center gap-3">
               {p.image_url ? (
-                <img
+                <Image
                   src={p.image_url}
                   alt={p.name}
                   className="h-10 w-10 rounded object-cover"

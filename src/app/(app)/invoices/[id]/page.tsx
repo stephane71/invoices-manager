@@ -74,7 +74,7 @@ export default function InvoiceDetailPage({
       const url = data?.pdf_url as string | undefined;
       if (url) {
         // update local state
-        setInvoice({ ...(invoice as Invoice), pdf_url: url });
+        setInvoice({ ...invoice, pdf_url: url });
         window.open(url, "_blank");
       }
     } catch (e: unknown) {

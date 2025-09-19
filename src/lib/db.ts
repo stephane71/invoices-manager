@@ -124,7 +124,7 @@ export async function listInvoices(params?: {
   if (error) {
     throw error;
   }
-  return data as any[];
+  return data;
 }
 
 export async function getInvoice(id: string) {
@@ -147,7 +147,7 @@ export async function getInvoice(id: string) {
   if (itemsError) {
     throw itemsError;
   }
-  const items = (rawItems || []).map((it: any) => ({
+  const items = (rawItems || []).map((it) => ({
     product_id: it.product_id,
     name: it.description,
     quantity: it.quantity,
@@ -161,7 +161,7 @@ export async function getInvoice(id: string) {
 export async function upsertInvoice(payload: Partial<Invoice>) {
   const supabase = await db();
   // Ensure we never try to upsert the legacy `items` column (moved to invoice_items table)
-  const { items, ...rest } = payload as any;
+  const { items, ...rest } = payload;
   const { data, error } = await supabase
     .from("invoices")
     .upsert(rest)
@@ -210,7 +210,7 @@ export async function createInvoiceWithItems(
   const supabase = await db();
 
   // 1) Insert the invoice without items
-  const { items, ...invoiceFields } = payload as any;
+  const { items, ...invoiceFields } = payload;
 
   const { data: invoice, error } = await supabase
     .from("invoices")
@@ -222,7 +222,7 @@ export async function createInvoiceWithItems(
   }
 
   // 2) Map and bulk insert invoice items
-  const rows = (items || []).map((it: any) => ({
+  const rows = (items || []).map((it) => ({
     invoice_id: invoice.id,
     product_id: it.product_id || null,
     description: it.name,

@@ -37,8 +37,9 @@ export default function SignInPage() {
       }
       router.replace("/invoices");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Authentication failed");
+    } catch (err: unknown) {
+      // @ts-expect-error error type is not correct
+      setError(err?.message || "Authentication failed");
     } finally {
       setLoading(false);
     }

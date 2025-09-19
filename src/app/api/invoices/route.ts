@@ -24,12 +24,14 @@ export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
     const parsed = invoiceSchema.partial({ id: true }).parse(json);
-    const created = await createInvoiceWithItems(parsed as any);
+    const created = await createInvoiceWithItems(parsed as never);
     return NextResponse.json(created, { status: 201 });
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Supabase/Postgres unique violation typically uses code "23505"
+    // @ts-expect-error error type is not correct
     const code = e?.code;
     const rawMessage =
+      // @ts-expect-error error type is not correct
       e?.message || (e instanceof Error ? e.message : "Unknown error");
     const isDuplicate =
       code === "23505" ||

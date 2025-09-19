@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
+import Image from "next/image";
 
 export default function NewProductPage() {
   const [form, setForm] = useState({
@@ -72,7 +73,7 @@ export default function NewProductPage() {
           disabled={uploading}
         />
         {form.image_url ? (
-          <img
+          <Image
             src={form.image_url}
             alt="Preview"
             className="h-16 w-16 object-cover rounded"

@@ -153,7 +153,7 @@ export default function NewInvoicePage() {
         }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}) as any);
+        const err = await res.json().catch(() => ({}) as never);
         const serverMessage: string | undefined = err?.error || err?.message;
         // If the backend signals a duplicate number (409), or the message suggests it
         if (

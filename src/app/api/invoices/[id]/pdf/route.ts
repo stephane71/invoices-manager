@@ -77,7 +77,10 @@ export async function POST(
     });
 
     const pdfBytes = pdf as Uint8Array;
-    const pdfUrl = await uploadInvoicePdf(invoice.id, pdfBytes.buffer);
+    const pdfUrl = await uploadInvoicePdf(
+      invoice.id,
+      pdfBytes.buffer as ArrayBuffer,
+    );
 
     const updated = await updateClient(invoice.id, {
       pdf_url: pdfUrl,
