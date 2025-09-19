@@ -173,6 +173,20 @@ export async function upsertInvoice(payload: Partial<Invoice>) {
   return data as Invoice;
 }
 
+export async function updateClient(id: string, payload: Partial<Invoice>) {
+  const supabase = await db();
+  const { data, error } = await supabase
+    .from("invoices")
+    .update(payload)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data as Client;
+}
+
 export async function deleteInvoice(id: string) {
   const supabase = await db();
   const { error } = await supabase.from("invoices").delete().eq("id", id);
