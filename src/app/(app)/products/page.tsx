@@ -19,6 +19,8 @@ async function ProductsList() {
                   src={p.image_url}
                   alt={p.name}
                   className="h-10 w-10 rounded object-cover"
+                  width={40}
+                  height={40}
                 />
               ) : (
                 <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-xs text-gray-500">

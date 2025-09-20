@@ -77,6 +77,8 @@ export default function NewProductPage() {
             src={form.image_url}
             alt="Preview"
             className="h-16 w-16 object-cover rounded"
+            width={64}
+            height={64}
           />
         ) : null}
       </div>
