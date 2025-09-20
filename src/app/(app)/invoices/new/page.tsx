@@ -212,7 +212,7 @@ export default function NewInvoicePage() {
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="grid gap-2">
           <label className="text-sm">Date émission</label>
           <input
@@ -249,7 +249,7 @@ export default function NewInvoicePage() {
             {items.map((it, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-[1fr_90px_110px_110px_80px] items-center gap-2"
+                className="grid grid-cols-1 sm:grid-cols-[1fr_90px_110px_110px_80px] items-center gap-2"
               >
                 <select
                   className="h-10 rounded-md border px-2 bg-background"
