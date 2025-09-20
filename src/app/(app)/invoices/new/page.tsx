@@ -19,6 +19,8 @@ type Item = {
   quantity: number;
   price: number;
   total: number;
+  // Transient UI state to allow clearing the quantity input before typing
+  quantityInput?: string;
 };
 
 export default function NewInvoicePage() {
@@ -62,7 +64,14 @@ export default function NewInvoicePage() {
   function addItem() {
     setItems((prev) => [
       ...prev,
-      { product_id: "", name: "", quantity: 1, price: 0, total: 0 },
+      {
+        product_id: "",
+        name: "",
+        quantity: 1,
+        price: 0,
+        total: 0,
+        quantityInput: "1",
+      },
     ]);
   }
 
@@ -76,29 +85,77 @@ export default function NewInvoicePage() {
       const prod = products.find((p) => p.id === productId);
       const price = prod?.price || 0;
       const name = prod?.name || "";
-      const qty = next[index]?.quantity || 1;
+      const existing = next[index];
+      const qty = existing?.quantity ?? 0;
+      const quantityInput = existing?.quantityInput ?? (qty ? String(qty) : "");
       next[index] = {
+        ...existing,
         product_id: productId,
         name,
         quantity: qty,
         price,
         total: +(price * qty).toFixed(2),
+        quantityInput,
+      } as Item;
+      return next;
+    });
+  }
+
+  function onChangeQty(index: number, rawValue: string) {
+    setItems((prev) => {
+      const next = [...prev];
+      const item = next[index];
+
+      // Allow temporary empty string while typing
+      if (rawValue === "") {
+        next[index] = {
+          ...item,
+          quantityInput: "",
+          quantity: 0,
+          total: 0,
+        };
+        return next;
+      }
+
+      // Parse positive integer quantity
+      const parsed = parseInt(rawValue, 10);
+      if (!Number.isFinite(parsed) || parsed < 1) {
+        next[index] = {
+          ...item,
+          quantityInput: rawValue,
+          quantity: 0,
+          total: 0,
+        };
+        return next;
+      }
+
+      const quantity = Math.floor(parsed);
+      const price = Number(item.price) || 0;
+      next[index] = {
+        ...item,
+        quantityInput: String(quantity),
+        quantity,
+        total: +(price * quantity).toFixed(2),
       };
       return next;
     });
   }
 
-  function onChangeQty(index: number, qty: number) {
+  function onBlurQty(index: number) {
     setItems((prev) => {
       const next = [...prev];
       const item = next[index];
-      const quantity = qty > 0 ? Math.floor(qty) : 1;
-      const price = Number(item.price) || 0;
-      next[index] = {
-        ...item,
-        quantity,
-        total: +(price * quantity).toFixed(2),
-      };
+      const raw = (item as Item).quantityInput ?? String(item.quantity ?? "");
+      if (raw === "" || item.quantity === 0) {
+        const quantity = 1;
+        const price = Number(item.price) || 0;
+        next[index] = {
+          ...item,
+          quantityInput: "1",
+          quantity,
+          total: +(price * quantity).toFixed(2),
+        };
+      }
       return next;
     });
   }
@@ -108,7 +165,7 @@ export default function NewInvoicePage() {
       const next = [...prev];
       const item = next[index];
       const price = priceInput >= 0 ? priceInput : 0;
-      const qty = Number(item.quantity) || 1;
+      const qty = Number(item.quantity) || 0; // while typing empty quantity, treat as 0
       next[index] = { ...item, price, total: +(price * qty).toFixed(2) };
       return next;
     });
@@ -267,10 +324,9 @@ export default function NewInvoicePage() {
                   type="number"
                   min={1}
                   className="h-10 rounded-md border px-2 bg-background"
-                  value={it.quantity}
-                  onChange={(e) =>
-                    onChangeQty(idx, parseInt(e.target.value || "1", 10))
-                  }
+                  value={it.quantityInput ?? String(it.quantity)}
+                  onChange={(e) => onChangeQty(idx, e.target.value)}
+                  onBlur={() => onBlurQty(idx)}
                 />
                 <input
                   type="number"
