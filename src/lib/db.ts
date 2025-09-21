@@ -5,11 +5,29 @@ export function db() {
   return getSupabaseServerClient();
 }
 
+// Resolve the current account identifier.
+// For now, we scope accounts per authenticated user: account_id === auth.user.id
+// This keeps the app single-user-per-account while allowing future multi-user accounts later.
+async function getCurrentAccountId() {
+  const supabase = await db();
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    throw error;
+  }
+  const user = data?.user;
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+  return user.id;
+}
+
 export async function listClients() {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   const { data, error } = await supabase
     .from("clients")
     .select("*")
+    .eq("account_id", accountId)
     .order("created_at", { ascending: false });
   if (error) {
     throw error;
@@ -19,10 +37,12 @@ export async function listClients() {
 
 export async function getClient(id: string) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   const { data, error } = await supabase
     .from("clients")
     .select("*")
     .eq("id", id)
+    .eq("account_id", accountId)
     .single();
   if (error) {
     throw error;
@@ -32,9 +52,10 @@ export async function getClient(id: string) {
 
 export async function upsertClient(payload: Partial<Client>) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   const { data, error } = await supabase
     .from("clients")
-    .upsert(payload)
+    .upsert({ ...payload, account_id: accountId })
     .select()
     .single();
   if (error) {
@@ -45,7 +66,12 @@ export async function upsertClient(payload: Partial<Client>) {
 
 export async function deleteClient(id: string) {
   const supabase = await db();
-  const { error } = await supabase.from("clients").delete().eq("id", id);
+  const accountId = await getCurrentAccountId();
+  const { error } = await supabase
+    .from("clients")
+    .delete()
+    .eq("id", id)
+    .eq("account_id", accountId);
   if (error) {
     throw error;
   }
@@ -53,9 +79,11 @@ export async function deleteClient(id: string) {
 
 export async function listProducts() {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   const { data, error } = await supabase
     .from("products")
     .select("*")
+    .eq("account_id", accountId)
     .order("created_at", { ascending: false });
   if (error) {
     throw error;
@@ -66,10 +94,12 @@ export async function listProducts() {
 
 export async function getProduct(id: string) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   const { data, error } = await supabase
     .from("products")
     .select("*")
     .eq("id", id)
+    .eq("account_id", accountId)
     .single();
   if (error) {
     throw error;
@@ -79,9 +109,10 @@ export async function getProduct(id: string) {
 
 export async function upsertProduct(payload: Partial<Product>) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   const { data, error } = await supabase
     .from("products")
-    .upsert(payload)
+    .upsert({ ...payload, account_id: accountId })
     .select()
     .single();
   if (error) {
@@ -92,7 +123,12 @@ export async function upsertProduct(payload: Partial<Product>) {
 
 export async function deleteProduct(id: string) {
   const supabase = await db();
-  const { error } = await supabase.from("products").delete().eq("id", id);
+  const accountId = await getCurrentAccountId();
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", id)
+    .eq("account_id", accountId);
   if (error) {
     throw error;
   }
@@ -105,7 +141,11 @@ export async function listInvoices(params?: {
 }) {
   const supabase = await db();
   // Include related client name for better list rendering
-  let query = supabase.from("invoices").select("*, clients(name)");
+  const accountId = await getCurrentAccountId();
+  let query = supabase
+    .from("invoices")
+    .select("*, clients(name)")
+    .eq("account_id", accountId);
   if (params?.status) {
     query = query.eq("status", params.status);
   }
@@ -129,11 +169,13 @@ export async function listInvoices(params?: {
 
 export async function getInvoice(id: string) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   // 1) Fetch the invoice row
   const { data: invoice, error } = await supabase
     .from("invoices")
     .select("*, clients(name)")
     .eq("id", id)
+    .eq("account_id", accountId)
     .single();
   if (error) {
     throw error;
@@ -143,6 +185,7 @@ export async function getInvoice(id: string) {
     .from("invoice_items")
     .select("product_id, description, quantity, unit_price, line_total")
     .eq("invoice_id", id)
+    .eq("account_id", accountId)
     .order("created_at", { ascending: true });
   if (itemsError) {
     throw itemsError;
@@ -160,11 +203,12 @@ export async function getInvoice(id: string) {
 
 export async function upsertInvoice(payload: Partial<Invoice>) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
   // Ensure we never try to upsert the legacy `items` column (moved to invoice_items table)
   const { items, ...rest } = payload;
   const { data, error } = await supabase
     .from("invoices")
-    .upsert(rest)
+    .upsert({ ...rest, account_id: accountId })
     .select()
     .single();
   if (error) {
@@ -173,7 +217,7 @@ export async function upsertInvoice(payload: Partial<Invoice>) {
   return data as Invoice;
 }
 
-export async function updateClient(id: string, payload: Partial<Invoice>) {
+export async function updateInvoice(id: string, payload: Partial<Invoice>) {
   const supabase = await db();
   const { data, error } = await supabase
     .from("invoices")
@@ -189,7 +233,12 @@ export async function updateClient(id: string, payload: Partial<Invoice>) {
 
 export async function deleteInvoice(id: string) {
   const supabase = await db();
-  const { error } = await supabase.from("invoices").delete().eq("id", id);
+  const accountId = await getCurrentAccountId();
+  const { error } = await supabase
+    .from("invoices")
+    .delete()
+    .eq("id", id)
+    .eq("account_id", accountId);
   if (error) {
     throw error;
   }
@@ -208,13 +257,14 @@ export async function createInvoiceWithItems(
   },
 ) {
   const supabase = await db();
+  const accountId = await getCurrentAccountId();
 
   // 1) Insert the invoice without items
   const { items, ...invoiceFields } = payload;
 
   const { data: invoice, error } = await supabase
     .from("invoices")
-    .upsert(invoiceFields)
+    .upsert({ ...invoiceFields, account_id: accountId })
     .select()
     .single();
   if (error) {
@@ -223,6 +273,7 @@ export async function createInvoiceWithItems(
 
   // 2) Map and bulk insert invoice items
   const rows = (items || []).map((it) => ({
+    account_id: accountId,
     invoice_id: invoice.id,
     product_id: it.product_id || null,
     description: it.name,

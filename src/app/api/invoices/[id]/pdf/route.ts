@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generate } from "@pdfme/generator";
-import { getClient, getInvoice, updateClient } from "@/lib/db";
+import { getClient, getInvoice, updateInvoice } from "@/lib/db";
 import { uploadInvoicePdf } from "@/lib/storage";
 import InvoiceTemplate from "./pdfme-invoice-template.json";
 import { Template } from "@pdfme/common";
@@ -82,7 +82,7 @@ export async function POST(
       pdfBytes.buffer as ArrayBuffer,
     );
 
-    const updated = await updateClient(invoice.id, {
+    const updated = await updateInvoice(invoice.id, {
       pdf_url: pdfUrl,
     });
 
