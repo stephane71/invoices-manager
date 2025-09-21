@@ -107,11 +107,11 @@
   "Contact": {
     "about": {
       "title": "À propos de moi",
-      "body": "Salut ! Moi c’est Stéphane — un bâtisseur dans l’âme qui aime transformer des idées un peu brouillonnes en logiciels simples et pragmatiques. Je vais à l’essentiel, je livre vite, et je porte une attention particulière aux petits détails qui rendent les outils agréables à utiliser.<br/>Si tu as des retours, des idées, ou simplement envie de parler produit, je suis tout ouïe."
+      "body": "Salut ! Moi c’est Stéphane — j'aime transformer des idées un peu brouillonnes en logiciels simples et pragmatiques. Je vais à l’essentiel, et je porte une attention particulière aux petits détails qui rendent les outils agréables à utiliser.<br></br>Si tu as des retours, des idées, ou simplement envie de parler produit, contacte moi !."
     },
     "ambition": {
       "title": "Ambition du projet",
-      "body": "InvoEase vise à être la manière la plus simple et la plus sympa pour les freelances et petites équipes de gérer leurs factures sans superflu. L’objectif : rester focalisé — des workflows rapides, une UX claire, et des fonctionnalités qui t’aident vraiment à être payé. Pas de distractions, juste un outil fluide et fiable sur lequel tu peux compter au quotidien."
+      "body": "InvoEase est la manière la plus simple pour les petites équipes de gérer leurs factures; sans superflu.<br></br>L’objectif : rester focalisé — une interface rapide et claire avec des fonctionnalités qui t’aident vraiment à être payé. Pas de distractions, juste un outil fluide et fiable sur lequel tu peux compter au quotidien."
     },
     "imageAlt": "Photo de Stéphane Maire"
   }

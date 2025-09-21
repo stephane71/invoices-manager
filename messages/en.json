@@ -107,11 +107,11 @@
   "Contact": {
     "about": {
       "title": "About me",
-      "body": "Hey there! I’m Stéphane — a builder at heart who loves turning messy ideas into clean, pragmatic software. I keep things simple, ship fast, and care a lot about small details that make tools a joy to use.<br/>If you’ve got feedback, ideas, or just want to chat product, I’m all ears."
+      "body": "Hey! I'm Stéphane — I love turning rough ideas into simple, pragmatic software. I go straight to the point and pay close attention to the little details that make tools a pleasure to use.<br></br>If you have feedback, ideas, or just want to talk product, feel free to reach out!"
     },
     "ambition": {
       "title": "Project ambition",
-      "body": "InvoEase aims to be the friendliest way for freelancers and small teams to manage invoices without the bloat. The goal is to stay focused: fast workflows, clear UX, and features that actually help you get paid. No distractions — just a smooth, reliable tool you can trust every day."
+      "body": "InvoEase is the simplest way for small teams to manage their invoices — without the extras.<br></br>The goal: stay focused — a fast, clear interface with features that genuinely help you get paid. No distractions, just a smooth, reliable tool you can count on every day."
     },
     "imageAlt": "Photo of Stéphane Maire"
   }

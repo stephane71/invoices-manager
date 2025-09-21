@@ -57,7 +57,9 @@ export default async function ContactPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold">{c("ambition.title")}</h2>
         <p className="text-sm leading-6 text-muted-foreground">
-          {c("ambition.body")}
+          {c.rich("ambition.body", {
+            br: () => <br />,
+          })}
         </p>
       </section>
     </div>
