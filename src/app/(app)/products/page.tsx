@@ -3,6 +3,7 @@ import { listProducts } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { Package, Plus } from "lucide-react";
 
 async function ProductsList() {
   const products = await listProducts();
@@ -53,9 +54,15 @@ export default async function ProductsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
+        <h1 className="text-xl font-semibold flex items-center gap-2">
+          <Package className="h-5 w-5" aria-hidden="true" />
+          <span>{t("title")}</span>
+        </h1>
         <Link href="/products/new">
-          <Button>{t("list.newButton")}</Button>
+          <Button>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            <span>{t("list.newButton")}</span>
+          </Button>
         </Link>
       </div>
 

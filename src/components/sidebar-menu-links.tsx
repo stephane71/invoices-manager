@@ -9,6 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
+import { FileText, Package, Users } from "lucide-react";
 
 export function SidebarMenuLinks() {
   const pathname = usePathname();
@@ -39,7 +40,10 @@ export function SidebarMenuLinks() {
           isActive={isActive("/invoices")}
           onClick={handleItemClick}
         >
-          <Link href="/invoices">{t("invoices")}</Link>
+          <Link href="/invoices">
+            <FileText />
+            <span>{t("invoices")}</span>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
@@ -48,7 +52,10 @@ export function SidebarMenuLinks() {
           isActive={isActive("/clients")}
           onClick={handleItemClick}
         >
-          <Link href="/clients">{t("clients")}</Link>
+          <Link href="/clients">
+            <Users />
+            <span>{t("clients")}</span>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
@@ -57,7 +64,10 @@ export function SidebarMenuLinks() {
           isActive={isActive("/products")}
           onClick={handleItemClick}
         >
-          <Link href="/products">{t("products")}</Link>
+          <Link href="/products">
+            <Package />
+            <span>{t("products")}</span>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

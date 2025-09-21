@@ -22,7 +22,7 @@
   "Products": {
     "title": "Vos produits",
     "list": {
-      "newButton": "+ Nouveau produit"
+      "newButton": "Nouveau produit"
     },
     "new": {
       "title": "Nouveau Produit",
@@ -47,7 +47,7 @@
   "Clients": {
     "title": "Vos Clients",
     "list": {
-      "newButton": "+ Nouveau client"
+      "newButton": "Nouveau client"
     },
     "new": {
       "title": "Nouveau client",
@@ -69,7 +69,7 @@
   "Invoices": {
     "title": "Vos Factures",
     "list": {
-      "newButton": "+ Nouvelle Facture",
+      "newButton": "Nouvelle Facture",
       "issued": "Émise:",
       "due": "Échéance:"
     },

@@ -22,7 +22,7 @@
   "Products": {
     "title": "Your products",
     "list": {
-      "newButton": "+ New product"
+      "newButton": "New product"
     },
     "new": {
       "title": "New product",
@@ -47,7 +47,7 @@
   "Clients": {
     "title": "Your clients",
     "list": {
-      "newButton": "+ New client"
+      "newButton": "New client"
     },
     "new": {
       "title": "New client",
@@ -69,7 +69,7 @@
   "Invoices": {
     "title": "Your invoices",
     "list": {
-      "newButton": "+ New invoice",
+      "newButton": "New invoice",
       "issued": "Issued:",
       "due": "Due:"
     },
