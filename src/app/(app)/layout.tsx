@@ -25,18 +25,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     redirect("/sign-in");
   }
 
-  const email = String(user.user_metadata.email);
-  const [local, ...rest] = email.split("@");
-  const domain = rest.join("@");
-
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="p-4">
-          <span>
-            {local}@<wbr />
-            <span className="whitespace-nowrap">{domain}</span>
-          </span>
+          <span>Facture Manager</span>
           <Separator />
         </SidebarHeader>
 

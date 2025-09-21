@@ -9,7 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
-import { FileText, Package, Users } from "lucide-react";
+import { FileText, Mail, Package, Users } from "lucide-react";
 
 export function SidebarMenuLinks() {
   const pathname = usePathname();
@@ -33,43 +33,62 @@ export function SidebarMenuLinks() {
   };
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={isActive("/invoices")}
-          onClick={handleItemClick}
-        >
-          <Link href="/invoices">
-            <FileText />
-            <span>{t("invoices")}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={isActive("/clients")}
-          onClick={handleItemClick}
-        >
-          <Link href="/clients">
-            <Users />
-            <span>{t("clients")}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={isActive("/products")}
-          onClick={handleItemClick}
-        >
-          <Link href="/products">
-            <Package />
-            <span>{t("products")}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={isActive("/invoices")}
+            onClick={handleItemClick}
+          >
+            <Link href="/invoices">
+              <FileText />
+              <span>{t("invoices")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={isActive("/clients")}
+            onClick={handleItemClick}
+          >
+            <Link href="/clients">
+              <Users />
+              <span>{t("clients")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={isActive("/products")}
+            onClick={handleItemClick}
+          >
+            <Link href="/products">
+              <Package />
+              <span>{t("products")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
+      <div className="mt-auto mb-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/contact")}
+              onClick={handleItemClick}
+            >
+              <Link href="/contact">
+                <Mail />
+                <span>{t("contact")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </div>
+    </>
   );
 }

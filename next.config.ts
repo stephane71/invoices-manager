@@ -3,7 +3,10 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [new URL("https://vckkkupndydwilnzpjkc.supabase.co/**")],
+    remotePatterns: [
+      new URL("https://vckkkupndydwilnzpjkc.supabase.co/**"),
+      new URL("https://github.com/**"),
+    ],
   },
 };
 
