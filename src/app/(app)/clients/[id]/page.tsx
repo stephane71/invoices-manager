@@ -2,6 +2,7 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function ClientDetailPage({
   params,
@@ -17,6 +18,8 @@ export default function ClientDetailPage({
   });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const t = useTranslations("Clients");
+  const c = useTranslations("Common");
 
   useEffect(() => {
     let active = true;
@@ -49,7 +52,7 @@ export default function ClientDetailPage({
   }
 
   async function remove() {
-    if (!confirm("Delete this client?")) {
+    if (!confirm(t("confirm.delete"))) {
       return;
     }
     const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
@@ -59,14 +62,14 @@ export default function ClientDetailPage({
   }
 
   if (loading) {
-    return <div className="p-4">Loading…</div>;
+    return <div className="p-4">{c("loading")}</div>;
   }
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">Éditer un client</h1>
+      <h1 className="text-xl font-semibold">{t("edit.title")}</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Nom complet</label>
+        <label className="text-sm">{t("new.form.name")}</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.name}
@@ -74,7 +77,7 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Email</label>
+        <label className="text-sm">{t("new.form.email")}</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.email}
@@ -82,7 +85,7 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Numéro de téléphone</label>
+        <label className="text-sm">{t("new.form.phone")}</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.phone}
@@ -90,7 +93,7 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Adresse</label>
+        <label className="text-sm">{t("new.form.address")}</label>
         <textarea
           className="min-h-20 rounded-md border px-3 py-2 bg-background"
           value={form.address}
@@ -98,9 +101,9 @@ export default function ClientDetailPage({
         />
       </div>
       <div className="flex gap-2">
-        <Button onClick={save}>Enregistrer</Button>
+        <Button onClick={save}>{c("save")}</Button>
         <Button variant="destructive" onClick={remove}>
-          Supprimer
+          {c("delete")}
         </Button>
       </div>
     </div>

@@ -1,0 +1,106 @@
+{
+  "App": {
+    "title": "InvoEase",
+    "description": "Mobile-first invoicing app"
+  },
+  "Nav": {
+    "invoices": "Invoices",
+    "clients": "Clients",
+    "products": "Products",
+    "signIn": "Sign in"
+  },
+  "Common": {
+    "view": "View →",
+    "loading": "Loading…",
+    "save": "Save",
+    "delete": "Delete",
+    "saving": "Saving…",
+    "uploading": "Uploading…",
+    "preview": "Preview",
+    "cancel": "Cancel"
+  },
+  "Products": {
+    "title": "Your products",
+    "list": {
+      "newButton": "+ New product"
+    },
+    "new": {
+      "title": "New product",
+      "form": {
+        "name": "Name",
+        "description": "Description",
+        "price": "Price",
+        "image": "Image"
+      },
+      "createButton": "Create product"
+    },
+    "edit": {
+      "title": "Edit product"
+    },
+    "alt": {
+      "preview": "Preview"
+    },
+    "confirm": {
+      "delete": "Delete this product?"
+    }
+  },
+  "Clients": {
+    "title": "Your clients",
+    "list": {
+      "newButton": "+ New client"
+    },
+    "new": {
+      "title": "New client",
+      "form": {
+        "name": "Full name",
+        "email": "Email",
+        "phone": "Phone number",
+        "address": "Address"
+      },
+      "createButton": "Create client"
+    },
+    "edit": {
+      "title": "Edit client"
+    },
+    "confirm": {
+      "delete": "Delete this client?"
+    }
+  },
+  "Invoices": {
+    "title": "Your invoices",
+    "list": {
+      "newButton": "+ New invoice",
+      "issued": "Issued:",
+      "due": "Due:"
+    },
+    "detail": {
+      "title": "Invoice {number}",
+      "info": "Information",
+      "clientLabel": "Client:",
+      "issued": "Issued:",
+      "due": "Due:",
+      "total": "Total",
+      "lines": "Items",
+      "none": "No items",
+      "download": "Download the invoice",
+      "downloading": "Downloading…",
+      "qty": "Qty"
+    },
+    "new": {
+      "title": "New Invoice",
+      "number": "Number (unique)",
+      "numberPlaceholder": "Enter invoice number",
+      "client": "Client",
+      "selectClient": "Select a client",
+      "issueDate": "Issue date",
+      "dueDate": "Due date",
+      "items": "Items",
+      "addItem": "Add item",
+      "empty": "No items. Click \"Add item\" to start.",
+      "remove": "Remove",
+      "total": "Total:",
+      "cancel": "Cancel",
+      "create": "Create invoice"
+    }
+  }
+}

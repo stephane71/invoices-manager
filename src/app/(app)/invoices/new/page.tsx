@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import type { Client, Product } from "@/types/models";
+import { useTranslations } from "next-intl";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -30,6 +31,8 @@ export default function NewInvoicePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("Invoices");
+  const c = useTranslations("Common");
 
   const [number, setNumber] = useState("");
   const [clientId, setClientId] = useState("");
@@ -234,36 +237,36 @@ export default function NewInvoicePage() {
   }
 
   if (loading) {
-    return <div className="p-4">Loading…</div>;
+    return <div className="p-4">{c("loading")}</div>;
   }
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Nouvelle Facture</h1>
+      <h1 className="text-xl font-semibold">{t("new.title")}</h1>
 
       <div className="grid gap-2">
-        <label className="text-sm">Numéro (unique)</label>
+        <label className="text-sm">{t("new.number")}</label>
         <input
           type="text"
           className="h-10 rounded-md border px-3 bg-background"
           value={number}
           onChange={(e) => setNumber(e.target.value)}
-          placeholder="Enter invoice number"
+          placeholder={t("new.numberPlaceholder")}
           required
         />
       </div>
 
       <div className="grid gap-2">
-        <label className="text-sm">Client</label>
+        <label className="text-sm">{t("new.client")}</label>
         <select
           className="h-10 rounded-md border px-3 bg-background"
           value={clientId}
           onChange={(e) => setClientId(e.target.value)}
         >
-          <option value="">Sélectionner un client</option>
-          {clients.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
+          <option value="">{t("new.selectClient")}</option>
+          {clients.map((cItem) => (
+            <option key={cItem.id} value={cItem.id}>
+              {cItem.name}
             </option>
           ))}
         </select>
@@ -271,7 +274,7 @@ export default function NewInvoicePage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="grid gap-2">
-          <label className="text-sm">Date émission</label>
+          <label className="text-sm">{t("new.issueDate")}</label>
           <input
             type="date"
             className="h-10 rounded-md border px-3 bg-background"
@@ -280,7 +283,7 @@ export default function NewInvoicePage() {
           />
         </div>
         <div className="grid gap-2">
-          <label className="text-sm">Date échéance</label>
+          <label className="text-sm">{t("new.dueDate")}</label>
           <input
             type="date"
             className="h-10 rounded-md border px-3 bg-background"
@@ -292,15 +295,13 @@ export default function NewInvoicePage() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="font-medium">Items</h2>
+          <h2 className="font-medium">{t("new.items")}</h2>
           <Button size="sm" onClick={addItem}>
-            Ajouter un article
+            {t("new.addItem")}
           </Button>
         </div>
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {`Pas d'article. Cliquez "Add item" pour commencer.`}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
         ) : (
           <div className="space-y-3">
             {items.map((it, idx) => (
@@ -310,7 +311,7 @@ export default function NewInvoicePage() {
               >
                 <select
                   className="h-10 rounded-md border px-2 bg-background"
-                  value={it.product_id || "Product…"}
+                  value={it.product_id || ""}
                   onChange={(e) => onChangeProduct(idx, e.target.value)}
                 >
                   <option value="" />
@@ -344,7 +345,7 @@ export default function NewInvoicePage() {
                   variant="destructive"
                   onClick={() => removeItem(idx)}
                 >
-                  Supprimer
+                  {t("new.remove")}
                 </Button>
               </div>
             ))}
@@ -354,7 +355,7 @@ export default function NewInvoicePage() {
 
       <div className="flex items-center justify-between">
         <div className="text-lg font-medium">
-          Total: ${totalAmount.toFixed(2)}
+          {t("new.total")} ${totalAmount.toFixed(2)}
         </div>
         <div className="flex gap-2">
           <Button
@@ -362,10 +363,10 @@ export default function NewInvoicePage() {
             onClick={() => router.push("/invoices")}
             disabled={saving}
           >
-            Annuler
+            {c("cancel")}
           </Button>
           <Button onClick={save} disabled={saving}>
-            {saving ? "Enregistrement…" : "Créer la facture"}
+            {saving ? c("saving") : t("new.create")}
           </Button>
         </div>
       </div>

@@ -2,9 +2,11 @@ import Link from "next/link";
 import { listInvoices } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Invoice } from "@/types/models";
+import { getTranslations } from "next-intl/server";
 
 async function InvoicesList() {
   const invoices = await listInvoices();
+  const t = await getTranslations("Invoices");
   return (
     <div className="space-y-3">
       {invoices.map(
@@ -39,10 +41,10 @@ async function InvoicesList() {
                       {clientName}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Émise: {inv.issue_date}
+                      {t("list.issued")} {inv.issue_date}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Échéance: {inv.due_date}
+                      {t("list.due")} {inv.due_date}
                     </p>
                   </div>
 
@@ -63,13 +65,14 @@ async function InvoicesList() {
   );
 }
 
-export default function InvoicesPage() {
+export default async function InvoicesPage() {
+  const t = await getTranslations("Invoices");
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Vos Factures</h1>
+        <h1 className="text-xl font-semibold">{t("title")}</h1>
         <Link href="/invoices/new">
-          <Button>+ Nouvelle Facture</Button>
+          <Button>{t("list.newButton")}</Button>
         </Link>
       </div>
       <InvoicesList />

@@ -2,9 +2,12 @@ import Link from "next/link";
 import { listProducts } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
 async function ProductsList() {
   const products = await listProducts();
+  const c = await getTranslations("Common");
+
   return (
     <ul className="divide-y">
       {products.map((p) => (
@@ -35,7 +38,7 @@ async function ProductsList() {
               </div>
             </div>
             <span className="text-sm text-blue-600 hover:text-blue-800">
-              View →
+              {c("view")}
             </span>
           </Link>
         </li>
@@ -44,13 +47,15 @@ async function ProductsList() {
   );
 }
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const t = await getTranslations("Products");
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Vos Produits</h1>
+        <h1 className="text-xl font-semibold">{t("title")}</h1>
         <Link href="/products/new">
-          <Button>+ Nouveau produit</Button>
+          <Button>{t("list.newButton")}</Button>
         </Link>
       </div>
 

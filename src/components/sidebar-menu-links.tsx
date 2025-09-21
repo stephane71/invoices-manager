@@ -8,10 +8,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
 
 export function SidebarMenuLinks() {
   const pathname = usePathname();
   const { isMobile, setOpen } = useSidebar();
+  const t = useTranslations("Nav");
 
   const isActive = (href: string) => {
     if (!pathname) {
@@ -37,7 +39,7 @@ export function SidebarMenuLinks() {
           isActive={isActive("/invoices")}
           onClick={handleItemClick}
         >
-          <Link href="/invoices">Factures</Link>
+          <Link href="/invoices">{t("invoices")}</Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
@@ -46,7 +48,7 @@ export function SidebarMenuLinks() {
           isActive={isActive("/clients")}
           onClick={handleItemClick}
         >
-          <Link href="/clients">Clients</Link>
+          <Link href="/clients">{t("clients")}</Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
@@ -55,7 +57,7 @@ export function SidebarMenuLinks() {
           isActive={isActive("/products")}
           onClick={handleItemClick}
         >
-          <Link href="/products">Produits</Link>
+          <Link href="/products">{t("products")}</Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

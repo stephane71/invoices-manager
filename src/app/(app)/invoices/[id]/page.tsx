@@ -2,6 +2,7 @@
 import { use, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Client, Invoice, InvoiceItem } from "@/types/models";
+import { useTranslations } from "next-intl";
 
 export default function InvoiceDetailPage({
   params,
@@ -15,6 +16,8 @@ export default function InvoiceDetailPage({
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("Invoices");
+  const c = useTranslations("Common");
 
   useEffect(() => {
     let active = true;
@@ -86,47 +89,51 @@ export default function InvoiceDetailPage({
   }
 
   if (loading) {
-    return <div className="p-4">Chargement…</div>;
+    return <div className="p-4">{c("loading")}</div>;
   }
   if (error || !invoice) {
-    return (
-      <div className="p-4 text-red-600">{error || "Invoice introuvable"}</div>
-    );
+    return <div className="p-4 text-red-600">{error || t("detail.none")}</div>;
   }
 
   return (
     <div className="pb-24">
       {/* padding bottom so content not hidden by fixed bar */}
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold">Facture {invoice.number}</h1>
+        <h1 className="text-xl font-semibold">
+          {t("detail.title", { number: invoice.number })}
+        </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-lg border bg-white p-4">
             <h2 className="text-sm font-semibold text-gray-700 mb-2">
-              Informations
+              {t("detail.info")}
             </h2>
             <div className="space-y-1 text-sm text-gray-700">
               <p>
-                <span className="text-gray-500">Client:</span>{" "}
+                <span className="text-gray-500">{t("detail.clientLabel")}</span>{" "}
                 {invoice.clients?.name}
               </p>
               <p>
-                <span className="text-gray-500">Émise:</span>{" "}
+                <span className="text-gray-500">{t("detail.issued")}</span>{" "}
                 {invoice.issue_date}
               </p>
               <p>
-                <span className="text-gray-500">Échéance:</span>{" "}
+                <span className="text-gray-500">{t("detail.due")}</span>{" "}
                 {invoice.due_date}
               </p>
             </div>
           </div>
           <div className="rounded-lg border bg-white p-4">
-            <h2 className="text-sm font-semibold text-gray-700 mb-2">Total</h2>
+            <h2 className="text-sm font-semibold text-gray-700 mb-2">
+              {t("detail.total")}
+            </h2>
             <p className="text-2xl font-semibold">€{total.toFixed(2)}</p>
           </div>
         </div>
 
         <div className="rounded-lg border bg-white p-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">Lignes</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-3">
+            {t("detail.lines")}
+          </h2>
           {invoice.items && invoice.items.length > 0 ? (
             <div className="divide-y">
               {invoice.items.map((it: InvoiceItem, idx: number) => (
@@ -137,7 +144,7 @@ export default function InvoiceDetailPage({
                   <div>
                     <div className="font-medium text-gray-900">{it.name}</div>
                     <div className="text-gray-500">
-                      Qté {it.quantity} × €{it.price.toFixed(2)}
+                      {t("detail.qty")} {it.quantity} × €{it.price.toFixed(2)}
                     </div>
                   </div>
                   <div className="font-semibold">€{it.total.toFixed(2)}</div>
@@ -145,7 +152,7 @@ export default function InvoiceDetailPage({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">Aucune ligne</p>
+            <p className="text-sm text-gray-500">{t("detail.none")}</p>
           )}
         </div>
       </div>
@@ -154,7 +161,7 @@ export default function InvoiceDetailPage({
       <div className="fixed bottom-0 inset-x-0 border-t bg-white p-4">
         <div className="mx-auto max-w-5xl flex justify-end">
           <Button onClick={handleDownload} disabled={downloading}>
-            {downloading ? "Téléchargement…" : "Download the invoice"}
+            {downloading ? t("detail.downloading") : t("detail.download")}
           </Button>
         </div>
       </div>

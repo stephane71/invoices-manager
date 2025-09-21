@@ -1,0 +1,106 @@
+{
+  "App": {
+    "title": "InvoEase",
+    "description": "Application de facturation mobile-first"
+  },
+  "Nav": {
+    "invoices": "Factures",
+    "clients": "Clients",
+    "products": "Produits",
+    "signIn": "Se connecter"
+  },
+  "Common": {
+    "view": "Voir →",
+    "loading": "Chargement…",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "saving": "Enregistrement…",
+    "uploading": "Téléversement…",
+    "preview": "Aperçu",
+    "cancel": "Annuler"
+  },
+  "Products": {
+    "title": "Vos produits",
+    "list": {
+      "newButton": "+ Nouveau produit"
+    },
+    "new": {
+      "title": "Nouveau Produit",
+      "form": {
+        "name": "Nom",
+        "description": "Description",
+        "price": "Prix",
+        "image": "Image"
+      },
+      "createButton": "Créer le produit"
+    },
+    "edit": {
+      "title": "Éditer un produit"
+    },
+    "alt": {
+      "preview": "Aperçu"
+    },
+    "confirm": {
+      "delete": "Supprimer ce produit ?"
+    }
+  },
+  "Clients": {
+    "title": "Vos Clients",
+    "list": {
+      "newButton": "+ Nouveau client"
+    },
+    "new": {
+      "title": "Nouveau client",
+      "form": {
+        "name": "Nom complet",
+        "email": "Email",
+        "phone": "Numéro de téléphone",
+        "address": "Adresse"
+      },
+      "createButton": "Créer le client"
+    },
+    "edit": {
+      "title": "Éditer un client"
+    },
+    "confirm": {
+      "delete": "Supprimer ce client ?"
+    }
+  },
+  "Invoices": {
+    "title": "Vos Factures",
+    "list": {
+      "newButton": "+ Nouvelle Facture",
+      "issued": "Émise:",
+      "due": "Échéance:"
+    },
+    "detail": {
+      "title": "Facture {number}",
+      "info": "Informations",
+      "clientLabel": "Client:",
+      "issued": "Émise:",
+      "due": "Échéance:",
+      "total": "Total",
+      "lines": "Lignes",
+      "none": "Aucune ligne",
+      "download": "Télécharger la facture",
+      "downloading": "Téléchargement…",
+      "qty": "Qté"
+    },
+    "new": {
+      "title": "Nouvelle Facture",
+      "number": "Numéro (unique)",
+      "numberPlaceholder": "Entrer le numéro de facture",
+      "client": "Client",
+      "selectClient": "Sélectionner un client",
+      "issueDate": "Date émission",
+      "dueDate": "Date échéance",
+      "items": "Articles",
+      "addItem": "Ajouter un article",
+      "empty": "Pas d'article. Cliquez \"Ajouter un article\" pour commencer.",
+      "remove": "Supprimer",
+      "total": "Total :",
+      "cancel": "Annuler",
+      "create": "Créer la facture"
+    }
+  }
+}

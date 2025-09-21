@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function ProductDetailPage({
   params,
@@ -23,6 +24,8 @@ export default function ProductDetailPage({
   );
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const t = useTranslations("Products");
+  const c = useTranslations("Common");
 
   useEffect(() => {
     let active = true;
@@ -56,7 +59,7 @@ export default function ProductDetailPage({
   }
 
   async function remove() {
-    if (!confirm("Delete this product?")) {
+    if (!confirm(t("confirm.delete"))) {
       return;
     }
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
@@ -66,14 +69,14 @@ export default function ProductDetailPage({
   }
 
   if (loading) {
-    return <div className="p-4">Loading…</div>;
+    return <div className="p-4">{c("loading")}</div>;
   }
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">Éditer un produit</h1>
+      <h1 className="text-xl font-semibold">{t("edit.title")}</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Nom</label>
+        <label className="text-sm">{t("new.form.name")}</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.name}
@@ -81,7 +84,7 @@ export default function ProductDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Description</label>
+        <label className="text-sm">{t("new.form.description")}</label>
         <textarea
           className="min-h-20 rounded-md border px-3 py-2 bg-background"
           value={form.description}
@@ -89,7 +92,7 @@ export default function ProductDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Prix</label>
+        <label className="text-sm">{t("new.form.price")}</label>
         <input
           type="number"
           step="0.01"
@@ -101,7 +104,7 @@ export default function ProductDetailPage({
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Image</label>
+        <label className="text-sm">{t("new.form.image")}</label>
         <input
           type="file"
           accept="image/*"
@@ -112,7 +115,7 @@ export default function ProductDetailPage({
         {form.image_url ? (
           <Image
             src={form.image_url}
-            alt="Preview"
+            alt={c("preview")}
             className="h-16 w-16 object-cover rounded"
             width={64}
             height={64}
@@ -121,10 +124,10 @@ export default function ProductDetailPage({
       </div>
       <div className="flex gap-2">
         <Button onClick={save} disabled={uploading}>
-          Enregistrer
+          {c("save")}
         </Button>
         <Button variant="destructive" onClick={remove}>
-          Supprimer
+          {c("delete")}
         </Button>
       </div>
     </div>

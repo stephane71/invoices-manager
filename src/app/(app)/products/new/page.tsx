@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function NewProductPage() {
   const [form, setForm] = useState({
@@ -18,6 +19,8 @@ export default function NewProductPage() {
   );
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("Products");
+  const c = useTranslations("Common");
 
   async function save() {
     setLoading(true);
@@ -33,9 +36,9 @@ export default function NewProductPage() {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">Nouveau Produit</h1>
+      <h1 className="text-xl font-semibold">{t("new.title")}</h1>
       <div className="grid gap-2">
-        <label className="text-sm">Nom</label>
+        <label className="text-sm">{t("new.form.name")}</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.name}
@@ -43,7 +46,7 @@ export default function NewProductPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Description</label>
+        <label className="text-sm">{t("new.form.description")}</label>
         <textarea
           className="min-h-20 rounded-md border px-3 py-2 bg-background"
           value={form.description}
@@ -51,7 +54,7 @@ export default function NewProductPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Prix</label>
+        <label className="text-sm">{t("new.form.price")}</label>
         <input
           type="number"
           step="0.01"
@@ -64,7 +67,7 @@ export default function NewProductPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Image</label>
+        <label className="text-sm">{t("new.form.image")}</label>
         <input
           type="file"
           accept="image/*"
@@ -75,7 +78,7 @@ export default function NewProductPage() {
         {form.image_url ? (
           <Image
             src={form.image_url}
-            alt="Preview"
+            alt={c("preview")}
             className="h-16 w-16 object-cover rounded"
             width={64}
             height={64}
@@ -85,10 +88,10 @@ export default function NewProductPage() {
       <div className="flex gap-2">
         <Button onClick={save} disabled={loading || uploading}>
           {loading
-            ? "Enregistrement…"
+            ? c("saving")
             : uploading
-              ? "Téléversement…"
-              : "Créer le produit"}
+              ? c("uploading")
+              : t("new.createButton")}
         </Button>
       </div>
     </div>

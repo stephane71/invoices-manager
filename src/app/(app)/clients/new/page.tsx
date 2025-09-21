@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
 
 export default function NewClientPage() {
   const [form, setForm] = useState({
@@ -14,6 +15,8 @@ export default function NewClientPage() {
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("Clients");
+  const c = useTranslations("Common");
 
   async function save() {
     setLoading(true);
@@ -30,23 +33,23 @@ export default function NewClientPage() {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">Nouveau client</h1>
+      <h1 className="text-xl font-semibold">{t("new.title")}</h1>
       <div className="grid gap-2">
-        <Label>Nom</Label>
+        <Label>{t("new.form.name")}</Label>
         <Input
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
       </div>
       <div className="grid gap-2">
-        <Label>Email</Label>
+        <Label>{t("new.form.email")}</Label>
         <Input
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Numéro de télephone</label>
+        <label className="text-sm">{t("new.form.phone")}</label>
         <input
           className="h-10 rounded-md border px-3 bg-background"
           value={form.phone}
@@ -54,7 +57,7 @@ export default function NewClientPage() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm">Adresse</label>
+        <label className="text-sm">{t("new.form.address")}</label>
         <textarea
           className="min-h-20 rounded-md border px-3 py-2 bg-background"
           value={form.address}
@@ -63,7 +66,7 @@ export default function NewClientPage() {
       </div>
       <div className="flex gap-2">
         <Button onClick={save} disabled={loading}>
-          {loading ? "Enregistrement…" : "Créer le client"}
+          {loading ? c("saving") : t("new.createButton")}
         </Button>
       </div>
     </div>
