@@ -4,21 +4,35 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { User } from "@supabase/auth-js";
 
 export function PageHeader() {
   const [initial, setInitial] = useState<string>("?");
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-    supabase.auth.getUser().then(({ data }) => {
-      const user = data.user;
-      const fullName = (user?.user_metadata as any)?.full_name as
-        | string
-        | undefined;
-      const source = fullName || user?.email || "?";
-      const letter = source?.trim()?.charAt(0)?.toUpperCase() || "?";
-      setInitial(letter);
-    });
+    async function loadInitial() {
+      try {
+        // Prefer the profile's full_name over auth metadata
+        const res = await fetch("/api/profile", { cache: "no-store" });
+        let source = "";
+        if (res.ok) {
+          const json = await res.json().catch(() => ({}));
+          source = json?.data?.full_name || "";
+        }
+        if (!source) {
+          // Fallback to the authenticated user's email if profile/full_name is missing
+          const supabase = createSupabaseBrowserClient();
+          const { data } = await supabase.auth.getUser();
+          const user = data.user as User | null;
+          source = user?.email || "?";
+        }
+        const letter = source?.trim()?.charAt(0)?.toUpperCase() || "?";
+        setInitial(letter);
+      } catch {
+        setInitial("?");
+      }
+    }
+    loadInitial();
   }, []);
 
   return (
