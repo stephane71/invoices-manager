@@ -1,5 +1,5 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import type { Client, Invoice, Product } from "@/types/models";
+import type { Client, Invoice, Product, Profile } from "@/types/models";
 
 export function db() {
   return getSupabaseServerClient();
@@ -293,4 +293,34 @@ export async function createInvoiceWithItems(
   }
 
   return invoice as Invoice;
+}
+
+// Profile handlers
+export async function getProfile() {
+  const supabase = await db();
+  const userId = await getCurrentAccountId();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) {
+    throw error;
+  }
+  return (data || null) as Profile | null;
+}
+
+export async function upsertProfile(payload: Partial<Profile>) {
+  const supabase = await db();
+  const userId = await getCurrentAccountId();
+  const row = { id: userId, ...payload };
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(row)
+    .select()
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data as Profile;
 }
