@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -274,22 +281,18 @@ export default function NewInvoicePage() {
         </div>
 
         <div className="grid gap-2">
-          <label className="text-sm" htmlFor="client-select">
-            {t("new.clientHelp")}
-          </label>
-          <select
-            id="client-select"
-            className="h-10 rounded-md border px-3 bg-background"
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-          >
-            <option value="">{t("new.selectClient")}</option>
-            {clients.map((cItem) => (
-              <option key={cItem.id} value={cItem.id}>
-                {cItem.name}
-              </option>
-            ))}
-          </select>
+          <Select value={clientId} onValueChange={setClientId}>
+            <SelectTrigger id="client-select" className="h-10 w-full">
+              <SelectValue placeholder={t("new.selectClient")} />
+            </SelectTrigger>
+            <SelectContent>
+              {clients.map((cItem) => (
+                <SelectItem key={cItem.id} value={cItem.id}>
+                  {cItem.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -306,18 +309,21 @@ export default function NewInvoicePage() {
                   key={idx}
                   className="grid grid-cols-1 sm:grid-cols-[1fr_90px_110px_110px] items-start gap-2"
                 >
-                  <select
-                    className="h-10 rounded-md border px-2 bg-background"
+                  <Select
                     value={it.product_id || ""}
-                    onChange={(e) => onChangeProduct(idx, e.target.value)}
+                    onValueChange={(v) => onChangeProduct(idx, v)}
                   >
-                    <option value="" />
-                    {products.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-10 w-full px-2">
+                      <SelectValue placeholder={t("new.selectProduct")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <input
                     type="number"
                     min={1}
