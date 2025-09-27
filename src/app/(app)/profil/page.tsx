@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, User2 } from "lucide-react";
 import { useProfileLogoUpload } from "@/hooks/useProfileLogoUpload";
+import Image from "next/image";
 
 export default function ProfilPage() {
   const [fullName, setFullName] = useState("");
@@ -223,10 +224,11 @@ export default function ProfilPage() {
           >
             <div className="relative aspect-video w-full overflow-hidden rounded-md border border-dashed bg-muted">
               {logoPreview && (
-                <img
+                <Image
                   src={logoPreview}
                   alt="Aperçu du logo"
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 object-contain"
+                  fill
                 />
               )}
               <div className="absolute inset-0 flex items-center justify-center">
