@@ -53,9 +53,9 @@ export default function ProfilPage() {
           setAddress(p.address || "");
           setLogoUrl(p.logo_url || "");
         }
-      } catch (e: any) {
+      } catch (e) {
         if (!cancelled) {
-          setError(e.message || "Erreur inconnue");
+          setError(e instanceof Error ? e.message : "Erreur inconnue");
         }
       } finally {
         if (!cancelled) {
@@ -106,8 +106,8 @@ export default function ProfilPage() {
         );
       }
       setSuccess("Profil mis à jour");
-    } catch (e: any) {
-      setError(e.message || "Erreur inconnue");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erreur inconnue");
     } finally {
       setSaving(false);
     }
