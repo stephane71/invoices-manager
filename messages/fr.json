@@ -92,7 +92,8 @@
       "number": "Numéro (unique)",
       "numberPlaceholder": "Entrer le numéro de facture",
       "client": "Client",
-      "selectClient": "Sélectionner un client",
+      "selectClient": "Selectionner un client existant",
+      "selectProduct": "Sélectionner un produit existant",
       "issueDate": "Date émission",
       "dueDate": "Date échéance",
       "items": "Articles",
@@ -101,7 +102,15 @@
       "remove": "Supprimer",
       "total": "Total :",
       "cancel": "Annuler",
-      "create": "Créer la facture"
+      "create": "Créer la facture",
+      "error": {
+        "numberRequired": "Veuillez saisir un numéro de facture",
+        "clientRequired": "Veuillez sélectionner un client",
+        "itemsRequired": "Veuillez ajouter au moins un article",
+        "itemsIncomplete": "Veuillez compléter tous les champs des articles",
+        "duplicateNumber": "Le numéro de facture existe déjà. Veuillez choisir un autre numéro.",
+        "createFail": "Échec de la création de la facture"
+      }
     }
   },
   "Contact": {
