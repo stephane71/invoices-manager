@@ -19,8 +19,6 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log(user);
-
   if (!user) {
     redirect("/sign-in");
   }
