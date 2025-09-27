@@ -2,16 +2,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
-}
-function addDaysISO(days: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
 }
 
 type Item = {
@@ -37,8 +33,16 @@ export default function NewInvoicePage() {
   const [number, setNumber] = useState("");
   const [clientId, setClientId] = useState("");
   const [issueDate, setIssueDate] = useState(todayISO());
-  const [dueDate, setDueDate] = useState(addDaysISO(30));
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([
+    {
+      product_id: "",
+      name: "",
+      quantity: 1,
+      price: 0,
+      total: 0,
+      quantityInput: "1",
+    },
+  ]);
 
   useEffect(() => {
     let active = true;
@@ -208,7 +212,6 @@ export default function NewInvoicePage() {
           items,
           total_amount: +totalAmount.toFixed(2),
           issue_date: issueDate,
-          due_date: dueDate,
           // status omitted to use default "draft"
         }),
       });
@@ -241,137 +244,147 @@ export default function NewInvoicePage() {
   }
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">{t("new.title")}</h1>
+    <>
+      <div className="pb-28">
+        <h1 className="text-xl font-semibold mb-4">{t("new.title")}</h1>
 
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.number")}</label>
-        <input
-          type="text"
-          className="h-10 rounded-md border px-3 bg-background"
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
-          placeholder={t("new.numberPlaceholder")}
-          required
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.client")}</label>
-        <select
-          className="h-10 rounded-md border px-3 bg-background"
-          value={clientId}
-          onChange={(e) => setClientId(e.target.value)}
-        >
-          <option value="">{t("new.selectClient")}</option>
-          {clients.map((cItem) => (
-            <option key={cItem.id} value={cItem.id}>
-              {cItem.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="grid gap-2">
-          <label className="text-sm">{t("new.issueDate")}</label>
-          <input
-            type="date"
-            className="h-10 rounded-md border px-3 bg-background"
-            value={issueDate}
-            onChange={(e) => setIssueDate(e.target.value)}
-          />
-        </div>
-        <div className="grid gap-2">
-          <label className="text-sm">{t("new.dueDate")}</label>
-          <input
-            type="date"
-            className="h-10 rounded-md border px-3 bg-background"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <h2 className="font-medium">{t("new.items")}</h2>
-          <Button size="sm" onClick={addItem}>
-            {t("new.addItem")}
-          </Button>
-        </div>
-        {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
-        ) : (
-          <div className="space-y-3">
-            {items.map((it, idx) => (
-              <div
-                key={idx}
-                className="grid grid-cols-1 sm:grid-cols-[1fr_90px_110px_110px_80px] items-center gap-2"
-              >
-                <select
-                  className="h-10 rounded-md border px-2 bg-background"
-                  value={it.product_id || ""}
-                  onChange={(e) => onChangeProduct(idx, e.target.value)}
-                >
-                  <option value="" />
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  min={1}
-                  className="h-10 rounded-md border px-2 bg-background"
-                  value={it.quantityInput ?? String(it.quantity)}
-                  onChange={(e) => onChangeQty(idx, e.target.value)}
-                  onBlur={() => onBlurQty(idx)}
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  min={0}
-                  className="h-10 rounded-md border px-2 bg-background"
-                  value={it.price}
-                  onChange={(e) =>
-                    onChangePrice(idx, parseFloat(e.target.value || "0"))
-                  }
-                />
-                <div className="text-sm">${it.total.toFixed(2)}</div>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => removeItem(idx)}
-                >
-                  {t("new.remove")}
-                </Button>
-              </div>
-            ))}
+        <div className="space-y-4 mb-8">
+          <div className="grid gap-2">
+            <label className="text-sm">{t("new.number")}</label>
+            <input
+              type="text"
+              className="h-10 rounded-md border px-3 bg-background"
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              placeholder={t("new.numberPlaceholder")}
+              required
+            />
           </div>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="text-lg font-medium">
-          {t("new.total")} ${totalAmount.toFixed(2)}
+          <div className="grid gap-2">
+            <label className="text-sm">{t("new.issueDate")}</label>
+            <input
+              type="date"
+              className="h-10 rounded-md border px-3 bg-background"
+              value={issueDate}
+              onChange={(e) => setIssueDate(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => router.push("/invoices")}
-            disabled={saving}
+
+        <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Client
+        </div>
+
+        <div className="grid gap-2">
+          <label className="text-sm" htmlFor="client-select">
+            Select a client from your records
+          </label>
+          <select
+            id="client-select"
+            className="h-10 rounded-md border px-3 bg-background"
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
           >
-            {c("cancel")}
-          </Button>
-          <Button onClick={save} disabled={saving}>
-            {saving ? c("saving") : t("new.create")}
-          </Button>
+            <option value="">{t("new.selectClient")}</option>
+            {clients.map((cItem) => (
+              <option key={cItem.id} value={cItem.id}>
+                {cItem.name}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Articles
+        </div>
+
+        <div className="space-y-3">
+          {items.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
+          ) : (
+            <div className="space-y-3">
+              {items.map((it, idx) => (
+                <div
+                  key={idx}
+                  className="grid grid-cols-1 sm:grid-cols-[1fr_90px_110px_110px] items-start gap-2"
+                >
+                  <select
+                    className="h-10 rounded-md border px-2 bg-background"
+                    value={it.product_id || ""}
+                    onChange={(e) => onChangeProduct(idx, e.target.value)}
+                  >
+                    <option value="" />
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    min={1}
+                    className="h-10 rounded-md border px-2 bg-background"
+                    value={it.quantityInput ?? String(it.quantity)}
+                    onChange={(e) => onChangeQty(idx, e.target.value)}
+                    onBlur={() => onBlurQty(idx)}
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    min={0}
+                    className="h-10 rounded-md border px-2 bg-background"
+                    value={it.price}
+                    onChange={(e) =>
+                      onChangePrice(idx, parseFloat(e.target.value || "0"))
+                    }
+                  />
+
+                  {/* Sub block: per-item total and delete */}
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="text-sm">${it.total.toFixed(2)}</div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeItem(idx)}
+                      aria-label={t("new.remove")}
+                      title={t("new.remove")}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center justify-end">
+            <Button size="sm" onClick={addItem}>
+              {t("new.addItem")}
+            </Button>
+          </div>
+        </div>
+
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-    </div>
+      <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
+        <div className="flex items-center justify-between px-2">
+          <div className="text-lg font-medium">
+            {t("new.total")} ${totalAmount.toFixed(2)}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => router.push("/invoices")}
+              disabled={saving}
+            >
+              {c("cancel")}
+            </Button>
+            <Button onClick={save} disabled={saving}>
+              {saving ? c("saving") : t("new.create")}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
