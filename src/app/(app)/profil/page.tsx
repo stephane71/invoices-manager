@@ -73,7 +73,7 @@ export default function ProfilPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   function onLogoChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -104,10 +104,8 @@ export default function ProfilPage() {
         }),
       });
       if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(
-          (json as any).error || t("error.save", { status: res.status }),
-        );
+        const json = await res.json().catch(() => ({ error: null }));
+        throw new Error(json.error || t("error.save", { status: res.status }));
       }
       setSuccess(t("status.updated"));
     } catch (e) {
