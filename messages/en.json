@@ -92,7 +92,8 @@
       "number": "Number (unique)",
       "numberPlaceholder": "Enter invoice number",
       "client": "Client",
-      "selectClient": "Select a client",
+      "selectClient": "Select an existing client",
+      "selectProduct": "Select an existing product",
       "issueDate": "Issue date",
       "dueDate": "Due date",
       "items": "Items",
@@ -101,7 +102,15 @@
       "remove": "Remove",
       "total": "Total:",
       "cancel": "Cancel",
-      "create": "Create invoice"
+      "create": "Create invoice",
+      "error": {
+        "numberRequired": "Please enter an invoice number",
+        "clientRequired": "Please select a client",
+        "itemsRequired": "Please add at least one item",
+        "itemsIncomplete": "Please complete all item fields",
+        "duplicateNumber": "The invoice number already exists. Please choose a different number.",
+        "createFail": "Failed to create invoice"
+      }
     }
   },
   "Contact": {
