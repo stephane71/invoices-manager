@@ -181,15 +181,15 @@ export default function NewInvoicePage() {
   async function save() {
     setError(null);
     if (!number.trim()) {
-      setError("Please enter an invoice number");
+      setError(t("new.error.numberRequired"));
       return;
     }
     if (!clientId) {
-      setError("Please select a client");
+      setError(t("new.error.clientRequired"));
       return;
     }
     if (items.length === 0) {
-      setError("Please add at least one item");
+      setError(t("new.error.itemsRequired"));
       return;
     }
     // validate all items
@@ -197,7 +197,7 @@ export default function NewInvoicePage() {
       (it) => it.product_id && it.name && it.quantity > 0,
     );
     if (!valid) {
-      setError("Please complete all item fields");
+      setError(t("new.error.itemsIncomplete"));
       return;
     }
 
@@ -223,16 +223,14 @@ export default function NewInvoicePage() {
           res.status === 409 ||
           /duplicate|exists|unique/i.test(String(serverMessage))
         ) {
-          throw new Error(
-            "The invoice number already exists. Please choose a different number.",
-          );
+          throw new Error(t("new.error.duplicateNumber"));
         }
-        throw new Error(serverMessage || "Failed to create invoice");
+        throw new Error(serverMessage || t("new.error.createFail"));
       }
       router.push("/invoices");
     } catch (e: unknown) {
       const message =
-        e instanceof Error ? e.message : "Failed to create invoice";
+        e instanceof Error ? e.message : t("new.error.createFail");
       setError(message);
     } finally {
       setSaving(false);
@@ -272,12 +270,12 @@ export default function NewInvoicePage() {
         </div>
 
         <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Client
+          {t("new.client")}
         </div>
 
         <div className="grid gap-2">
           <label className="text-sm" htmlFor="client-select">
-            Select a client from your records
+            {t("new.clientHelp")}
           </label>
           <select
             id="client-select"
@@ -295,7 +293,7 @@ export default function NewInvoicePage() {
         </div>
 
         <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Articles
+          {t("new.items")}
         </div>
 
         <div className="space-y-3">

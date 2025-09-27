@@ -92,6 +92,7 @@
       "number": "Number (unique)",
       "numberPlaceholder": "Enter invoice number",
       "client": "Client",
+      "clientHelp": "Select a client from your records",
       "selectClient": "Select a client",
       "issueDate": "Issue date",
       "dueDate": "Due date",
@@ -101,7 +102,15 @@
       "remove": "Remove",
       "total": "Total:",
       "cancel": "Cancel",
-      "create": "Create invoice"
+      "create": "Create invoice",
+      "error": {
+        "numberRequired": "Please enter an invoice number",
+        "clientRequired": "Please select a client",
+        "itemsRequired": "Please add at least one item",
+        "itemsIncomplete": "Please complete all item fields",
+        "duplicateNumber": "The invoice number already exists. Please choose a different number.",
+        "createFail": "Failed to create invoice"
+      }
     }
   },
   "Contact": {
