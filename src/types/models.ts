@@ -40,3 +40,14 @@ export type Invoice = {
   created_at?: string;
   number: string;
 };
+
+export type Profile = {
+  id: UUID; // equals auth.users.id
+  full_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  logo_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
