@@ -113,6 +113,8 @@ export default function ProfilPage() {
     }
   }
 
+  const isLogoDisabled = loading || saving || uploadingLogo;
+
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="text-xl font-semibold">Mon profil</h1>
@@ -202,28 +204,40 @@ export default function ProfilPage() {
         {/* Logo */}
         <div className="space-y-2">
           <Label htmlFor="logo">Logo sur les factures</Label>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Input
-                id="logo"
-                type="file"
-                accept="image/*"
-                onChange={onLogoChange}
-                disabled={loading || saving || uploadingLogo}
-              />
-            </div>
-            {logoPreview ? (
-              <img
-                src={logoPreview}
-                alt="Aperçu du logo"
-                className="h-12 w-12 rounded-full object-cover border"
-              />
-            ) : (
-              <div className="h-12 w-12 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs">
-                Aucune image
+
+          {/* Hidden native input; click the box to trigger */}
+          <Input
+            id="logo"
+            type="file"
+            accept="image/*"
+            onChange={onLogoChange}
+            disabled={isLogoDisabled}
+            className="hidden"
+          />
+
+          {/* Clickable preview/select box */}
+          <label
+            htmlFor="logo"
+            className={`block w-full max-w-sm cursor-pointer ${isLogoDisabled ? "pointer-events-none opacity-60" : ""}`}
+            aria-disabled={isLogoDisabled}
+          >
+            <div className="relative aspect-video w-full overflow-hidden rounded-md border border-dashed bg-muted">
+              {logoPreview && (
+                <img
+                  src={logoPreview}
+                  alt="Aperçu du logo"
+                  className="absolute inset-0 h-full w-full object-contain"
+                />
+              )}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="rounded-md bg-black/40 px-3 py-1.5 text-xs font-medium text-white">
+                  {logoPreview
+                    ? "Changer l'image"
+                    : "Cliquez pour sélectionner une image"}
+                </span>
               </div>
-            )}
-          </div>
+            </div>
+          </label>
         </div>
 
         <div className="pt-2">
