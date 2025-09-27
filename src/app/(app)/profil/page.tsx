@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, User2 } from "lucide-react";
 import { useProfileLogoUpload } from "@/hooks/useProfileLogoUpload";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function ProfilPage() {
+  const t = useTranslations("Profile");
+  const c = useTranslations("Common");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -22,7 +25,7 @@ export default function ProfilPage() {
   const { uploading: uploadingLogo, onSelectImage } = useProfileLogoUpload(
     (url) => {
       setLogoUrl(url);
-      setSuccess("Logo téléversé");
+      setSuccess(t("status.uploaded"));
     },
   );
 
@@ -43,7 +46,7 @@ export default function ProfilPage() {
         setError(null);
         const res = await fetch("/api/profile", { cache: "no-store" });
         if (!res.ok) {
-          throw new Error(`Erreur de chargement (${res.status})`);
+          throw new Error(t("error.load", { status: res.status }));
         }
         const json = await res.json();
         const p = json?.data;
@@ -56,7 +59,7 @@ export default function ProfilPage() {
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Erreur inconnue");
+          setError(e instanceof Error ? e.message : t("error.unknown"));
         }
       } finally {
         if (!cancelled) {
@@ -103,12 +106,12 @@ export default function ProfilPage() {
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
         throw new Error(
-          json.error || `Erreur d'enregistrement (${res.status})`,
+          (json as any).error || t("error.save", { status: res.status }),
         );
       }
-      setSuccess("Profil mis à jour");
+      setSuccess(t("status.updated"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur inconnue");
+      setError(e instanceof Error ? e.message : t("error.unknown"));
     } finally {
       setSaving(false);
     }
@@ -118,7 +121,7 @@ export default function ProfilPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-semibold">Mon profil</h1>
+      <h1 className="text-xl font-semibold">{t("title")}</h1>
 
       {error && (
         <div className="text-sm text-red-600" role="alert">
@@ -134,12 +137,12 @@ export default function ProfilPage() {
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Full name */}
         <div className="space-y-2">
-          <Label htmlFor="fullName">Nom complet</Label>
+          <Label htmlFor="fullName">{t("form.fullName")}</Label>
           <div className="relative">
             <User2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               id="fullName"
-              placeholder="Ex: Jean Dupont"
+              placeholder={t("form.fullNamePlaceholder")}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="pl-9"
@@ -151,13 +154,13 @@ export default function ProfilPage() {
 
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("form.email")}</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               id="email"
               type="email"
-              placeholder="vous@exemple.com"
+              placeholder={t("form.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-9"
@@ -169,13 +172,13 @@ export default function ProfilPage() {
 
         {/* Phone */}
         <div className="space-y-2">
-          <Label htmlFor="phone">Téléphone</Label>
+          <Label htmlFor="phone">{t("form.phone")}</Label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               id="phone"
               type="tel"
-              placeholder="+33 6 12 34 56 78"
+              placeholder={t("form.phonePlaceholder")}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="pl-9"
@@ -187,12 +190,12 @@ export default function ProfilPage() {
 
         {/* Address */}
         <div className="space-y-2">
-          <Label htmlFor="address">Adresse</Label>
+          <Label htmlFor="address">{t("form.address")}</Label>
           <div className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               id="address"
-              placeholder="12 rue de Paris, 75000 Paris"
+              placeholder={t("form.addressPlaceholder")}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="pl-9"
@@ -204,7 +207,7 @@ export default function ProfilPage() {
 
         {/* Logo */}
         <div className="space-y-2">
-          <Label htmlFor="logo">Logo sur les factures</Label>
+          <Label htmlFor="logo">{t("form.logo")}</Label>
 
           {/* Hidden native input; click the box to trigger */}
           <Input
@@ -226,16 +229,14 @@ export default function ProfilPage() {
               {logoPreview && (
                 <Image
                   src={logoPreview}
-                  alt="Aperçu du logo"
+                  alt={t("form.logoAlt")}
                   className="absolute inset-0 object-contain"
                   fill
                 />
               )}
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="rounded-md bg-black/40 px-3 py-1.5 text-xs font-medium text-white">
-                  {logoPreview
-                    ? "Changer l'image"
-                    : "Cliquez pour sélectionner une image"}
+                  {logoPreview ? t("form.logoChange") : t("form.logoSelect")}
                 </span>
               </div>
             </div>
@@ -245,10 +246,10 @@ export default function ProfilPage() {
         <div className="pt-2">
           <Button type="submit" disabled={loading || saving || uploadingLogo}>
             {saving
-              ? "Enregistrement..."
+              ? c("saving")
               : uploadingLogo
-                ? "Téléversement du logo..."
-                : "Enregistrer"}
+                ? t("status.uploadingLogo")
+                : c("save")}
           </Button>
         </div>
       </form>

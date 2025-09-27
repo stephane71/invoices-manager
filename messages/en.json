@@ -114,5 +114,32 @@
       "body": "InvoEase is the simplest way for small teams to manage their invoices — without the extras.<br></br>The goal: stay focused — a fast, clear interface with features that genuinely help you get paid. No distractions, just a smooth, reliable tool you can count on every day."
     },
     "imageAlt": "Photo of Stéphane Maire"
+  },
+  "Profile": {
+    "title": "My profile",
+    "form": {
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Ex: John Doe",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 555 123 4567",
+      "address": "Address",
+      "addressPlaceholder": "123 Main St, 10001 New York",
+      "logo": "Logo on invoices",
+      "logoAlt": "Logo preview",
+      "logoChange": "Change image",
+      "logoSelect": "Click to select an image"
+    },
+    "status": {
+      "uploaded": "Logo uploaded",
+      "updated": "Profile updated",
+      "uploadingLogo": "Uploading logo…"
+    },
+    "error": {
+      "load": "Load error ({status})",
+      "save": "Save error ({status})",
+      "unknown": "Unknown error"
+    }
   }
 }
