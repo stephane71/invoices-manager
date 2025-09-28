@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ClientBlock from "@/components/invoices/ClientBlock";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -276,24 +277,11 @@ export default function NewInvoicePage() {
           </div>
         </div>
 
-        <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t("new.client")}
-        </div>
-
-        <div className="grid gap-2">
-          <Select value={clientId} onValueChange={setClientId}>
-            <SelectTrigger id="client-select" className="h-10 w-full">
-              <SelectValue placeholder={t("new.selectClient")} />
-            </SelectTrigger>
-            <SelectContent>
-              {clients.map((cItem) => (
-                <SelectItem key={cItem.id} value={cItem.id}>
-                  {cItem.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <ClientBlock
+          clients={clients}
+          clientId={clientId}
+          onSelectClientAction={setClientId}
+        />
 
         <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {t("new.items")}

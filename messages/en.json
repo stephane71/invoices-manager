@@ -103,6 +103,17 @@
       "total": "Total:",
       "cancel": "Cancel",
       "create": "Create invoice",
+      "addNewClient": "Add a new client",
+      "form": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "namePlaceholder": "Client name",
+        "emailPlaceholder": "email@example.com",
+        "phonePlaceholder": "+1 555 123 4567",
+        "addressPlaceholder": "Street, City, ZIP code"
+      },
       "error": {
         "numberRequired": "Please enter an invoice number",
         "clientRequired": "Please select a client",
