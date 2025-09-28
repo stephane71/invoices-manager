@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Client } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -97,9 +98,8 @@ export default function ClientBlock({
         <div className="mt-2 grid gap-2 rounded-md border p-3">
           <div className="grid gap-1">
             <label className="text-sm">{t("new.form.name")}</label>
-            <input
+            <Input
               type="text"
-              className="h-10 rounded-md border px-3 bg-background"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder={t("new.form.namePlaceholder")}
@@ -107,9 +107,8 @@ export default function ClientBlock({
           </div>
           <div className="grid gap-1">
             <label className="text-sm">{t("new.form.email")}</label>
-            <input
+            <Input
               type="email"
-              className="h-10 rounded-md border px-3 bg-background"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder={t("new.form.emailPlaceholder")}
@@ -117,9 +116,8 @@ export default function ClientBlock({
           </div>
           <div className="grid gap-1">
             <label className="text-sm">{t("new.form.phone")}</label>
-            <input
+            <Input
               type="tel"
-              className="h-10 rounded-md border px-3 bg-background"
               value={newPhone}
               onChange={(e) => setNewPhone(e.target.value)}
               placeholder={t("new.form.phonePlaceholder")}
