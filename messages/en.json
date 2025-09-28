@@ -104,6 +104,7 @@
       "cancel": "Cancel",
       "create": "Create invoice",
       "addNewClient": "Add a new client",
+      "createClient": "Create client",
       "form": {
         "name": "Name",
         "email": "Email",

@@ -16,12 +16,19 @@ export type ClientBlockProps = {
   clients: Client[];
   clientId: string;
   onSelectClientAction: (id: string) => void;
+  onRequestCreateNewClientAction: (data: {
+    name: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  }) => void;
 };
 
 export default function ClientBlock({
   clients,
   clientId,
   onSelectClientAction,
+  onRequestCreateNewClientAction,
 }: ClientBlockProps) {
   const t = useTranslations("Invoices");
 
@@ -31,6 +38,7 @@ export default function ClientBlock({
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newAddress, setNewAddress] = useState("");
+  const [hasRequestedCreate, setHasRequestedCreate] = useState(false);
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
@@ -38,6 +46,7 @@ export default function ClientBlock({
     setNewEmail("");
     setNewPhone("");
     setNewAddress("");
+    setHasRequestedCreate(false);
   }, []);
 
   // When user selects an existing client, collapse and reset the direct-new form
@@ -59,10 +68,40 @@ export default function ClientBlock({
     }
   };
 
-  // If parent clears clientId externally, we don't force any change here
+  // Close and reset the inline form once a client gets selected/created by parent
   useEffect(() => {
-    // no-op; kept for future synchronization if needed
-  }, [clientId]);
+    if (showNewForm && clientId) {
+      resetNewForm();
+    }
+  }, [clientId, showNewForm, resetNewForm]);
+
+  // Trigger creation request to parent when at least the name is provided
+  const triggerCreateIfEligible = useCallback(() => {
+    if (!showNewForm) {
+      return;
+    }
+
+    const name = newName.trim();
+    if (!name || hasRequestedCreate) {
+      return;
+    }
+
+    setHasRequestedCreate(true);
+    onRequestCreateNewClientAction({
+      name,
+      email: newEmail.trim() ? newEmail.trim() : undefined,
+      phone: newPhone.trim() ? newPhone.trim() : undefined,
+      address: newAddress.trim() ? newAddress.trim() : undefined,
+    });
+  }, [
+    showNewForm,
+    newName,
+    newEmail,
+    newPhone,
+    newAddress,
+    hasRequestedCreate,
+    onRequestCreateNewClientAction,
+  ]);
 
   return (
     <div>
@@ -91,7 +130,12 @@ export default function ClientBlock({
 
       {/* Inline new client form trigger / content */}
       {!showNewForm ? (
-        <Button variant="outline" size="sm" onClick={revealNewForm}>
+        <Button
+          variant="outline"
+          size="default"
+          onClick={revealNewForm}
+          className="w-full"
+        >
           {t("new.addNewClient")}
         </Button>
       ) : (
@@ -133,9 +177,16 @@ export default function ClientBlock({
             />
           </div>
 
-          {/* No confirm button here: validated by the page validation button later */}
+          {/* Actions: explicit create button or cancel */}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button
+              size="sm"
+              onClick={triggerCreateIfEligible}
+              disabled={!newName.trim() || hasRequestedCreate}
+            >
+              {t("new.createClient")}
+            </Button>
             <Button variant="ghost" size="sm" onClick={resetNewForm}>
               {t("new.cancel")}
             </Button>
