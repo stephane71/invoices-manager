@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { useCreateNewClientFromNewInvoice } from "@/hooks/useCreateNewClientFromNewInvoice";
+import { useMinDelay } from "@/hooks/useMinDelay";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -79,6 +80,8 @@ export default function NewInvoicePage() {
 
   // Hook to create or resolve client selection from inline new client form
   const createClientFromSelection = useCreateNewClientFromNewInvoice({});
+  // Loading controller to keep the client block overlay visible for at least 2 seconds
+  const { pending: clientBlockLoading, wrap } = useMinDelay(2000);
 
   // Called by ClientBlock when user completes the new client name
   const onRequestCreateNewClient = async (clientData: {
@@ -88,7 +91,7 @@ export default function NewInvoicePage() {
     address?: string;
   }) => {
     try {
-      const newId = await createClientFromSelection(clientData);
+      const newId = await wrap(() => createClientFromSelection(clientData));
       setClientId(newId);
       // Optimistic update without triggering a new request
       // Ensure the new client appears in the select immediately
@@ -321,6 +324,7 @@ export default function NewInvoicePage() {
           clientId={clientId}
           onSelectClientAction={setClientId}
           onRequestCreateNewClientAction={onRequestCreateNewClient}
+          isLoading={clientBlockLoading}
         />
 
         <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">

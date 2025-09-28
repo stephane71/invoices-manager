@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 
 export type ClientBlockProps = {
   clients: Client[];
@@ -22,6 +23,7 @@ export type ClientBlockProps = {
     phone?: string;
     address?: string;
   }) => void;
+  isLoading: boolean;
 };
 
 export default function ClientBlock({
@@ -29,6 +31,7 @@ export default function ClientBlock({
   clientId,
   onSelectClientAction,
   onRequestCreateNewClientAction,
+  isLoading,
 }: ClientBlockProps) {
   const t = useTranslations("Invoices");
 
@@ -38,7 +41,6 @@ export default function ClientBlock({
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newAddress, setNewAddress] = useState("");
-  const [hasRequestedCreate, setHasRequestedCreate] = useState(false);
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
@@ -46,7 +48,6 @@ export default function ClientBlock({
     setNewEmail("");
     setNewPhone("");
     setNewAddress("");
-    setHasRequestedCreate(false);
   }, []);
 
   // When user selects an existing client, collapse and reset the direct-new form
@@ -82,11 +83,10 @@ export default function ClientBlock({
     }
 
     const name = newName.trim();
-    if (!name || hasRequestedCreate) {
+    if (!name) {
       return;
     }
 
-    setHasRequestedCreate(true);
     onRequestCreateNewClientAction({
       name,
       email: newEmail.trim() ? newEmail.trim() : undefined,
@@ -99,12 +99,19 @@ export default function ClientBlock({
     newEmail,
     newPhone,
     newAddress,
-    hasRequestedCreate,
     onRequestCreateNewClientAction,
   ]);
 
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 z-20 bg-black/30 backdrop-blur-[1px] rounded-md flex items-center justify-center cursor-wait">
+          <span className="text-white text-sm opacity-90">
+            <Spinner />
+          </span>
+        </div>
+      )}
+
       <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {t("new.client")}
       </div>
@@ -183,7 +190,7 @@ export default function ClientBlock({
             <Button
               size="sm"
               onClick={triggerCreateIfEligible}
-              disabled={!newName.trim() || hasRequestedCreate}
+              disabled={!newName.trim()}
             >
               {t("new.createClient")}
             </Button>
