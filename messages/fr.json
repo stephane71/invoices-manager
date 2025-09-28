@@ -92,7 +92,7 @@
       "number": "Numéro (unique)",
       "numberPlaceholder": "Entrer le numéro de facture",
       "client": "Client",
-      "selectClient": "Selectionner un client existant",
+      "selectClient": "Sélectionner un client existant",
       "selectProduct": "Sélectionner un produit existant",
       "issueDate": "Date émission",
       "dueDate": "Date échéance",
@@ -103,6 +103,18 @@
       "total": "Total :",
       "cancel": "Annuler",
       "create": "Créer la facture",
+      "addNewClient": "Ajouter un nouveau client",
+      "createClient": "Créer le client",
+      "form": {
+        "name": "Nom",
+        "email": "Email",
+        "phone": "Téléphone",
+        "address": "Adresse",
+        "namePlaceholder": "Nom du client",
+        "emailPlaceholder": "email@exemple.com",
+        "phonePlaceholder": "+33 6 12 34 56 78",
+        "addressPlaceholder": "Rue, Ville, Code postal"
+      },
       "error": {
         "numberRequired": "Veuillez saisir un numéro de facture",
         "clientRequired": "Veuillez sélectionner un client",

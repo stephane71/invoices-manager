@@ -12,6 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ClientBlock from "@/components/invoices/ClientBlock";
+import { useCreateNewClientFromNewInvoice } from "@/hooks/useCreateNewClientFromNewInvoice";
+import { useMinDelay } from "@/hooks/useMinDelay";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -74,6 +77,46 @@ export default function NewInvoicePage() {
     () => items.reduce((sum, it) => sum + (Number(it.total) || 0), 0),
     [items],
   );
+
+  // Hook to create or resolve client selection from inline new client form
+  const createClientFromSelection = useCreateNewClientFromNewInvoice({});
+  // Loading controller to keep the client block overlay visible for at least 2 seconds
+  const { pending: clientBlockLoading, wrap } = useMinDelay(2000);
+
+  // Called by ClientBlock when user completes the new client name
+  const onRequestCreateNewClient = async (clientData: {
+    name: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  }) => {
+    try {
+      const newId = await wrap(() => createClientFromSelection(clientData));
+      setClientId(newId);
+      // Optimistic update without triggering a new request
+      // Ensure the new client appears in the select immediately
+      setClients((prev) => {
+        if (prev.some((c) => c.id === newId)) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          {
+            id: newId,
+            name: clientData.name,
+            email: clientData.email ?? null,
+            phone: clientData.phone ?? null,
+            address: clientData.address ?? null,
+          } as Client,
+        ];
+      });
+    } catch (e: unknown) {
+      setError(
+        e instanceof Error ? e.message : t("new.error.clientCreateFail"),
+      );
+    }
+  };
 
   function addItem() {
     setItems((prev) => [
@@ -276,24 +319,13 @@ export default function NewInvoicePage() {
           </div>
         </div>
 
-        <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t("new.client")}
-        </div>
-
-        <div className="grid gap-2">
-          <Select value={clientId} onValueChange={setClientId}>
-            <SelectTrigger id="client-select" className="h-10 w-full">
-              <SelectValue placeholder={t("new.selectClient")} />
-            </SelectTrigger>
-            <SelectContent>
-              {clients.map((cItem) => (
-                <SelectItem key={cItem.id} value={cItem.id}>
-                  {cItem.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <ClientBlock
+          clients={clients}
+          clientId={clientId}
+          onSelectClientAction={setClientId}
+          onRequestCreateNewClientAction={onRequestCreateNewClient}
+          isLoading={clientBlockLoading}
+        />
 
         <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {t("new.items")}
