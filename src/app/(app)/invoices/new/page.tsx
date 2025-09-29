@@ -2,33 +2,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { useCreateNewClientFromNewInvoice } from "@/hooks/useCreateNewClientFromNewInvoice";
 import { useMinDelay } from "@/hooks/useMinDelay";
+import ArticlesBlock, {
+  type InvoiceItem,
+} from "@/components/invoices/ArticlesBlock";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-type Item = {
-  product_id: string;
-  name: string;
-  quantity: number;
-  price: number;
-  total: number;
-  // Transient UI state to allow clearing the quantity input before typing
-  quantityInput?: string;
-};
+// Replace local Item type with the shared InvoiceItem
+type Item = InvoiceItem;
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -170,7 +158,7 @@ export default function NewInvoicePage() {
           quantityInput: "",
           quantity: 0,
           total: 0,
-        };
+        } as Item;
         return next;
       }
 
@@ -182,7 +170,7 @@ export default function NewInvoicePage() {
           quantityInput: rawValue,
           quantity: 0,
           total: 0,
-        };
+        } as Item;
         return next;
       }
 
@@ -193,7 +181,7 @@ export default function NewInvoicePage() {
         quantityInput: String(quantity),
         quantity,
         total: +(price * quantity).toFixed(2),
-      };
+      } as Item;
       return next;
     });
   }
@@ -211,7 +199,7 @@ export default function NewInvoicePage() {
           quantityInput: "1",
           quantity,
           total: +(price * quantity).toFixed(2),
-        };
+        } as Item;
       }
       return next;
     });
@@ -223,7 +211,11 @@ export default function NewInvoicePage() {
       const item = next[index];
       const price = priceInput >= 0 ? priceInput : 0;
       const qty = Number(item.quantity) || 0; // while typing empty quantity, treat as 0
-      next[index] = { ...item, price, total: +(price * qty).toFixed(2) };
+      next[index] = {
+        ...item,
+        price,
+        total: +(price * qty).toFixed(2),
+      } as Item;
       return next;
     });
   }
@@ -327,77 +319,17 @@ export default function NewInvoicePage() {
           isLoading={clientBlockLoading}
         />
 
-        <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t("new.items")}
-        </div>
-
-        <div className="space-y-3">
-          {items.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
-          ) : (
-            <div className="space-y-3">
-              {items.map((it, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-1 sm:grid-cols-[1fr_90px_110px_110px] items-start gap-2"
-                >
-                  <Select
-                    value={it.product_id || ""}
-                    onValueChange={(v) => onChangeProduct(idx, v)}
-                  >
-                    <SelectTrigger className="h-10 w-full px-2">
-                      <SelectValue placeholder={t("new.selectProduct")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {products.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <input
-                    type="number"
-                    min={1}
-                    className="h-10 rounded-md border px-2 bg-background"
-                    value={it.quantityInput ?? String(it.quantity)}
-                    onChange={(e) => onChangeQty(idx, e.target.value)}
-                    onBlur={() => onBlurQty(idx)}
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min={0}
-                    className="h-10 rounded-md border px-2 bg-background"
-                    value={it.price}
-                    onChange={(e) =>
-                      onChangePrice(idx, parseFloat(e.target.value || "0"))
-                    }
-                  />
-
-                  {/* Sub block: per-item total and delete */}
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm">${it.total.toFixed(2)}</div>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      onClick={() => removeItem(idx)}
-                      aria-label={t("new.remove")}
-                      title={t("new.remove")}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="flex items-center justify-end">
-            <Button size="lg" variant="secondary" onClick={addItem}>
-              {t("new.addItem")}
-            </Button>
-          </div>
-        </div>
+        {/* Articles block extracted to component */}
+        <ArticlesBlock
+          products={products}
+          items={items}
+          onAddAction={addItem}
+          onRemoveAction={removeItem}
+          onChangeProductAction={onChangeProduct}
+          onChangeQtyAction={onChangeQty}
+          onBlurQtyAction={onBlurQty}
+          onChangePriceAction={onChangePrice}
+        />
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </div>
