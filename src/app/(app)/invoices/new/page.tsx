@@ -376,10 +376,10 @@ export default function NewInvoicePage() {
                   />
 
                   {/* Sub block: per-item total and delete */}
-                  <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center justify-between">
                     <div className="text-sm">${it.total.toFixed(2)}</div>
                     <Button
-                      size="sm"
+                      size="lg"
                       variant="outline"
                       onClick={() => removeItem(idx)}
                       aria-label={t("new.remove")}
@@ -393,7 +393,7 @@ export default function NewInvoicePage() {
             </div>
           )}
           <div className="flex items-center justify-end">
-            <Button size="sm" onClick={addItem}>
+            <Button size="lg" variant="secondary" onClick={addItem}>
               {t("new.addItem")}
             </Button>
           </div>

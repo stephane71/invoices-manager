@@ -139,7 +139,7 @@ export default function ClientBlock({
       {!showNewForm ? (
         <Button
           variant="outline"
-          size="default"
+          size="lg"
           onClick={revealNewForm}
           className="w-full"
         >
@@ -188,13 +188,14 @@ export default function ClientBlock({
 
           <div className="flex justify-end gap-2">
             <Button
-              size="sm"
+              variant="secondary"
+              size="lg"
               onClick={triggerCreateIfEligible}
               disabled={!newName.trim()}
             >
               {t("new.createClient")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={resetNewForm}>
+            <Button variant="ghost" size="lg" onClick={resetNewForm}>
               {t("new.cancel")}
             </Button>
           </div>
