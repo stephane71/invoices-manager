@@ -20,6 +20,7 @@ export type InvoiceItem = {
   price: number;
   total: number;
   quantityInput?: string;
+  priceInput?: string;
 };
 
 export type ArticlesBlockProps = {
@@ -30,7 +31,8 @@ export type ArticlesBlockProps = {
   onChangeProductAction: (index: number, productId: string) => void;
   onChangeQtyAction: (index: number, rawValue: string) => void;
   onBlurQtyAction: (index: number) => void;
-  onChangePriceAction: (index: number, price: number) => void;
+  onChangePriceAction: (index: number, rawValue: string) => void;
+  onBlurPriceAction: (index: number) => void;
 };
 
 export default function ArticlesBlock({
@@ -42,6 +44,7 @@ export default function ArticlesBlock({
   onChangeQtyAction,
   onBlurQtyAction,
   onChangePriceAction,
+  onBlurPriceAction,
 }: ArticlesBlockProps) {
   const t = useTranslations("Invoices");
 
@@ -106,17 +109,13 @@ export default function ArticlesBlock({
                   </Label>
                   <Input
                     id={`price-${idx}`}
-                    type="number"
-                    step="0.01"
-                    min={0}
+                    type="text"
+                    inputMode="decimal"
                     className="h-10 rounded-md border px-2 bg-background"
-                    value={it.price}
-                    onChange={(e) =>
-                      onChangePriceAction(
-                        idx,
-                        parseFloat(e.target.value || "0"),
-                      )
-                    }
+                    value={it.priceInput ?? String(it.price)}
+                    onChange={(e) => onChangePriceAction(idx, e.target.value)}
+                    onBlur={() => onBlurPriceAction(idx)}
+                    placeholder="0.00"
                   />
                 </div>
 

@@ -39,6 +39,7 @@ export default function NewInvoicePage() {
       price: 0,
       total: 0,
       quantityInput: "1",
+      priceInput: "0",
     },
   ]);
 
@@ -116,6 +117,7 @@ export default function NewInvoicePage() {
         price: 0,
         total: 0,
         quantityInput: "1",
+        priceInput: "0",
       },
     ]);
   }
@@ -141,6 +143,7 @@ export default function NewInvoicePage() {
         price,
         total: +(price * qty).toFixed(2),
         quantityInput,
+        priceInput: String(price),
       } as Item;
       return next;
     });
@@ -205,17 +208,67 @@ export default function NewInvoicePage() {
     });
   }
 
-  function onChangePrice(index: number, priceInput: number) {
+  function onChangePrice(index: number, rawValue: string) {
     setItems((prev) => {
       const next = [...prev];
       const item = next[index];
-      const price = priceInput >= 0 ? priceInput : 0;
-      const qty = Number(item.quantity) || 0; // while typing empty quantity, treat as 0
+
+      // Allow temporary empty string while typing
+      if (rawValue === "") {
+        next[index] = {
+          ...item,
+          priceInput: "",
+          price: 0,
+          total: 0,
+        } as Item;
+        return next;
+      }
+
+      // Parse positive decimal price
+      const parsed = parseFloat(rawValue);
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        next[index] = {
+          ...item,
+          priceInput: rawValue,
+          price: 0,
+          total: 0,
+        } as Item;
+        return next;
+      }
+
+      const price = Math.max(0, parsed);
+      const qty = Number(item.quantity) || 0;
       next[index] = {
         ...item,
+        priceInput: rawValue,
         price,
         total: +(price * qty).toFixed(2),
       } as Item;
+      return next;
+    });
+  }
+
+  function onBlurPrice(index: number) {
+    setItems((prev) => {
+      const next = [...prev];
+      const item = next[index];
+      const raw = (item as Item).priceInput ?? String(item.price ?? "");
+      if (raw === "" || item.price === 0) {
+        const price = 0;
+        const qty = Number(item.quantity) || 0;
+        next[index] = {
+          ...item,
+          priceInput: "0",
+          price,
+          total: +(price * qty).toFixed(2),
+        } as Item;
+      } else {
+        // Clean up the display format
+        next[index] = {
+          ...item,
+          priceInput: String(item.price),
+        } as Item;
+      }
       return next;
     });
   }
@@ -329,6 +382,7 @@ export default function NewInvoicePage() {
           onChangeQtyAction={onChangeQty}
           onBlurQtyAction={onBlurQty}
           onChangePriceAction={onChangePrice}
+          onBlurPriceAction={onBlurPrice}
         />
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
