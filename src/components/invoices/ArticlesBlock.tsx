@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export type InvoiceItem = {
   product_id: string;
@@ -54,53 +55,78 @@ export default function ArticlesBlock({
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {items.map((it, idx) => (
-              <div
-                key={idx}
-                className="grid grid-cols-1 sm:grid-cols-[1fr_90px_110px_110px] items-start gap-2"
-              >
-                <Select
-                  value={it.product_id || ""}
-                  onValueChange={(v) => onChangeProductAction(idx, v)}
-                >
-                  <SelectTrigger className="h-10 w-full px-2">
-                    <SelectValue placeholder={t("new.selectProduct")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={idx} className="space-y-3 p-4 border rounded-lg">
+                {/* Product Select */}
+                <div className="space-y-1">
+                  <Select
+                    value={it.product_id || ""}
+                    onValueChange={(v) => onChangeProductAction(idx, v)}
+                  >
+                    <SelectTrigger className="h-10 w-full px-2">
+                      <SelectValue placeholder={t("new.selectProduct")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                <Input
-                  type="number"
-                  min={1}
-                  className="h-10 rounded-md border px-2 bg-background"
-                  value={it.quantityInput ?? String(it.quantity)}
-                  onChange={(e) => onChangeQtyAction(idx, e.target.value)}
-                  onBlur={() => onBlurQtyAction(idx)}
-                />
+                {/* Quantity Input */}
+                <div className="space-y-1">
+                  <Label
+                    htmlFor={`quantity-${idx}`}
+                    className="text-sm font-medium"
+                  >
+                    {t("new.quantity")}
+                  </Label>
+                  <Input
+                    id={`quantity-${idx}`}
+                    type="number"
+                    min={1}
+                    className="h-10 rounded-md border px-2 bg-background"
+                    value={it.quantityInput ?? String(it.quantity)}
+                    onChange={(e) => onChangeQtyAction(idx, e.target.value)}
+                    onBlur={() => onBlurQtyAction(idx)}
+                  />
+                </div>
 
-                <Input
-                  type="number"
-                  step="0.01"
-                  min={0}
-                  className="h-10 rounded-md border px-2 bg-background"
-                  value={it.price}
-                  onChange={(e) =>
-                    onChangePriceAction(idx, parseFloat(e.target.value || "0"))
-                  }
-                />
+                {/* Unit Price Input */}
+                <div className="space-y-1">
+                  <Label
+                    htmlFor={`price-${idx}`}
+                    className="text-sm font-medium"
+                  >
+                    {t("new.unitPrice")}
+                  </Label>
+                  <Input
+                    id={`price-${idx}`}
+                    type="number"
+                    step="0.01"
+                    min={0}
+                    className="h-10 rounded-md border px-2 bg-background"
+                    value={it.price}
+                    onChange={(e) =>
+                      onChangePriceAction(
+                        idx,
+                        parseFloat(e.target.value || "0"),
+                      )
+                    }
+                  />
+                </div>
 
-                {/* Sub block: per-item total and delete */}
-                <div className="flex items-center justify-between">
-                  <div className="text-sm">${it.total.toFixed(2)}</div>
+                {/* Total and Delete Button */}
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-sm font-medium">
+                    Total: ${it.total.toFixed(2)}
+                  </div>
                   <Button
-                    size="lg"
+                    size="sm"
                     variant="outline"
                     onClick={() => onRemoveAction(idx)}
                     aria-label={t("new.remove")}
