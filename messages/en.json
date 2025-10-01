@@ -100,6 +100,8 @@
       "addItem": "Add item",
       "empty": "No items. Click \"Add item\" to start.",
       "remove": "Remove",
+      "quantity": "Quantity",
+      "unitPrice": "Unit Price",
       "total": "Total:",
       "cancel": "Cancel",
       "create": "Create invoice",
