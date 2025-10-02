@@ -3,13 +3,7 @@ import type { Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -29,6 +23,7 @@ export type ArticlesBlockProps = {
   onAddAction: () => void;
   onRemoveAction: (index: number) => void;
   onChangeProductAction: (index: number, productId: string) => void;
+  onCreateNewProductAction: (index: number, productName: string) => void;
   onChangeQtyAction: (index: number, rawValue: string) => void;
   onBlurQtyAction: (index: number) => void;
   onChangePriceAction: (index: number, rawValue: string) => void;
@@ -41,12 +36,19 @@ export default function ArticlesBlock({
   onAddAction,
   onRemoveAction,
   onChangeProductAction,
+  onCreateNewProductAction,
   onChangeQtyAction,
   onBlurQtyAction,
   onChangePriceAction,
   onBlurPriceAction,
 }: ArticlesBlockProps) {
   const t = useTranslations("Invoices");
+
+  // Convertir les produits au format requis par le Combobox
+  const productOptions = products.map((product) => ({
+    value: product.id,
+    label: product.name,
+  }));
 
   return (
     <div>
@@ -61,23 +63,26 @@ export default function ArticlesBlock({
           <div className="space-y-4">
             {items.map((it, idx) => (
               <div key={idx} className="space-y-3 p-4 border rounded-lg">
-                {/* Product Select */}
+                {/* Product Combobox */}
                 <div className="space-y-1">
-                  <Select
+                  <Label className="text-sm font-medium">
+                    {t("new.product")}
+                  </Label>
+                  <Combobox
+                    options={productOptions}
                     value={it.product_id || ""}
-                    onValueChange={(v) => onChangeProductAction(idx, v)}
-                  >
-                    <SelectTrigger className="h-10 w-full px-2">
-                      <SelectValue placeholder={t("new.selectProduct")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {products.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onSelect={(productId) =>
+                      onChangeProductAction(idx, productId)
+                    }
+                    onCustomCreate={(productName) =>
+                      onCreateNewProductAction(idx, productName)
+                    }
+                    placeholder={t("new.selectProduct")}
+                    searchPlaceholder="Rechercher un produit..."
+                    emptyText="Aucun produit trouvé."
+                    allowCustom={true}
+                    className="h-10"
+                  />
                 </div>
 
                 {/* Quantity Input */}
