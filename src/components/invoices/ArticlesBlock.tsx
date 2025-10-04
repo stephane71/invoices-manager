@@ -105,7 +105,7 @@ export default function ArticlesBlock({
                     htmlFor={`price-${idx}`}
                     className="text-sm font-medium"
                   >
-                    {t("new.unitPrice")}
+                    {t("new.unitPrice")} (€)
                   </Label>
                   <Input
                     id={`price-${idx}`}
@@ -115,14 +115,14 @@ export default function ArticlesBlock({
                     value={it.priceInput ?? String(it.price)}
                     onChange={(e) => onChangePriceAction(idx, e.target.value)}
                     onBlur={() => onBlurPriceAction(idx)}
-                    placeholder="0.00"
+                    placeholder="0,00 €"
                   />
                 </div>
 
                 {/* Total and Delete Button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="text-sm font-medium">
-                    Total: ${it.total.toFixed(2)}
+                    Total: {it.total.toFixed(2)} €
                   </div>
                   <Button
                     size="sm"

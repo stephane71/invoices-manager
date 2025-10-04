@@ -31,7 +31,7 @@ export const invoiceSchema = z.object({
   total_amount: z.number().nonnegative(),
   status: z.enum(["draft", "sent", "paid", "overdue"]).default("draft"),
   issue_date: z.string(),
-  due_date: z.string(),
+  due_date: z.string().optional(),
   pdf_url: z.string().url().optional().nullable(),
   number: z.string(),
 });
