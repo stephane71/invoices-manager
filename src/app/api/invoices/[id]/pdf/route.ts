@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generate } from "@pdfme/generator";
-import { getClient, getInvoice, updateInvoice } from "@/lib/db";
+import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { uploadInvoicePdf } from "@/lib/storage";
 import InvoiceTemplate from "./pdfme-invoice-template.json";
 import { Template } from "@pdfme/common";
@@ -14,6 +14,7 @@ import {
 } from "@pdfme/schemas";
 import path from "node:path";
 import * as fs from "node:fs";
+import { numberToCurrency } from "@/lib/utils";
 
 export async function POST(
   req: NextRequest,
@@ -23,6 +24,7 @@ export async function POST(
     const { id } = await params;
     const invoice = await getInvoice(id);
     const client = await getClient(invoice.client_id);
+    const profile = await getProfile();
 
     const plugins = {
       text,
@@ -37,14 +39,26 @@ export async function POST(
     const itemsData = invoice.items.map((item) => [
       item.name,
       item.quantity.toString(),
-      item.price.toFixed(2),
-      item.total.toFixed(2),
+      numberToCurrency(item.price, { currency: "EUR" }),
+      numberToCurrency(item.total, { currency: "EUR" }),
     ]);
 
     const subtotal = invoice.items.reduce((sum, item) => sum + item.total, 0);
-    const taxRate = 10; // ou récupérer depuis les données
+    const taxRate = 20;
     const taxAmount = subtotal * (taxRate / 100);
     const total = subtotal + taxAmount;
+
+    console.log(
+      "subtotal",
+      subtotal,
+      numberToCurrency(subtotal, { currency: "EUR" }),
+    );
+    console.log(
+      "taxAmount",
+      taxAmount,
+      numberToCurrency(taxAmount, { currency: "EUR" }),
+    );
+    console.log("total", total, numberToCurrency(total, { currency: "EUR" }));
 
     // Read the logo file and convert to base64
     const logoPath = path.join(
@@ -54,19 +68,40 @@ export async function POST(
     const logoBuffer = fs.readFileSync(logoPath);
     const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
+    const shopName = profile?.full_name;
+    const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
+    const clientInfo = [client.email, client.phone, client.address]
+      .filter(Boolean)
+      .join("\n");
+
     const inputs = [
       {
         logo: logoBase64,
-        billedToInput: `${client.name}\n${client.email || ""}\n${client.address || ""}`,
+        // New template fields
+        client_name: client.name,
+        client_information: clientInfo,
+        facture_number: invoice.number || invoice.id,
+        shopName,
+        shopAddress: JSON.stringify({
+          address_street: (addressStreet || "").trim(),
+          address_city: (addressCity || "").trim(),
+        }),
+        // Optional description left empty unless available in data model
+        // invoice_description: "",
+        // Note: field name contains a trailing space in the template
+        issue_date: JSON.stringify({ issue_date: invoice.issue_date }),
+        // Table rows
+        orders: JSON.stringify(itemsData),
+        // Tax rate variable for TVA line
+        taxInput: JSON.stringify({ rate: taxRate.toString() }),
+        // Totals
+        subtotal: numberToCurrency(subtotal, { currency: "EUR" }),
+        tax: numberToCurrency(taxAmount, { currency: "EUR" }),
+        total: numberToCurrency(total, { currency: "EUR" }),
+        // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,
-          Date: invoice.issue_date,
         }),
-        orders: JSON.stringify(itemsData),
-        taxInput: JSON.stringify({ rate: taxRate.toString() }),
-        subtotal: subtotal.toFixed(2),
-        tax: taxAmount.toFixed(2),
-        total: `$${total.toFixed(2)}`,
       },
     ];
 
