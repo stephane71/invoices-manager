@@ -152,7 +152,9 @@
       "logo": "Logo sur les factures",
       "logoAlt": "Aperçu du logo",
       "logoChange": "Changer l'image",
-      "logoSelect": "Cliquez pour sélectionner une image"
+      "logoSelect": "Cliquez pour sélectionner une image",
+      "currency": "Devise",
+      "currencyPlaceholder": "Sélectionner la devise"
     },
     "status": {
       "uploaded": "Logo téléversé",

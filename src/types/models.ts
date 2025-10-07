@@ -48,6 +48,7 @@ export type Profile = {
   phone?: string | null;
   address?: string | null;
   logo_url?: string | null;
+  currency?: string | null;
   created_at?: string;
   updated_at?: string;
 };
