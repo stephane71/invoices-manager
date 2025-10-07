@@ -26,6 +26,7 @@ export type InvoiceItem = {
 export type ArticlesBlockProps = {
   products: Product[];
   items: InvoiceItem[];
+  currency?: string;
   onAddAction: () => void;
   onRemoveAction: (index: number) => void;
   onChangeProductAction: (index: number, productId: string) => void;
@@ -38,6 +39,7 @@ export type ArticlesBlockProps = {
 export default function ArticlesBlock({
   products,
   items,
+  currency = "EUR",
   onAddAction,
   onRemoveAction,
   onChangeProductAction,
@@ -47,6 +49,21 @@ export default function ArticlesBlock({
   onBlurPriceAction,
 }: ArticlesBlockProps) {
   const t = useTranslations("Invoices");
+  
+  // Get the currency symbol for display
+  const getCurrencySymbol = (curr: string) => {
+    try {
+      return (0).toLocaleString("en", {
+        style: "currency",
+        currency: curr,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).replace(/\d/g, "").trim();
+    } catch {
+      return curr;
+    }
+  };
+  const currencySymbol = getCurrencySymbol(currency);
 
   return (
     <div>
@@ -105,7 +122,7 @@ export default function ArticlesBlock({
                     htmlFor={`price-${idx}`}
                     className="text-sm font-medium"
                   >
-                    {t("new.unitPrice")} (€)
+                    {t("new.unitPrice")} ({currencySymbol})
                   </Label>
                   <Input
                     id={`price-${idx}`}
@@ -115,14 +132,14 @@ export default function ArticlesBlock({
                     value={it.priceInput ?? String(it.price)}
                     onChange={(e) => onChangePriceAction(idx, e.target.value)}
                     onBlur={() => onBlurPriceAction(idx)}
-                    placeholder="0,00 €"
+                    placeholder={`0,00 ${currencySymbol}`}
                   />
                 </div>
 
                 {/* Total and Delete Button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="text-sm font-medium">
-                    Total: {it.total.toFixed(2)} €
+                    Total: {it.total.toFixed(2)} {currencySymbol}
                   </div>
                   <Button
                     size="sm"

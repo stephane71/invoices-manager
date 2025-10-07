@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import type { Client, Product } from "@/types/models";
+import type { Client, Product, Profile } from "@/types/models";
 import { useTranslations } from "next-intl";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { useCreateNewClientFromNewInvoice } from "@/hooks/useCreateNewClientFromNewInvoice";
@@ -10,6 +10,7 @@ import { useMinDelay } from "@/hooks/useMinDelay";
 import ArticlesBlock, {
   type InvoiceItem,
 } from "@/components/invoices/ArticlesBlock";
+import { numberToCurrency } from "@/lib/utils";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -22,11 +23,14 @@ export default function NewInvoicePage() {
   const router = useRouter();
   const [clients, setClients] = useState<Client[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
+
+  const currency = profile?.currency || "EUR";
 
   const [number, setNumber] = useState("");
   const [clientId, setClientId] = useState("");
@@ -45,15 +49,23 @@ export default function NewInvoicePage() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetch("/api/clients"), fetch("/api/products")])
-      .then(async ([c, p]) => {
+    Promise.all([
+      fetch("/api/clients"),
+      fetch("/api/products"),
+      fetch("/api/profile"),
+    ])
+      .then(async ([c, p, prof]) => {
         const clientsData = await c.json();
         const productsData = await p.json();
+        const profileData = await prof.json();
         if (!active) {
           return;
         }
         setClients(clientsData || []);
         setProducts(productsData || []);
+        if (profileData?.data) {
+          setProfile(profileData.data);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -376,6 +388,7 @@ export default function NewInvoicePage() {
         <ArticlesBlock
           products={products}
           items={items}
+          currency={currency}
           onAddAction={addItem}
           onRemoveAction={removeItem}
           onChangeProductAction={onChangeProduct}
@@ -391,7 +404,7 @@ export default function NewInvoicePage() {
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
-            {t("new.total")} ${totalAmount.toFixed(2)}
+            {t("new.total")} {numberToCurrency(totalAmount, { currency })}
           </div>
           <div className="flex gap-2">
             <Button

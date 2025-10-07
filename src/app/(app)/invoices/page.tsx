@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { listInvoices } from "@/lib/db";
+import { listInvoices, getProfile } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Invoice } from "@/types/models";
 import { getTranslations } from "next-intl/server";
 import { FileText, Plus } from "lucide-react";
+import { numberToCurrency } from "@/lib/utils";
 
 async function InvoicesList() {
   const invoices = await listInvoices();
+  const profile = await getProfile();
+  const currency = profile?.currency || "EUR";
   const t = await getTranslations("Invoices");
   return (
     <div className="space-y-3">
@@ -26,7 +29,7 @@ async function InvoicesList() {
             inv.client_name ||
             inv.clientId ||
             inv.client_id;
-          const total = inv.total_amount.toFixed(2);
+          const total = numberToCurrency(inv.total_amount, { currency });
 
           return (
             <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">
@@ -52,7 +55,7 @@ async function InvoicesList() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-semibold text-lg text-gray-900">
-                        €{total}
+                        {total}
                       </p>
                     </div>
                   </div>
