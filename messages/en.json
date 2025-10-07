@@ -152,7 +152,9 @@
       "logo": "Logo on invoices",
       "logoAlt": "Logo preview",
       "logoChange": "Change image",
-      "logoSelect": "Click to select an image"
+      "logoSelect": "Click to select an image",
+      "currency": "Currency",
+      "currencyPlaceholder": "Select currency"
     },
     "status": {
       "uploaded": "Logo uploaded",

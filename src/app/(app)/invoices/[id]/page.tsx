@@ -1,8 +1,9 @@
 "use client";
 import { use, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Client, Invoice, InvoiceItem } from "@/types/models";
+import { Client, Invoice, InvoiceItem, Profile } from "@/types/models";
 import { useTranslations } from "next-intl";
+import { numberToCurrency } from "@/lib/utils";
 
 export default function InvoiceDetailPage({
   params,
@@ -13,25 +14,35 @@ export default function InvoiceDetailPage({
   const [invoice, setInvoice] = useState<
     (Invoice & { clients: Pick<Client, "name"> }) | null
   >(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
+  const currency = profile?.currency || "EUR";
+
   useEffect(() => {
     let active = true;
     async function load() {
       try {
-        const res = await fetch(`/api/invoices/${id}`);
-        const data = await res.json();
+        const [invoiceRes, profileRes] = await Promise.all([
+          fetch(`/api/invoices/${id}`),
+          fetch("/api/profile"),
+        ]);
+        const invoiceData = await invoiceRes.json();
+        const profileData = await profileRes.json();
         if (!active) {
           return;
         }
-        if (!res.ok) {
-          throw new Error(data?.error || "Failed to load invoice");
+        if (!invoiceRes.ok) {
+          throw new Error(invoiceData?.error || "Failed to load invoice");
         }
-        setInvoice(data);
+        setInvoice(invoiceData);
+        if (profileRes.ok && profileData?.data) {
+          setProfile(profileData.data);
+        }
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : "Failed to load";
         setError(msg);
@@ -126,7 +137,9 @@ export default function InvoiceDetailPage({
             <h2 className="text-sm font-semibold text-gray-700 mb-2">
               {t("detail.total")}
             </h2>
-            <p className="text-2xl font-semibold">€{total.toFixed(2)}</p>
+            <p className="text-2xl font-semibold">
+              {numberToCurrency(total, { currency })}
+            </p>
           </div>
         </div>
 
@@ -144,10 +157,13 @@ export default function InvoiceDetailPage({
                   <div>
                     <div className="font-medium text-gray-900">{it.name}</div>
                     <div className="text-gray-500">
-                      {t("detail.qty")} {it.quantity} × €{it.price.toFixed(2)}
+                      {t("detail.qty")} {it.quantity} ×{" "}
+                      {numberToCurrency(it.price, { currency })}
                     </div>
                   </div>
-                  <div className="font-semibold">€{it.total.toFixed(2)}</div>
+                  <div className="font-semibold">
+                    {numberToCurrency(it.total, { currency })}
+                  </div>
                 </div>
               ))}
             </div>

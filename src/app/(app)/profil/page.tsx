@@ -8,6 +8,13 @@ import { Mail, MapPin, Phone, User2 } from "lucide-react";
 import { useProfileLogoUpload } from "@/hooks/useProfileLogoUpload";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProfilPage() {
   const t = useTranslations("Profile");
@@ -16,6 +23,7 @@ export default function ProfilPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [currency, setCurrency] = useState("EUR");
   const [logoUrl, setLogoUrl] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +63,7 @@ export default function ProfilPage() {
           setEmail(p.email || "");
           setPhone(p.phone || "");
           setAddress(p.address || "");
+          setCurrency(p.currency || "EUR");
           setLogoUrl(p.logo_url || "");
         }
       } catch (e) {
@@ -100,6 +109,7 @@ export default function ProfilPage() {
           email,
           phone,
           address,
+          currency,
           logo_url: logoUrl,
         }),
       });
@@ -201,6 +211,23 @@ export default function ProfilPage() {
               disabled={loading || saving}
             />
           </div>
+        </div>
+
+        {/* Currency */}
+        <div className="space-y-2">
+          <Label htmlFor="currency">{t("form.currency")}</Label>
+          <Select
+            value={currency}
+            onValueChange={setCurrency}
+            disabled={loading || saving}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("form.currencyPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="EUR">Euro (EUR)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Logo */}

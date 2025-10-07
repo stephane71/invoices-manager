@@ -26,6 +26,9 @@ export async function POST(
     const client = await getClient(invoice.client_id);
     const profile = await getProfile();
 
+    // Get currency from profile, default to EUR
+    const currency = profile?.currency || "EUR";
+
     const plugins = {
       text,
       svg,
@@ -39,8 +42,8 @@ export async function POST(
     const itemsData = invoice.items.map((item) => [
       item.name,
       item.quantity.toString(),
-      numberToCurrency(item.price, { currency: "EUR" }),
-      numberToCurrency(item.total, { currency: "EUR" }),
+      numberToCurrency(item.price, { currency }),
+      numberToCurrency(item.total, { currency }),
     ]);
 
     const subtotal = invoice.items.reduce((sum, item) => sum + item.total, 0);
@@ -51,14 +54,14 @@ export async function POST(
     console.log(
       "subtotal",
       subtotal,
-      numberToCurrency(subtotal, { currency: "EUR" }),
+      numberToCurrency(subtotal, { currency }),
     );
     console.log(
       "taxAmount",
       taxAmount,
-      numberToCurrency(taxAmount, { currency: "EUR" }),
+      numberToCurrency(taxAmount, { currency }),
     );
-    console.log("total", total, numberToCurrency(total, { currency: "EUR" }));
+    console.log("total", total, numberToCurrency(total, { currency }));
 
     // Read the logo file and convert to base64
     const logoPath = path.join(
@@ -95,9 +98,9 @@ export async function POST(
         // Tax rate variable for TVA line
         taxInput: JSON.stringify({ rate: taxRate.toString() }),
         // Totals
-        subtotal: numberToCurrency(subtotal, { currency: "EUR" }),
-        tax: numberToCurrency(taxAmount, { currency: "EUR" }),
-        total: numberToCurrency(total, { currency: "EUR" }),
+        subtotal: numberToCurrency(subtotal, { currency }),
+        tax: numberToCurrency(taxAmount, { currency }),
+        total: numberToCurrency(total, { currency }),
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,
