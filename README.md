@@ -4,6 +4,24 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 This project uses Supabase for backend database and storage. For detailed information about the Supabase connection, client usage, and best practices, see [.claude/SUPABASE_CONNECTION.md](./.claude/SUPABASE_CONNECTION.md).
 
+## Claude Code Configuration
+
+This project uses Claude Code with MCP servers for enhanced development capabilities. To configure:
+
+1. Create a `.claude/settings.local.json` file (this file is gitignored):
+```json
+{
+  "enableAllProjectMcpServers": true,
+  "env": {
+    "CONTEXT7_API_KEY": "your-context7-api-key"
+  }
+}
+```
+
+2. Get your Context7 API key from [context7.com](https://context7.com)
+
+**Note:** Never commit `.claude/settings.local.json` as it contains sensitive API keys.
+
 ## Getting Started
 
 First, ensure you have a `.env.local` file with the required Supabase environment variables:
