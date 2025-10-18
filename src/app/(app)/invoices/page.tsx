@@ -45,9 +45,6 @@ async function InvoicesList() {
                     <p className="text-gray-500 text-sm">
                       {t("list.issued")} {inv.issue_date}
                     </p>
-                    <p className="text-gray-500 text-sm">
-                      {t("list.due")} {inv.due_date}
-                    </p>
                   </div>
 
                   <div className="flex items-center gap-3">

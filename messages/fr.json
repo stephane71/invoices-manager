@@ -71,15 +71,13 @@
     "title": "Vos Factures",
     "list": {
       "newButton": "Nouvelle Facture",
-      "issued": "Émise:",
-      "due": "Échéance:"
+      "issued": "Émise:"
     },
     "detail": {
       "title": "Facture {number}",
       "info": "Informations",
       "clientLabel": "Client:",
       "issued": "Émise:",
-      "due": "Échéance:",
       "total": "Total",
       "lines": "Lignes",
       "none": "Aucune ligne",

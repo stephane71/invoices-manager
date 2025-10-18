@@ -117,10 +117,6 @@ export default function InvoiceDetailPage({
                 <span className="text-gray-500">{t("detail.issued")}</span>{" "}
                 {invoice.issue_date}
               </p>
-              <p>
-                <span className="text-gray-500">{t("detail.due")}</span>{" "}
-                {invoice.due_date}
-              </p>
             </div>
           </div>
           <div className="rounded-lg border bg-white p-4">

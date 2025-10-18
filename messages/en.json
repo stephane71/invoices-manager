@@ -71,15 +71,13 @@
     "title": "Your invoices",
     "list": {
       "newButton": "New invoice",
-      "issued": "Issued:",
-      "due": "Due:"
+      "issued": "Issued:"
     },
     "detail": {
       "title": "Invoice {number}",
       "info": "Information",
       "clientLabel": "Client:",
       "issued": "Issued:",
-      "due": "Due:",
       "total": "Total",
       "lines": "Items",
       "none": "No items",
