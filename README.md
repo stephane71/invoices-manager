@@ -1,8 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Supabase Configuration
+
+This project uses Supabase for backend database and storage. For detailed information about the Supabase connection, client usage, and best practices, see [.claude/SUPABASE_CONNECTION.md](./.claude/SUPABASE_CONNECTION.md).
+
 ## Getting Started
 
-First, run the development server:
+First, ensure you have a `.env.local` file with the required Supabase environment variables:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
