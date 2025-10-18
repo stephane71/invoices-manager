@@ -10,6 +10,7 @@ import { useMinDelay } from "@/hooks/useMinDelay";
 import ArticlesBlock, {
   type InvoiceItem,
 } from "@/components/invoices/ArticlesBlock";
+import { numberToCurrency } from "@/lib/utils";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -391,7 +392,8 @@ export default function NewInvoicePage() {
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
-            {t("new.total")} ${totalAmount.toFixed(2)}
+            {t("new.total")}{" "}
+            {numberToCurrency(totalAmount, { currency: "EUR" })}
           </div>
           <div className="flex gap-2">
             <Button
