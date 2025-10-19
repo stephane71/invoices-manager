@@ -6,7 +6,22 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "env:local": "./scripts/switch-env.sh local",
+    "env:remote": "./scripts/switch-env.sh remote",
+    "env:status": "grep 'NEXT_PUBLIC_SUPABASE_URL' .env.local 2>/dev/null || echo 'No .env.local found'",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:logs": "supabase logs",
+    "db:link": "supabase link --project-ref vckkkupndydwilnzpjkc",
+    "db:pull": "supabase db pull",
+    "db:push": "supabase db push",
+    "db:push:dry": "supabase db push --dry-run",
+    "db:migration:new": "supabase migration new",
+    "db:migration:list": "supabase migration list",
+    "db:diff": "supabase db diff",
+    "db:reset": "supabase db reset"
   },
   "dependencies": {
     "@pdfme/generator": "^5.4.2",
@@ -43,6 +58,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "prettier": "^3.6.2",
+    "supabase": "^2.51.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"

@@ -4,6 +4,86 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 This project uses Supabase for backend database and storage. For detailed information about the Supabase connection, client usage, and best practices, see [.claude/SUPABASE_CONNECTION.md](./.claude/SUPABASE_CONNECTION.md).
 
+### Database Migrations
+
+This project uses Supabase's official migration system. See [supabase/MIGRATIONS.md](./supabase/MIGRATIONS.md) for detailed documentation.
+
+Quick commands:
+```bash
+# Link to your Supabase project (first time setup)
+npm run db:link
+
+# Pull current database schema
+npm run db:pull
+
+# Create a new migration
+npm run db:migration:new <migration_name>
+
+# Push migrations to remote database
+npm run db:push
+
+# Preview changes before pushing
+npm run db:push:dry
+
+# List migration status
+npm run db:migration:list
+```
+
+### Local Development with Supabase
+
+You can run a complete local Supabase instance for development. See [supabase/LOCAL_DEVELOPMENT.md](./supabase/LOCAL_DEVELOPMENT.md) for detailed instructions.
+
+Quick start:
+```bash
+# Start local Supabase (includes database, auth, storage, etc.)
+npm run supabase:start
+
+# Switch to local environment
+npm run env:local
+
+# Run your app
+npm run dev
+
+# Access Supabase Studio (manage database)
+open http://127.0.0.1:54323
+
+# Switch back to production when done
+npm run env:remote
+
+# Stop local Supabase
+npm run supabase:stop
+```
+
+**Benefits of local development:**
+- ✅ Work offline
+- ✅ Faster development cycle
+- ✅ Test migrations safely
+- ✅ Free database resets
+- ✅ Email testing with Mailpit
+
+### Environment Switching
+
+Easily toggle between local and remote Supabase environments. See [docs/ENVIRONMENT_SWITCHING.md](./docs/ENVIRONMENT_SWITCHING.md) for full guide.
+
+```bash
+# Switch to local development
+npm run env:local
+
+# Switch to production/remote
+npm run env:remote
+
+# Check current environment
+npm run env:status
+```
+
+**Key features:**
+- 🔄 One-command switching
+- 💾 Automatic backups
+- ✅ Safe and validated
+- 🎨 Visual feedback
+
+**Security Note:** Local development keys in `.env.local.development` are safe to commit. See [docs/SECURITY.md](./docs/SECURITY.md) for details.
+
 ## Claude Code Configuration
 
 This project uses Claude Code with MCP servers for enhanced development capabilities. To configure:
