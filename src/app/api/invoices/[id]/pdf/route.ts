@@ -14,7 +14,8 @@ import {
 } from "@pdfme/schemas";
 import path from "node:path";
 import * as fs from "node:fs";
-import { numberToCurrency } from "@/lib/utils";
+import { centsToCurrencyString } from "@/lib/utils";
+import { APP_LOCALE } from "@/lib/constants";
 
 export async function POST(
   req: NextRequest,
@@ -36,29 +37,25 @@ export async function POST(
     };
 
     // Préparer les données pour le template
+    // Note: invoice items have prices in cents
     const itemsData = invoice.items.map((item) => [
       item.name,
       item.quantity.toString(),
-      numberToCurrency(item.price, { currency: "EUR" }),
-      numberToCurrency(item.total, { currency: "EUR" }),
+      centsToCurrencyString(item.price, "EUR", APP_LOCALE),
+      centsToCurrencyString(item.total, "EUR", APP_LOCALE),
     ]);
 
-    const subtotal = invoice.items.reduce((sum, item) => sum + item.total, 0);
+    const subtotalCents = invoice.items.reduce(
+      (sum, item) => sum + item.total,
+      0,
+    ); // already in cents
     const taxRate = 20;
-    const taxAmount = subtotal * (taxRate / 100);
-    const total = subtotal + taxAmount;
+    const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
+    const totalCents = subtotalCents + taxAmountCents; // total in cents
 
-    console.log(
-      "subtotal",
-      subtotal,
-      numberToCurrency(subtotal, { currency: "EUR" }),
-    );
-    console.log(
-      "taxAmount",
-      taxAmount,
-      numberToCurrency(taxAmount, { currency: "EUR" }),
-    );
-    console.log("total", total, numberToCurrency(total, { currency: "EUR" }));
+    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE));
+    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
+    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
 
     // Read the logo file and convert to base64
     const logoPath = path.join(
@@ -95,9 +92,9 @@ export async function POST(
         // Tax rate variable for TVA line
         taxInput: JSON.stringify({ rate: taxRate.toString() }),
         // Totals
-        subtotal: numberToCurrency(subtotal, { currency: "EUR" }),
-        tax: numberToCurrency(taxAmount, { currency: "EUR" }),
-        total: numberToCurrency(total, { currency: "EUR" }),
+        subtotal: centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
+        tax: centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
+        total: centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,

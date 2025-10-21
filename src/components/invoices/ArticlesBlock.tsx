@@ -12,16 +12,17 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { numberToCurrency } from "@/lib/utils";
+import { PriceInput } from "@/components/ui/price-input";
+import { centsToCurrencyString } from "@/lib/utils";
+import { APP_LOCALE } from "@/lib/constants";
 
 export type InvoiceItem = {
   product_id: string;
   name: string;
   quantity: number;
-  price: number;
-  total: number;
+  price: number; // in cents (integer)
+  total: number; // in cents (integer)
   quantityInput?: string;
-  priceInput?: string;
 };
 
 export type ArticlesBlockProps = {
@@ -32,8 +33,7 @@ export type ArticlesBlockProps = {
   onChangeProductAction: (index: number, productId: string) => void;
   onChangeQtyAction: (index: number, rawValue: string) => void;
   onBlurQtyAction: (index: number) => void;
-  onChangePriceAction: (index: number, rawValue: string) => void;
-  onBlurPriceAction: (index: number) => void;
+  onChangePriceAction: (index: number, cents: number) => void;
 };
 
 export default function ArticlesBlock({
@@ -45,7 +45,6 @@ export default function ArticlesBlock({
   onChangeQtyAction,
   onBlurQtyAction,
   onChangePriceAction,
-  onBlurPriceAction,
 }: ArticlesBlockProps) {
   const t = useTranslations("Invoices");
 
@@ -106,24 +105,20 @@ export default function ArticlesBlock({
                     htmlFor={`price-${idx}`}
                     className="text-sm font-medium"
                   >
-                    {t("new.unitPrice")} (€)
+                    {t("new.unitPrice")}
                   </Label>
-                  <Input
+                  <PriceInput
                     id={`price-${idx}`}
-                    type="text"
-                    inputMode="decimal"
-                    className="h-10 rounded-md border px-2 bg-background"
-                    value={it.priceInput ?? String(it.price)}
-                    onChange={(e) => onChangePriceAction(idx, e.target.value)}
-                    onBlur={() => onBlurPriceAction(idx)}
-                    placeholder="0,00 €"
+                    value={it.price}
+                    onChange={(cents) => onChangePriceAction(idx, cents)}
+                    placeholder="0,00"
                   />
                 </div>
 
                 {/* Total and Delete Button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="text-sm font-medium">
-                    Total: {numberToCurrency(it.total, { currency: "EUR" })}
+                    Total: {centsToCurrencyString(it.total, "EUR", APP_LOCALE)}
                   </div>
                   <Button
                     size="sm"
