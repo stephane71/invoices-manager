@@ -11,6 +11,7 @@ import ArticlesBlock, {
   type InvoiceItem,
 } from "@/components/invoices/ArticlesBlock";
 import { centsToCurrencyString } from "@/lib/utils";
+import { APP_LOCALE } from "@/lib/constants";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -341,7 +342,7 @@ export default function NewInvoicePage() {
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
-            {t("new.total")} {centsToCurrencyString(totalAmount, "EUR")}
+            {t("new.total")} {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)}
           </div>
           <div className="flex gap-2">
             <Button

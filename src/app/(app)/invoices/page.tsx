@@ -5,6 +5,7 @@ import { Invoice } from "@/types/models";
 import { getTranslations } from "next-intl/server";
 import { FileText, Plus } from "lucide-react";
 import { centsToCurrencyString } from "@/lib/utils";
+import { APP_LOCALE } from "@/lib/constants";
 
 async function InvoicesList() {
   const invoices = await listInvoices();
@@ -27,7 +28,7 @@ async function InvoicesList() {
             inv.client_name ||
             inv.clientId ||
             inv.client_id;
-          const total = centsToCurrencyString(inv.total_amount, "EUR");
+          const total = centsToCurrencyString(inv.total_amount, "EUR", APP_LOCALE);
 
           return (
             <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">

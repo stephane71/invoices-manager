@@ -15,6 +15,7 @@ import {
 import path from "node:path";
 import * as fs from "node:fs";
 import { centsToCurrencyString } from "@/lib/utils";
+import { APP_LOCALE } from "@/lib/constants";
 
 export async function POST(
   req: NextRequest,
@@ -40,8 +41,8 @@ export async function POST(
     const itemsData = invoice.items.map((item) => [
       item.name,
       item.quantity.toString(),
-      centsToCurrencyString(item.price, "EUR"),
-      centsToCurrencyString(item.total, "EUR"),
+      centsToCurrencyString(item.price, "EUR", APP_LOCALE),
+      centsToCurrencyString(item.total, "EUR", APP_LOCALE),
     ]);
 
     const subtotalCents = invoice.items.reduce(
@@ -52,9 +53,9 @@ export async function POST(
     const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
-    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR"));
-    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR"));
-    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR"));
+    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE));
+    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
+    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
 
     // Read the logo file and convert to base64
     const logoPath = path.join(
@@ -91,9 +92,9 @@ export async function POST(
         // Tax rate variable for TVA line
         taxInput: JSON.stringify({ rate: taxRate.toString() }),
         // Totals
-        subtotal: centsToCurrencyString(subtotalCents, "EUR"),
-        tax: centsToCurrencyString(taxAmountCents, "EUR"),
-        total: centsToCurrencyString(totalCents, "EUR"),
+        subtotal: centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
+        tax: centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
+        total: centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,

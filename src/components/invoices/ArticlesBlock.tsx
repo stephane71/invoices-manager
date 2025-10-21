@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PriceInput } from "@/components/ui/price-input";
 import { centsToCurrencyString } from "@/lib/utils";
+import { APP_LOCALE } from "@/lib/constants";
 
 export type InvoiceItem = {
   product_id: string;
@@ -117,7 +118,7 @@ export default function ArticlesBlock({
                 {/* Total and Delete Button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="text-sm font-medium">
-                    Total: {centsToCurrencyString(it.total, "EUR")}
+                    Total: {centsToCurrencyString(it.total, "EUR", APP_LOCALE)}
                   </div>
                   <Button
                     size="sm"
