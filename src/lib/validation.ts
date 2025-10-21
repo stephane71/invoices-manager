@@ -5,7 +5,7 @@ export const productSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional().nullable(),
   price: z.number().nonnegative(),
-  image_url: z.string().url().optional().nullable(),
+  image_url: z.string().url().or(z.literal("")).optional().nullable(),
 });
 
 export const clientSchema = z.object({
