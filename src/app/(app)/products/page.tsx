@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Package, Plus } from "lucide-react";
-import { numberToCurrency } from "@/lib/utils";
+import { centsToCurrencyString } from "@/lib/utils";
 
 async function ProductsList() {
   const products = await listProducts();
@@ -35,9 +35,7 @@ async function ProductsList() {
               <div>
                 <p className="font-medium">{p.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {p.price != null
-                    ? numberToCurrency(p.price, { currency: "EUR" })
-                    : "N/A"}
+                  {p.price != null ? centsToCurrencyString(p.price) : "N/A"}
                 </p>
               </div>
             </div>

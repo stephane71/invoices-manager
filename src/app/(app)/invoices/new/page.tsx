@@ -10,7 +10,7 @@ import { useMinDelay } from "@/hooks/useMinDelay";
 import ArticlesBlock, {
   type InvoiceItem,
 } from "@/components/invoices/ArticlesBlock";
-import { numberToCurrency } from "@/lib/utils";
+import { centsToCurrencyString } from "@/lib/utils";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -37,10 +37,9 @@ export default function NewInvoicePage() {
       product_id: "",
       name: "",
       quantity: 1,
-      price: 0,
-      total: 0,
+      price: 0, // in cents
+      total: 0, // in cents
       quantityInput: "1",
-      priceInput: "0",
     },
   ]);
 
@@ -115,10 +114,9 @@ export default function NewInvoicePage() {
         product_id: "",
         name: "",
         quantity: 1,
-        price: 0,
-        total: 0,
+        price: 0, // in cents
+        total: 0, // in cents
         quantityInput: "1",
-        priceInput: "0",
       },
     ]);
   }
@@ -131,20 +129,20 @@ export default function NewInvoicePage() {
     setItems((prev) => {
       const next = [...prev];
       const prod = products.find((p) => p.id === productId);
-      const price = prod?.price || 0;
+      const priceCents = prod?.price || 0; // price is already in cents from DB
       const name = prod?.name || "";
       const existing = next[index];
       const qty = existing?.quantity ?? 0;
       const quantityInput = existing?.quantityInput ?? (qty ? String(qty) : "");
+      const totalCents = Math.round(priceCents * qty); // total in cents
       next[index] = {
         ...existing,
         product_id: productId,
         name,
         quantity: qty,
-        price,
-        total: +(price * qty).toFixed(2),
+        price: priceCents,
+        total: totalCents,
         quantityInput,
-        priceInput: String(price),
       } as Item;
       return next;
     });
@@ -179,12 +177,13 @@ export default function NewInvoicePage() {
       }
 
       const quantity = Math.floor(parsed);
-      const price = Number(item.price) || 0;
+      const priceCents = Number(item.price) || 0; // price in cents
+      const totalCents = Math.round(priceCents * quantity); // total in cents
       next[index] = {
         ...item,
         quantityInput: String(quantity),
         quantity,
-        total: +(price * quantity).toFixed(2),
+        total: totalCents,
       } as Item;
       return next;
     });
@@ -197,79 +196,30 @@ export default function NewInvoicePage() {
       const raw = (item as Item).quantityInput ?? String(item.quantity ?? "");
       if (raw === "" || item.quantity === 0) {
         const quantity = 1;
-        const price = Number(item.price) || 0;
+        const priceCents = Number(item.price) || 0; // price in cents
+        const totalCents = Math.round(priceCents * quantity); // total in cents
         next[index] = {
           ...item,
           quantityInput: "1",
           quantity,
-          total: +(price * quantity).toFixed(2),
+          total: totalCents,
         } as Item;
       }
       return next;
     });
   }
 
-  function onChangePrice(index: number, rawValue: string) {
+  function onChangePrice(index: number, cents: number) {
     setItems((prev) => {
       const next = [...prev];
       const item = next[index];
-
-      // Allow temporary empty string while typing
-      if (rawValue === "") {
-        next[index] = {
-          ...item,
-          priceInput: "",
-          price: 0,
-          total: 0,
-        } as Item;
-        return next;
-      }
-
-      // Parse positive decimal price
-      const parsed = parseFloat(rawValue);
-      if (!Number.isFinite(parsed) || parsed < 0) {
-        next[index] = {
-          ...item,
-          priceInput: rawValue,
-          price: 0,
-          total: 0,
-        } as Item;
-        return next;
-      }
-
-      const price = Math.max(0, parsed);
       const qty = Number(item.quantity) || 0;
+      const totalCents = Math.round(cents * qty); // total in cents
       next[index] = {
         ...item,
-        priceInput: rawValue,
-        price,
-        total: +(price * qty).toFixed(2),
+        price: cents,
+        total: totalCents,
       } as Item;
-      return next;
-    });
-  }
-
-  function onBlurPrice(index: number) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
-      const raw = (item as Item).priceInput ?? String(item.price ?? "");
-      if (raw === "" || item.price === 0) {
-        const price = 0;
-        const qty = Number(item.quantity) || 0;
-        next[index] = {
-          ...item,
-          priceInput: "0",
-          price,
-          total: +(price * qty).toFixed(2),
-        } as Item;
-      } else {
-        // Clean up the display format
-        next[index] = {
-          ...item,
-          priceInput: String(item.price),
-        } as Item;
-      }
       return next;
     });
   }
@@ -383,7 +333,6 @@ export default function NewInvoicePage() {
           onChangeQtyAction={onChangeQty}
           onBlurQtyAction={onBlurQty}
           onChangePriceAction={onChangePrice}
-          onBlurPriceAction={onBlurPrice}
         />
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
@@ -392,8 +341,7 @@ export default function NewInvoicePage() {
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
-            {t("new.total")}{" "}
-            {numberToCurrency(totalAmount, { currency: "EUR" })}
+            {t("new.total")} {centsToCurrencyString(totalAmount)}
           </div>
           <div className="flex gap-2">
             <Button

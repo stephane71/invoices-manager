@@ -2,7 +2,7 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
+import { PriceInput } from "@/components/ui/price-input";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -93,14 +93,10 @@ export default function ProductDetailPage({
       </div>
       <div className="grid gap-2">
         <label className="text-sm">{t("new.form.price")}</label>
-        <input
-          type="number"
-          step="0.01"
-          className="h-10 rounded-md border px-3 bg-background"
+        <PriceInput
           value={form.price}
-          onChange={(e) =>
-            setForm({ ...form, price: parseFloat(e.target.value) || 0 })
-          }
+          onChange={(cents) => setForm({ ...form, price: cents })}
+          placeholder="0,00"
         />
       </div>
       <div className="grid gap-2">

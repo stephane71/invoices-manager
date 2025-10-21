@@ -3,7 +3,7 @@ import { use, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Client, Invoice, InvoiceItem } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { numberToCurrency } from "@/lib/utils";
+import { centsToCurrencyString } from "@/lib/utils";
 
 export default function InvoiceDetailPage({
   params,
@@ -124,7 +124,7 @@ export default function InvoiceDetailPage({
               {t("detail.total")}
             </h2>
             <p className="text-2xl font-semibold">
-              {numberToCurrency(total, { currency: "EUR" })}
+              {centsToCurrencyString(total)}
             </p>
           </div>
         </div>
@@ -144,11 +144,11 @@ export default function InvoiceDetailPage({
                     <div className="font-medium text-gray-900">{it.name}</div>
                     <div className="text-gray-500">
                       {t("detail.qty")} {it.quantity} ×{" "}
-                      {numberToCurrency(it.price, { currency: "EUR" })}
+                      {centsToCurrencyString(it.price)}
                     </div>
                   </div>
                   <div className="font-semibold">
-                    {numberToCurrency(it.total, { currency: "EUR" })}
+                    {centsToCurrencyString(it.total)}
                   </div>
                 </div>
               ))}
