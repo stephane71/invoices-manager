@@ -117,7 +117,7 @@ export default function ArticlesBlock({
                 {/* Total and Delete Button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="text-sm font-medium">
-                    Total: {centsToCurrencyString(it.total)}
+                    Total: {centsToCurrencyString(it.total, "EUR")}
                   </div>
                   <Button
                     size="sm"

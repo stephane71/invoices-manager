@@ -27,7 +27,7 @@ async function InvoicesList() {
             inv.client_name ||
             inv.clientId ||
             inv.client_id;
-          const total = centsToCurrencyString(inv.total_amount);
+          const total = centsToCurrencyString(inv.total_amount, "EUR");
 
           return (
             <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">

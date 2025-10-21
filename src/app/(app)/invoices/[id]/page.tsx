@@ -124,7 +124,7 @@ export default function InvoiceDetailPage({
               {t("detail.total")}
             </h2>
             <p className="text-2xl font-semibold">
-              {centsToCurrencyString(total)}
+              {centsToCurrencyString(total, "EUR")}
             </p>
           </div>
         </div>
@@ -144,11 +144,11 @@ export default function InvoiceDetailPage({
                     <div className="font-medium text-gray-900">{it.name}</div>
                     <div className="text-gray-500">
                       {t("detail.qty")} {it.quantity} ×{" "}
-                      {centsToCurrencyString(it.price)}
+                      {centsToCurrencyString(it.price, "EUR")}
                     </div>
                   </div>
                   <div className="font-semibold">
-                    {centsToCurrencyString(it.total)}
+                    {centsToCurrencyString(it.total, "EUR")}
                   </div>
                 </div>
               ))}

@@ -35,7 +35,7 @@ async function ProductsList() {
               <div>
                 <p className="font-medium">{p.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {p.price != null ? centsToCurrencyString(p.price) : "N/A"}
+                  {p.price != null ? centsToCurrencyString(p.price, "EUR") : "N/A"}
                 </p>
               </div>
             </div>

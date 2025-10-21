@@ -40,8 +40,8 @@ export async function POST(
     const itemsData = invoice.items.map((item) => [
       item.name,
       item.quantity.toString(),
-      centsToCurrencyString(item.price),
-      centsToCurrencyString(item.total),
+      centsToCurrencyString(item.price, "EUR"),
+      centsToCurrencyString(item.total, "EUR"),
     ]);
 
     const subtotalCents = invoice.items.reduce(
@@ -52,9 +52,9 @@ export async function POST(
     const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
-    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents));
-    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents));
-    console.log("total", totalCents, centsToCurrencyString(totalCents));
+    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR"));
+    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR"));
+    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR"));
 
     // Read the logo file and convert to base64
     const logoPath = path.join(
@@ -91,9 +91,9 @@ export async function POST(
         // Tax rate variable for TVA line
         taxInput: JSON.stringify({ rate: taxRate.toString() }),
         // Totals
-        subtotal: centsToCurrencyString(subtotalCents),
-        tax: centsToCurrencyString(taxAmountCents),
-        total: centsToCurrencyString(totalCents),
+        subtotal: centsToCurrencyString(subtotalCents, "EUR"),
+        tax: centsToCurrencyString(taxAmountCents, "EUR"),
+        total: centsToCurrencyString(totalCents, "EUR"),
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,
