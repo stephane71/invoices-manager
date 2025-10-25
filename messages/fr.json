@@ -18,7 +18,9 @@
     "saving": "Enregistrement…",
     "uploading": "Téléversement…",
     "preview": "Aperçu",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "vatExcluded": "HT",
+    "vatIncluded": "TTC"
   },
   "Products": {
     "title": "Vos produits",

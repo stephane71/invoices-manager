@@ -18,7 +18,9 @@
     "saving": "Saving…",
     "uploading": "Uploading…",
     "preview": "Preview",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "vatExcluded": "ex VAT",
+    "vatIncluded": "inc VAT"
   },
   "Products": {
     "title": "Your products",

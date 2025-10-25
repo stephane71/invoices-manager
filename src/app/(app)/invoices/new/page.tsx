@@ -342,7 +342,7 @@ export default function NewInvoicePage() {
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
-            {t("new.total")} {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)}
+            {t("new.total")} {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)} {c("vatExcluded")}
           </div>
           <div className="flex gap-2">
             <Button
