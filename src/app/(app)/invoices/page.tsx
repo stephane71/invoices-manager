@@ -10,6 +10,7 @@ import { APP_LOCALE } from "@/lib/constants";
 async function InvoicesList() {
   const invoices = await listInvoices();
   const t = await getTranslations("Invoices");
+  const c = await getTranslations("Common");
   return (
     <div className="space-y-3">
       {invoices.map(
@@ -51,7 +52,7 @@ async function InvoicesList() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-semibold text-lg text-gray-900">
-                        {total}
+                        {total} {c("vatExcluded")}
                       </p>
                     </div>
                   </div>

@@ -47,6 +47,7 @@ export default function ArticlesBlock({
   onChangePriceAction,
 }: ArticlesBlockProps) {
   const t = useTranslations("Invoices");
+  const c = useTranslations("Common");
 
   return (
     <div>
@@ -118,7 +119,7 @@ export default function ArticlesBlock({
                 {/* Total and Delete Button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="text-sm font-medium">
-                    Total: {centsToCurrencyString(it.total, "EUR", APP_LOCALE)}
+                    Total: {centsToCurrencyString(it.total, "EUR", APP_LOCALE)} {c("vatExcluded")}
                   </div>
                   <Button
                     size="sm"
