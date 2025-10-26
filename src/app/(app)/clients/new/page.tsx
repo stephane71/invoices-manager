@@ -14,20 +14,42 @@ export default function NewClientPage() {
     phone: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
 
   async function save() {
     setLoading(true);
-    const res = await fetch(`/api/clients`, {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
-    setLoading(false);
+    setError(null);
 
-    if (res.ok) {
-      router.push("/clients");
+    try {
+      // Prepare the client data, converting empty strings to undefined
+      const clientData = {
+        name: form.name.trim(),
+        email: form.email.trim() ? form.email.trim() : undefined,
+        phone: form.phone.trim() ? form.phone.trim() : undefined,
+        address: form.address.trim() ? form.address.trim() : undefined,
+      };
+
+      const res = await fetch(`/api/clients`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(clientData),
+      });
+
+      if (res.ok) {
+        router.push("/clients");
+      } else {
+        const data = await res.json();
+        setError(data.error || t("new.error.createFail"));
+      }
+    } catch (e: unknown) {
+      setError(
+        e instanceof Error ? e.message : t("new.error.createFail"),
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -69,6 +91,7 @@ export default function NewClientPage() {
           {loading ? c("saving") : t("new.createButton")}
         </Button>
       </div>
+      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
     </div>
   );
 }

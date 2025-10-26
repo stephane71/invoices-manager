@@ -13,7 +13,13 @@ export const clientSchema = z.object({
   name: z.string().min(1),
   address: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
-  email: z.string().email().optional().nullable(),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .nullable()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? null : val)),
 });
 
 export const invoiceItemSchema = z.object({

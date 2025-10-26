@@ -60,7 +60,10 @@
         "phone": "Phone number",
         "address": "Address"
       },
-      "createButton": "Create client"
+      "createButton": "Create client",
+      "error": {
+        "createFail": "Failed to create client"
+      }
     },
     "edit": {
       "title": "Edit client"
