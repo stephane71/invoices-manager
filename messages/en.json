@@ -167,5 +167,31 @@
       "save": "Save error ({status})",
       "unknown": "Unknown error"
     }
+  },
+  "Validation": {
+    "name": {
+      "required": "Name is required",
+      "invalid": "Invalid name"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "invalid": "Invalid email format"
+    },
+    "phone": {
+      "required": "Phone number is required",
+      "invalid": "Invalid phone number"
+    },
+    "address": {
+      "required": "Address is required",
+      "invalid": "Invalid address"
+    },
+    "price": {
+      "required": "Price is required",
+      "invalid": "Invalid price"
+    },
+    "description": {
+      "invalid": "Invalid description"
+    }
   }
 }

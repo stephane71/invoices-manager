@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { ClientForm } from "@/components/clients/ClientForm";
+import { ClientForm, type FieldErrors } from "@/components/clients/ClientForm";
 
 const ERROR_DEFAULT = "";
 
@@ -16,6 +16,7 @@ export default function NewClientPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>(ERROR_DEFAULT);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const router = useRouter();
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
@@ -23,6 +24,7 @@ export default function NewClientPage() {
   async function save() {
     setLoading(true);
     setError(ERROR_DEFAULT);
+    setFieldErrors({});
 
     try {
       // Prepare the client data, converting empty strings to undefined
@@ -43,6 +45,13 @@ export default function NewClientPage() {
         router.push("/clients");
       } else {
         const data = await res.json();
+
+        // If the API returns field-specific errors, use them
+        if (data.fields) {
+          setFieldErrors(data.fields);
+        }
+
+        // Always set the main error message
         setError(data.error || t("new.error.createFail"));
       }
     } catch (e: unknown) {
@@ -55,7 +64,12 @@ export default function NewClientPage() {
   return (
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">{t("new.title")}</h1>
-      <ClientForm value={form} onChange={setForm} error={error}>
+      <ClientForm
+        value={form}
+        onChange={setForm}
+        error={error}
+        fieldErrors={fieldErrors}
+      >
         <Button onClick={save} disabled={loading}>
           {loading ? c("saving") : t("new.createButton")}
         </Button>

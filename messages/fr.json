@@ -167,5 +167,31 @@
       "save": "Erreur d'enregistrement ({status})",
       "unknown": "Erreur inconnue"
     }
+  },
+  "Validation": {
+    "name": {
+      "required": "Le nom est requis",
+      "invalid": "Nom invalide"
+    },
+    "email": {
+      "required": "L'email est requis",
+      "invalidEmail": "Veuillez entrer une adresse email valide",
+      "invalid": "Format d'email invalide"
+    },
+    "phone": {
+      "required": "Le numéro de téléphone est requis",
+      "invalid": "Numéro de téléphone invalide"
+    },
+    "address": {
+      "required": "L'adresse est requise",
+      "invalid": "Adresse invalide"
+    },
+    "price": {
+      "required": "Le prix est requis",
+      "invalid": "Prix invalide"
+    },
+    "description": {
+      "invalid": "Description invalide"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { clientSchema } from "@/lib/validation";
 import { listClients, upsertClient } from "@/lib/db";
+import { handleApiError } from "@/lib/errors";
 
 export async function GET() {
   try {
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
     const created = await upsertClient(parsed);
     return NextResponse.json(created, { status: 201 });
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 400 });
+    const errorResponse = handleApiError(e);
+    return NextResponse.json(errorResponse, { status: 400 });
   }
 }
