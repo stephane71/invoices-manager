@@ -49,10 +49,9 @@ export default function NewClientPage() {
         // If the API returns field-specific errors, use them
         if (data.fields) {
           setFieldErrors(data.fields);
+        } else {
+          setError(data.error || t("new.error.createFail"));
         }
-
-        // Always set the main error message
-        setError(data.error || t("new.error.createFail"));
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t("new.error.createFail"));
