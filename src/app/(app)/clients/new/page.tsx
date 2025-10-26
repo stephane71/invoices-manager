@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { ClientForm } from "@/components/clients/ClientForm";
 
+const ERROR_DEFAULT = "";
+
 export default function NewClientPage() {
   const [form, setForm] = useState({
     name: "",
@@ -13,14 +15,14 @@ export default function NewClientPage() {
     phone: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>(ERROR_DEFAULT);
   const router = useRouter();
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
 
   async function save() {
     setLoading(true);
-    setError(null);
+    setError(ERROR_DEFAULT);
 
     try {
       // Prepare the client data, converting empty strings to undefined

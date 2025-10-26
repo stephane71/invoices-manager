@@ -13,14 +13,14 @@ export interface ClientFormData {
 interface ClientFormProps {
   value: ClientFormData;
   onChange: (value: ClientFormData) => void;
-  error?: string | null;
+  error?: string;
   children?: ReactNode;
 }
 
 export function ClientForm({
   value,
   onChange,
-  error,
+  error = "",
   children,
 }: ClientFormProps) {
   const t = useTranslations("Clients");
