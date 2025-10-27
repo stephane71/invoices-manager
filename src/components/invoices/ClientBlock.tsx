@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import type { Client } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,6 +11,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  ClientForm,
+  type ClientFormData,
+  type FieldErrors,
+} from "@/components/clients/ClientForm";
+
+const FORM_DATA_DEFAULT: ClientFormData = {
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+};
 
 export type ClientBlockProps = {
   clients: Client[];
@@ -24,6 +35,8 @@ export type ClientBlockProps = {
     address?: string;
   }) => void;
   isLoading: boolean;
+  clientFormErrors?: FieldErrors;
+  error?: string;
 };
 
 export default function ClientBlock({
@@ -32,22 +45,18 @@ export default function ClientBlock({
   onSelectClientAction,
   onRequestCreateNewClientAction,
   isLoading,
+  clientFormErrors = {},
+  error = "",
 }: ClientBlockProps) {
   const t = useTranslations("Invoices");
 
   // UI state for the inline "direct new client" form
   const [showNewForm, setShowNewForm] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newPhone, setNewPhone] = useState("");
-  const [newAddress, setNewAddress] = useState("");
+  const [formData, setFormData] = useState<ClientFormData>(FORM_DATA_DEFAULT);
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
-    setNewName("");
-    setNewEmail("");
-    setNewPhone("");
-    setNewAddress("");
+    setFormData(FORM_DATA_DEFAULT);
   }, []);
 
   // When user selects an existing client, collapse and reset the direct-new form
@@ -82,25 +91,18 @@ export default function ClientBlock({
       return;
     }
 
-    const name = newName.trim();
+    const name = formData.name.trim();
     if (!name) {
       return;
     }
 
     onRequestCreateNewClientAction({
       name,
-      email: newEmail.trim() ? newEmail.trim() : undefined,
-      phone: newPhone.trim() ? newPhone.trim() : undefined,
-      address: newAddress.trim() ? newAddress.trim() : undefined,
+      email: formData.email.trim() ? formData.email.trim() : undefined,
+      phone: formData.phone.trim() ? formData.phone.trim() : undefined,
+      address: formData.address.trim() ? formData.address.trim() : undefined,
     });
-  }, [
-    showNewForm,
-    newName,
-    newEmail,
-    newPhone,
-    newAddress,
-    onRequestCreateNewClientAction,
-  ]);
+  }, [showNewForm, formData, onRequestCreateNewClientAction]);
 
   return (
     <div className="relative">
@@ -147,58 +149,24 @@ export default function ClientBlock({
         </Button>
       ) : (
         <div className="mt-2 grid gap-2 rounded-md border p-3">
-          <div className="grid gap-1">
-            <label className="text-sm">{t("new.form.name")}</label>
-            <Input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder={t("new.form.namePlaceholder")}
-            />
-          </div>
-          <div className="grid gap-1">
-            <label className="text-sm">{t("new.form.email")}</label>
-            <Input
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder={t("new.form.emailPlaceholder")}
-            />
-          </div>
-          <div className="grid gap-1">
-            <label className="text-sm">{t("new.form.phone")}</label>
-            <Input
-              type="tel"
-              value={newPhone}
-              onChange={(e) => setNewPhone(e.target.value)}
-              placeholder={t("new.form.phonePlaceholder")}
-            />
-          </div>
-          <div className="grid gap-1">
-            <label className="text-sm">{t("new.form.address")}</label>
-            <textarea
-              className="min-h-[80px] rounded-md border p-3 bg-background"
-              value={newAddress}
-              onChange={(e) => setNewAddress(e.target.value)}
-              placeholder={t("new.form.addressPlaceholder")}
-            />
-          </div>
-
-          {/* Actions: explicit create button or cancel */}
-
-          <div className="flex justify-end gap-2">
+          <ClientForm
+            value={formData}
+            onChange={setFormData}
+            fieldErrors={clientFormErrors}
+            error={error}
+          >
             <Button
               variant="secondary"
               size="lg"
               onClick={triggerCreateIfEligible}
-              disabled={!newName.trim()}
+              disabled={!formData.name.trim()}
             >
               {t("new.createClient")}
             </Button>
             <Button variant="ghost" size="lg" onClick={resetNewForm}>
               {t("new.cancel")}
             </Button>
-          </div>
+          </ClientForm>
         </div>
       )}
     </div>

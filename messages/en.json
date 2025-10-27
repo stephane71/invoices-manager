@@ -58,7 +58,11 @@
         "name": "Full name",
         "email": "Email",
         "phone": "Phone number",
-        "address": "Address"
+        "address": "Address",
+        "namePlaceholder": "Client name",
+        "emailPlaceholder": "email@example.com",
+        "phonePlaceholder": "+1 555 123 4567",
+        "addressPlaceholder": "Street, City, ZIP code"
       },
       "createButton": "Create client",
       "error": {
@@ -114,11 +118,7 @@
         "name": "Name",
         "email": "Email",
         "phone": "Phone",
-        "address": "Address",
-        "namePlaceholder": "Client name",
-        "emailPlaceholder": "email@example.com",
-        "phonePlaceholder": "+1 555 123 4567",
-        "addressPlaceholder": "Street, City, ZIP code"
+        "address": "Address"
       },
       "error": {
         "numberRequired": "Please enter an invoice number",

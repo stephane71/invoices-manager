@@ -1,6 +1,17 @@
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Client } from "@/types/models";
+import type { FieldErrors } from "@/components/clients/ClientForm";
+
+export class ClientCreationError extends Error {
+  fieldErrors?: FieldErrors;
+
+  constructor(message: string, fieldErrors?: FieldErrors) {
+    super(message);
+    this.name = "ClientCreationError";
+    this.fieldErrors = fieldErrors;
+  }
+}
 
 export const useCreateNewClientFromNewInvoice = ({}) => {
   const t = useTranslations("Invoices");
@@ -14,7 +25,11 @@ export const useCreateNewClientFromNewInvoice = ({}) => {
       });
 
       if (!clientRes.ok) {
-        throw new Error(t("new.error.clientCreateFail"));
+        const errorData = await clientRes.json();
+        throw new ClientCreationError(
+          errorData.error || t("new.error.clientCreateFail"),
+          errorData.fields,
+        );
       }
 
       const newClient = await clientRes.json();

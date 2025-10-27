@@ -21,7 +21,7 @@ export default function ClientDetailPage({
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string>(ERROR_DEFAULT);
+  const [error, setError] = useState(ERROR_DEFAULT);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const router = useRouter();
   const t = useTranslations("Clients");

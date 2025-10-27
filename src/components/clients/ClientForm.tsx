@@ -39,9 +39,11 @@ export function ClientForm({
       <div className="grid gap-2">
         <Label>{t("new.form.name")}</Label>
         <Input
+          type="text"
           value={value.name}
           onChange={(e) => onChange({ ...value, name: e.target.value })}
           className={fieldErrors.name ? "border-red-500" : ""}
+          placeholder={t("new.form.namePlaceholder")}
         />
         {fieldErrors.name && (
           <p className="text-xs text-red-600">{fieldErrors.name}</p>
@@ -50,9 +52,11 @@ export function ClientForm({
       <div className="grid gap-2">
         <Label>{t("new.form.email")}</Label>
         <Input
+          type="email"
           value={value.email}
           onChange={(e) => onChange({ ...value, email: e.target.value })}
           className={fieldErrors.email ? "border-red-500" : ""}
+          placeholder={t("new.form.emailPlaceholder")}
         />
         {fieldErrors.email && (
           <p className="text-xs text-red-600">{fieldErrors.email}</p>
@@ -61,9 +65,11 @@ export function ClientForm({
       <div className="grid gap-2">
         <Label>{t("new.form.phone")}</Label>
         <Input
+          type="tel"
           value={value.phone}
           onChange={(e) => onChange({ ...value, phone: e.target.value })}
           className={fieldErrors.phone ? "border-red-500" : ""}
+          placeholder={t("new.form.phonePlaceholder")}
         />
         {fieldErrors.phone && (
           <p className="text-xs text-red-600">{fieldErrors.phone}</p>
@@ -75,6 +81,7 @@ export function ClientForm({
           className={`min-h-20 rounded-md border px-3 py-2 bg-background ${fieldErrors.address ? "border-red-500" : ""}`}
           value={value.address}
           onChange={(e) => onChange({ ...value, address: e.target.value })}
+          placeholder={t("new.form.addressPlaceholder")}
         />
         {fieldErrors.address && (
           <p className="text-xs text-red-600">{fieldErrors.address}</p>

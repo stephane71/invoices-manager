@@ -58,7 +58,11 @@
         "name": "Nom complet",
         "email": "Email",
         "phone": "Numéro de téléphone",
-        "address": "Adresse"
+        "address": "Adresse",
+        "namePlaceholder": "Nom du client",
+        "emailPlaceholder": "email@exemple.com",
+        "phonePlaceholder": "+33 6 12 34 56 78",
+        "addressPlaceholder": "Rue, Ville, Code postal"
       },
       "createButton": "Créer le client",
       "error": {
@@ -114,11 +118,7 @@
         "name": "Nom",
         "email": "Email",
         "phone": "Téléphone",
-        "address": "Adresse",
-        "namePlaceholder": "Nom du client",
-        "emailPlaceholder": "email@exemple.com",
-        "phonePlaceholder": "+33 6 12 34 56 78",
-        "addressPlaceholder": "Rue, Ville, Code postal"
+        "address": "Adresse"
       },
       "error": {
         "numberRequired": "Veuillez saisir un numéro de facture",

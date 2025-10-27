@@ -15,7 +15,7 @@ export default function NewClientPage() {
     phone: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>(ERROR_DEFAULT);
+  const [error, setError] = useState(ERROR_DEFAULT);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const router = useRouter();
   const t = useTranslations("Clients");
