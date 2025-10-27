@@ -155,12 +155,14 @@
       "logo": "Logo on invoices",
       "logoAlt": "Logo preview",
       "logoChange": "Change image",
-      "logoSelect": "Click to select an image"
+      "logoSelect": "Click to select an image",
+      "logoRemove": "Remove logo"
     },
     "status": {
       "uploaded": "Logo uploaded",
       "updated": "Profile updated",
-      "uploadingLogo": "Uploading logo…"
+      "uploadingLogo": "Uploading logo…",
+      "logoRemoved": "Logo removed"
     },
     "error": {
       "load": "Load error ({status})",

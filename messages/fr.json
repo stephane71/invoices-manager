@@ -155,12 +155,14 @@
       "logo": "Logo sur les factures",
       "logoAlt": "Aperçu du logo",
       "logoChange": "Changer l'image",
-      "logoSelect": "Cliquez pour sélectionner une image"
+      "logoSelect": "Cliquez pour sélectionner une image",
+      "logoRemove": "Supprimer le logo"
     },
     "status": {
       "uploaded": "Logo téléversé",
       "updated": "Profil mis à jour",
-      "uploadingLogo": "Téléversement du logo…"
+      "uploadingLogo": "Téléversement du logo…",
+      "logoRemoved": "Logo supprimé"
     },
     "error": {
       "load": "Erreur de chargement ({status})",

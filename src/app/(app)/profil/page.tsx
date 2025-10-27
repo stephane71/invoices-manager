@@ -4,7 +4,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone, User2 } from "lucide-react";
+import { Mail, MapPin, Phone, User2, X } from "lucide-react";
 import { useProfileLogoUpload } from "@/hooks/useProfileLogoUpload";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -83,6 +83,12 @@ export default function ProfilPage() {
     } else {
       setLogoFile(null);
     }
+  }
+
+  function onRemoveLogo() {
+    setLogoFile(null);
+    setLogoUrl("");
+    setSuccess(t("status.logoRemoved"));
   }
 
   async function onSubmit(e: FormEvent) {
@@ -217,28 +223,45 @@ export default function ProfilPage() {
             className="hidden"
           />
 
-          {/* Clickable preview/select box */}
-          <label
-            htmlFor="logo"
-            className={`block w-full max-w-sm cursor-pointer ${isLogoDisabled ? "pointer-events-none opacity-60" : ""}`}
-            aria-disabled={isLogoDisabled}
-          >
-            <div className="relative aspect-video w-full overflow-hidden rounded-md border border-dashed bg-muted">
-              {logoPreview && (
-                <Image
-                  src={logoPreview}
-                  alt={t("form.logoAlt")}
-                  className="absolute inset-0 object-contain"
-                  fill
-                />
-              )}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="rounded-md bg-black/40 px-3 py-1.5 text-xs font-medium text-white">
-                  {logoPreview ? t("form.logoChange") : t("form.logoSelect")}
-                </span>
+          <div className="flex gap-2 items-start">
+            {/* Clickable preview/select box */}
+            <label
+              htmlFor="logo"
+              className={`block w-full max-w-sm cursor-pointer ${isLogoDisabled ? "pointer-events-none opacity-60" : ""}`}
+              aria-disabled={isLogoDisabled}
+            >
+              <div className="relative aspect-video w-full overflow-hidden rounded-md border border-dashed bg-muted">
+                {logoPreview && (
+                  <Image
+                    src={logoPreview}
+                    alt={t("form.logoAlt")}
+                    className="absolute inset-0 object-contain"
+                    fill
+                  />
+                )}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="rounded-md bg-black/40 px-3 py-1.5 text-xs font-medium text-white">
+                    {logoPreview ? t("form.logoChange") : t("form.logoSelect")}
+                  </span>
+                </div>
               </div>
-            </div>
-          </label>
+            </label>
+
+            {/* Remove logo button */}
+            {logoPreview && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={onRemoveLogo}
+                disabled={isLogoDisabled}
+                title={t("form.logoRemove")}
+                aria-label={t("form.logoRemove")}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="pt-2">
