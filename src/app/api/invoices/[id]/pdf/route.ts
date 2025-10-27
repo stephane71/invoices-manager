@@ -14,6 +14,7 @@ import {
 } from "@pdfme/schemas";
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
+import { fetchLogoAsBase64 } from "@/lib/logo";
 
 export async function POST(
   req: NextRequest,
@@ -56,36 +57,9 @@ export async function POST(
     console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
 
     // Fetch logo from profile if available
-    let logoBase64: string | undefined;
-    if (profile?.logo_url) {
-      try {
-        const response = await fetch(profile.logo_url);
-        if (response.ok) {
-          const logoBuffer = Buffer.from(await response.arrayBuffer());
-
-          // Detect image type from Content-Type header or URL extension
-          let mimeType = "image/png"; // default
-          const contentType = response.headers.get("content-type");
-
-          if (contentType?.includes("jpeg") || contentType?.includes("jpg")) {
-            mimeType = "image/jpeg";
-          } else if (contentType?.includes("png")) {
-            mimeType = "image/png";
-          } else {
-            // Fallback: detect from URL extension
-            const urlLower = profile.logo_url.toLowerCase();
-            if (urlLower.includes(".jpg") || urlLower.includes(".jpeg")) {
-              mimeType = "image/jpeg";
-            }
-          }
-
-          logoBase64 = `data:${mimeType};base64,${logoBuffer.toString("base64")}`;
-        }
-      } catch (error) {
-        console.warn("Failed to fetch profile logo:", error);
-        // Don't set logoBase64, leave it undefined
-      }
-    }
+    const logoBase64 = profile?.logo_url
+      ? await fetchLogoAsBase64(profile.logo_url)
+      : undefined;
 
     const shopName = profile?.full_name;
     const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
