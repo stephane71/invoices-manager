@@ -62,7 +62,24 @@ export async function POST(
         const response = await fetch(profile.logo_url);
         if (response.ok) {
           const logoBuffer = Buffer.from(await response.arrayBuffer());
-          logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+
+          // Detect image type from Content-Type header or URL extension
+          let mimeType = "image/png"; // default
+          const contentType = response.headers.get("content-type");
+
+          if (contentType?.includes("jpeg") || contentType?.includes("jpg")) {
+            mimeType = "image/jpeg";
+          } else if (contentType?.includes("png")) {
+            mimeType = "image/png";
+          } else {
+            // Fallback: detect from URL extension
+            const urlLower = profile.logo_url.toLowerCase();
+            if (urlLower.includes(".jpg") || urlLower.includes(".jpeg")) {
+              mimeType = "image/jpeg";
+            }
+          }
+
+          logoBase64 = `data:${mimeType};base64,${logoBuffer.toString("base64")}`;
         }
       } catch (error) {
         console.warn("Failed to fetch profile logo:", error);
