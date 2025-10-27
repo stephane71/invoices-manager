@@ -58,9 +58,16 @@
         "name": "Full name",
         "email": "Email",
         "phone": "Phone number",
-        "address": "Address"
+        "address": "Address",
+        "namePlaceholder": "Client name",
+        "emailPlaceholder": "email@example.com",
+        "phonePlaceholder": "+1 555 123 4567",
+        "addressPlaceholder": "Street, City, ZIP code"
       },
-      "createButton": "Create client"
+      "createButton": "Create client",
+      "error": {
+        "createFail": "Failed to create client"
+      }
     },
     "edit": {
       "title": "Edit client"
@@ -111,11 +118,7 @@
         "name": "Name",
         "email": "Email",
         "phone": "Phone",
-        "address": "Address",
-        "namePlaceholder": "Client name",
-        "emailPlaceholder": "email@example.com",
-        "phonePlaceholder": "+1 555 123 4567",
-        "addressPlaceholder": "Street, City, ZIP code"
+        "address": "Address"
       },
       "error": {
         "numberRequired": "Please enter an invoice number",
@@ -163,6 +166,32 @@
       "load": "Load error ({status})",
       "save": "Save error ({status})",
       "unknown": "Unknown error"
+    }
+  },
+  "Validation": {
+    "name": {
+      "required": "Name is required",
+      "invalid": "Invalid name"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "invalid": "Invalid email format"
+    },
+    "phone": {
+      "required": "Phone number is required",
+      "invalid": "Invalid phone number"
+    },
+    "address": {
+      "required": "Address is required",
+      "invalid": "Invalid address"
+    },
+    "price": {
+      "required": "Price is required",
+      "invalid": "Invalid price"
+    },
+    "description": {
+      "invalid": "Invalid description"
     }
   }
 }

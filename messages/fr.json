@@ -58,9 +58,16 @@
         "name": "Nom complet",
         "email": "Email",
         "phone": "Numéro de téléphone",
-        "address": "Adresse"
+        "address": "Adresse",
+        "namePlaceholder": "Nom du client",
+        "emailPlaceholder": "email@exemple.com",
+        "phonePlaceholder": "+33 6 12 34 56 78",
+        "addressPlaceholder": "Rue, Ville, Code postal"
       },
-      "createButton": "Créer le client"
+      "createButton": "Créer le client",
+      "error": {
+        "createFail": "Échec de la création du client"
+      }
     },
     "edit": {
       "title": "Éditer un client"
@@ -111,11 +118,7 @@
         "name": "Nom",
         "email": "Email",
         "phone": "Téléphone",
-        "address": "Adresse",
-        "namePlaceholder": "Nom du client",
-        "emailPlaceholder": "email@exemple.com",
-        "phonePlaceholder": "+33 6 12 34 56 78",
-        "addressPlaceholder": "Rue, Ville, Code postal"
+        "address": "Adresse"
       },
       "error": {
         "numberRequired": "Veuillez saisir un numéro de facture",
@@ -163,6 +166,32 @@
       "load": "Erreur de chargement ({status})",
       "save": "Erreur d'enregistrement ({status})",
       "unknown": "Erreur inconnue"
+    }
+  },
+  "Validation": {
+    "name": {
+      "required": "Le nom est requis",
+      "invalid": "Nom invalide"
+    },
+    "email": {
+      "required": "L'email est requis",
+      "invalidEmail": "Veuillez entrer une adresse email valide",
+      "invalid": "Format d'email invalide"
+    },
+    "phone": {
+      "required": "Le numéro de téléphone est requis",
+      "invalid": "Numéro de téléphone invalide"
+    },
+    "address": {
+      "required": "L'adresse est requise",
+      "invalid": "Adresse invalide"
+    },
+    "price": {
+      "required": "Le prix est requis",
+      "invalid": "Prix invalide"
+    },
+    "description": {
+      "invalid": "Description invalide"
     }
   }
 }

@@ -5,13 +5,20 @@ import { Button } from "@/components/ui/button";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import ClientBlock from "@/components/invoices/ClientBlock";
-import { useCreateNewClientFromNewInvoice } from "@/hooks/useCreateNewClientFromNewInvoice";
+import {
+  ClientCreationError,
+  useCreateNewClientFromNewInvoice,
+} from "@/hooks/useCreateNewClientFromNewInvoice";
 import { useMinDelay } from "@/hooks/useMinDelay";
 import ArticlesBlock, {
   type InvoiceItem,
 } from "@/components/invoices/ArticlesBlock";
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
+import type { FieldErrors } from "@/components/clients/ClientForm";
+
+const ERROR_DEFAULT = "";
+const FIELD_ERROR_DEFAULT = undefined;
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -26,7 +33,10 @@ export default function NewInvoicePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(ERROR_DEFAULT);
+  const [clientFieldErrors, setClientFieldErrors] = useState<
+    FieldErrors | typeof FIELD_ERROR_DEFAULT
+  >();
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
@@ -81,6 +91,10 @@ export default function NewInvoicePage() {
     address?: string;
   }) => {
     try {
+      // Clear previous errors
+      setClientFieldErrors(FIELD_ERROR_DEFAULT);
+      setError(ERROR_DEFAULT);
+
       const newId = await wrap(() => createClientFromSelection(clientData));
       setClientId(newId);
       // Optimistic update without triggering a new request
@@ -102,9 +116,17 @@ export default function NewInvoicePage() {
         ];
       });
     } catch (e: unknown) {
-      setError(
-        e instanceof Error ? e.message : t("new.error.clientCreateFail"),
-      );
+      if (e instanceof ClientCreationError) {
+        if (e.fieldErrors) {
+          setClientFieldErrors(e.fieldErrors);
+        } else {
+          setError(e.message);
+        }
+      } else {
+        setError(
+          e instanceof Error ? e.message : t("new.error.clientCreateFail"),
+        );
+      }
     }
   };
 
@@ -226,7 +248,8 @@ export default function NewInvoicePage() {
   }
 
   async function save() {
-    setError(null);
+    setError(ERROR_DEFAULT);
+
     if (!number.trim()) {
       setError(t("new.error.numberRequired"));
       return;
@@ -322,9 +345,10 @@ export default function NewInvoicePage() {
           onSelectClientAction={setClientId}
           onRequestCreateNewClientAction={onRequestCreateNewClient}
           isLoading={clientBlockLoading}
+          clientFormErrors={clientFieldErrors}
+          error={error}
         />
 
-        {/* Articles block extracted to component */}
         <ArticlesBlock
           products={products}
           items={items}
@@ -342,7 +366,9 @@ export default function NewInvoicePage() {
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
-            {t("new.total")} {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)} {c("vatExcluded")}
+            {t("new.total")}{" "}
+            {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)}{" "}
+            {c("vatExcluded")}
           </div>
           <div className="flex gap-2">
             <Button
