@@ -12,8 +12,6 @@ import {
   table,
   text,
 } from "@pdfme/schemas";
-import path from "node:path";
-import * as fs from "node:fs";
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
 
@@ -57,13 +55,20 @@ export async function POST(
     console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
     console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
 
-    // Read the logo file and convert to base64
-    const logoPath = path.join(
-      process.cwd(),
-      "src/app/api/invoices/[id]/pdf/logo-les-douceurs-de-pau.png",
-    );
-    const logoBuffer = fs.readFileSync(logoPath);
-    const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+    // Fetch logo from profile if available
+    let logoBase64: string | undefined;
+    if (profile?.logo_url) {
+      try {
+        const response = await fetch(profile.logo_url);
+        if (response.ok) {
+          const logoBuffer = Buffer.from(await response.arrayBuffer());
+          logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+        }
+      } catch (error) {
+        console.warn("Failed to fetch profile logo:", error);
+        // Don't set logoBase64, leave it undefined
+      }
+    }
 
     const shopName = profile?.full_name;
     const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
@@ -73,7 +78,7 @@ export async function POST(
 
     const inputs = [
       {
-        logo: logoBase64,
+        ...(logoBase64 && { logo: logoBase64 }),
         // New template fields
         client_name: client.name,
         client_information: clientInfo,
