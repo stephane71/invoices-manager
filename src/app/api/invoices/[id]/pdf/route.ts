@@ -5,15 +5,12 @@ import { uploadInvoicePdf } from "@/lib/storage";
 import InvoiceTemplate from "./pdfme-invoice-template.json";
 import { Template } from "@pdfme/common";
 import {
-  image,
   line,
   multiVariableText,
   svg,
   table,
   text,
 } from "@pdfme/schemas";
-import path from "node:path";
-import * as fs from "node:fs";
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
 
@@ -33,7 +30,6 @@ export async function POST(
       table,
       line,
       multiVariableText,
-      image,
     };
 
     // Préparer les données pour le template
@@ -57,14 +53,6 @@ export async function POST(
     console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
     console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
 
-    // Read the logo file and convert to base64
-    const logoPath = path.join(
-      process.cwd(),
-      "src/app/api/invoices/[id]/pdf/logo-les-douceurs-de-pau.png",
-    );
-    const logoBuffer = fs.readFileSync(logoPath);
-    const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
-
     const shopName = profile?.full_name;
     const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
     const clientInfo = [client.email, client.phone, client.address]
@@ -73,7 +61,6 @@ export async function POST(
 
     const inputs = [
       {
-        logo: logoBase64,
         // New template fields
         client_name: client.name,
         client_information: clientInfo,

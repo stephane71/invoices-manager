@@ -1,12 +1,10 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, User2 } from "lucide-react";
-import { useProfileLogoUpload } from "@/hooks/useProfileLogoUpload";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 export default function ProfilPage() {
@@ -16,28 +14,10 @@ export default function ProfilPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { uploading: uploadingLogo, onSelectImage } = useProfileLogoUpload(
-    (url) => {
-      setLogoUrl(url);
-      setSuccess(t("status.uploaded"));
-    },
-  );
-
-  const logoPreview = useMemo(() => {
-    if (logoFile) {
-      return URL.createObjectURL(logoFile);
-    }
-    if (logoUrl) {
-      return logoUrl;
-    }
-    return "";
-  }, [logoFile, logoUrl]);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,7 +35,6 @@ export default function ProfilPage() {
           setEmail(p.email || "");
           setPhone(p.phone || "");
           setAddress(p.address || "");
-          setLogoUrl(p.logo_url || "");
         }
       } catch (e) {
         if (!cancelled) {
@@ -75,16 +54,6 @@ export default function ProfilPage() {
     };
   }, [t]);
 
-  function onLogoChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogoFile(file);
-      onSelectImage(file);
-    } else {
-      setLogoFile(null);
-    }
-  }
-
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -100,7 +69,6 @@ export default function ProfilPage() {
           email,
           phone,
           address,
-          logo_url: logoUrl,
         }),
       });
       if (!res.ok) {
@@ -114,8 +82,6 @@ export default function ProfilPage() {
       setSaving(false);
     }
   }
-
-  const isLogoDisabled = loading || saving || uploadingLogo;
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -203,51 +169,9 @@ export default function ProfilPage() {
           </div>
         </div>
 
-        {/* Logo */}
-        <div className="space-y-2">
-          <Label htmlFor="logo">{t("form.logo")}</Label>
-
-          {/* Hidden native input; click the box to trigger */}
-          <Input
-            id="logo"
-            type="file"
-            accept="image/*"
-            onChange={onLogoChange}
-            disabled={isLogoDisabled}
-            className="hidden"
-          />
-
-          {/* Clickable preview/select box */}
-          <label
-            htmlFor="logo"
-            className={`block w-full max-w-sm cursor-pointer ${isLogoDisabled ? "pointer-events-none opacity-60" : ""}`}
-            aria-disabled={isLogoDisabled}
-          >
-            <div className="relative aspect-video w-full overflow-hidden rounded-md border border-dashed bg-muted">
-              {logoPreview && (
-                <Image
-                  src={logoPreview}
-                  alt={t("form.logoAlt")}
-                  className="absolute inset-0 object-contain"
-                  fill
-                />
-              )}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="rounded-md bg-black/40 px-3 py-1.5 text-xs font-medium text-white">
-                  {logoPreview ? t("form.logoChange") : t("form.logoSelect")}
-                </span>
-              </div>
-            </div>
-          </label>
-        </div>
-
         <div className="pt-2">
-          <Button type="submit" disabled={loading || saving || uploadingLogo}>
-            {saving
-              ? c("saving")
-              : uploadingLogo
-                ? t("status.uploadingLogo")
-                : c("save")}
+          <Button type="submit" disabled={loading || saving}>
+            {saving ? c("saving") : c("save")}
           </Button>
         </div>
       </form>

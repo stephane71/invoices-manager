@@ -47,7 +47,6 @@ export type Profile = {
   email?: string | null;
   phone?: string | null;
   address?: string | null;
-  logo_url?: string | null;
   created_at?: string;
   updated_at?: string;
 };

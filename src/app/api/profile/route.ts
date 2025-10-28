@@ -31,7 +31,6 @@ export async function PUT(req: NextRequest) {
       email: body.email ?? undefined,
       phone: body.phone ?? undefined,
       address: body.address ?? undefined,
-      logo_url: body.logo_url ?? undefined,
     } as const;
     const data = await upsertProfile(payload as Partial<Profile>);
     return NextResponse.json({ data }, { status: 200 });

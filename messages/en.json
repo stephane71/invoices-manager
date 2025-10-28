@@ -151,16 +151,10 @@
       "phone": "Phone",
       "phonePlaceholder": "+1 555 123 4567",
       "address": "Address",
-      "addressPlaceholder": "123 Main St, 10001 New York",
-      "logo": "Logo on invoices",
-      "logoAlt": "Logo preview",
-      "logoChange": "Change image",
-      "logoSelect": "Click to select an image"
+      "addressPlaceholder": "123 Main St, 10001 New York"
     },
     "status": {
-      "uploaded": "Logo uploaded",
-      "updated": "Profile updated",
-      "uploadingLogo": "Uploading logo…"
+      "updated": "Profile updated"
     },
     "error": {
       "load": "Load error ({status})",
