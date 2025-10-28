@@ -52,9 +52,21 @@ export async function POST(
     const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
-    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE));
-    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
-    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
+    console.log(
+      "subtotal",
+      subtotalCents,
+      centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
+    );
+    console.log(
+      "taxAmount",
+      taxAmountCents,
+      centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
+    );
+    console.log(
+      "total",
+      totalCents,
+      centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
+    );
 
     // Fetch logo from profile if available
     const logoBase64 = profile?.logo_url
@@ -98,8 +110,40 @@ export async function POST(
       },
     ];
 
+    // Clone and adjust template if no logo is present
+    const template = JSON.parse(JSON.stringify(InvoiceTemplate)) as Template;
+
+    if (!logoBase64) {
+      // When no logo, hoist shop and client info to the top
+      // The offset is the space occupied by the logo (height + position)
+      const LOGO_OFFSET = 25.14; // Logo height from original template
+
+      const elementsToHoist = [
+        "shopName",
+        "shopAddress",
+        "client_name",
+        "client_information",
+        "head", // "Facture" label
+        "facture_number",
+        "issue_date",
+        "invoice_description",
+        // table rows
+        "orders",
+        "subtotal",
+        "tax",
+        "total",
+      ];
+
+      // Adjust positions in the template
+      template.schemas[0].forEach((schema) => {
+        if (elementsToHoist.includes(schema.name)) {
+          schema.position.y -= LOGO_OFFSET;
+        }
+      });
+    }
+
     const pdf = await generate({
-      template: InvoiceTemplate as unknown as Template,
+      template,
       inputs,
       plugins,
     });
