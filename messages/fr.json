@@ -151,16 +151,10 @@
       "phone": "Téléphone",
       "phonePlaceholder": "+33 6 12 34 56 78",
       "address": "Adresse",
-      "addressPlaceholder": "12 rue de Paris, 75000 Paris",
-      "logo": "Logo sur les factures",
-      "logoAlt": "Aperçu du logo",
-      "logoChange": "Changer l'image",
-      "logoSelect": "Cliquez pour sélectionner une image"
+      "addressPlaceholder": "12 rue de Paris, 75000 Paris"
     },
     "status": {
-      "uploaded": "Logo téléversé",
-      "updated": "Profil mis à jour",
-      "uploadingLogo": "Téléversement du logo…"
+      "updated": "Profil mis à jour"
     },
     "error": {
       "load": "Erreur de chargement ({status})",
