@@ -159,7 +159,8 @@
     "error": {
       "load": "Load error ({status})",
       "save": "Save error ({status})",
-      "unknown": "Unknown error"
+      "unknown": "Unknown error",
+      "invalidPhone": "Invalid phone number format. Use international format (e.g., +33612345678)"
     }
   },
   "Validation": {

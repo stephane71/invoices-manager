@@ -19,7 +19,7 @@ export default function ProfilPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string>("");
 
   useEffect(() => {
     let cancelled = false;
@@ -58,15 +58,11 @@ export default function ProfilPage() {
 
   const handlePhoneBlur = () => {
     const phoneValue = phone.trim();
+    let errorMessage = "";
     if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      setPhoneError(
-        t("error.invalidPhone", {
-          default: "Invalid phone number format. Use international format (e.g., +33612345678)",
-        })
-      );
-    } else {
-      setPhoneError(null);
+      errorMessage = t("error.invalidPhone");
     }
+    setPhoneError(errorMessage);
   };
 
   async function onSubmit(e: FormEvent) {
@@ -78,11 +74,7 @@ export default function ProfilPage() {
     // Validate phone before submitting
     const phoneValue = phone.trim();
     if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      setPhoneError(
-        t("error.invalidPhone", {
-          default: "Invalid phone number format. Use international format (e.g., +33612345678)",
-        })
-      );
+      setPhoneError(t("error.invalidPhone"));
       setSaving(false);
       return;
     }
@@ -178,9 +170,7 @@ export default function ProfilPage() {
               disabled={loading || saving}
             />
           </div>
-          {phoneError && (
-            <p className="text-xs text-red-600">{phoneError}</p>
-          )}
+          {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
         </div>
 
         {/* Address */}
