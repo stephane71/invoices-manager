@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export interface ClientFormData {
   name: string;
@@ -22,6 +23,7 @@ interface ClientFormProps {
   onChange: (value: ClientFormData) => void;
   error?: string;
   fieldErrors?: FieldErrors;
+  onPhoneBlur?: (isValid: boolean) => void;
   children?: ReactNode;
 }
 
@@ -30,9 +32,19 @@ export function ClientForm({
   onChange,
   error = "",
   fieldErrors = {},
+  onPhoneBlur,
   children,
 }: ClientFormProps) {
   const t = useTranslations("Clients");
+
+  const handlePhoneBlur = () => {
+    const phoneValue = value.phone.trim();
+    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
+      onPhoneBlur?.(false);
+    } else {
+      onPhoneBlur?.(true);
+    }
+  };
 
   return (
     <>
@@ -68,6 +80,7 @@ export function ClientForm({
           type="tel"
           value={value.phone}
           onChange={(e) => onChange({ ...value, phone: e.target.value })}
+          onBlur={handlePhoneBlur}
           className={fieldErrors.phone ? "border-red-500" : ""}
           placeholder={t("new.form.phonePlaceholder")}
         />

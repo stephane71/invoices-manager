@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const productSchema = z.object({
   id: z.string().uuid().optional(),
@@ -12,7 +13,15 @@ export const clientSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
   address: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  phone: z
+    .string()
+    .optional()
+    .nullable()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? null : val))
+    .refine((val) => !val || isValidPhoneNumber(val), {
+      message: "Invalid phone number format. Use international format (e.g., +33612345678)",
+    }),
   email: z
     .string()
     .email()
@@ -42,6 +51,29 @@ export const invoiceSchema = z.object({
   number: z.string(),
 });
 
+export const profileSchema = z.object({
+  id: z.string().uuid().optional(),
+  full_name: z.string().optional().nullable(),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .nullable()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? null : val)),
+  phone: z
+    .string()
+    .optional()
+    .nullable()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? null : val))
+    .refine((val) => !val || isValidPhoneNumber(val), {
+      message: "Invalid phone number format. Use international format (e.g., +33612345678)",
+    }),
+  address: z.string().optional().nullable(),
+});
+
 export type ProductInput = z.infer<typeof productSchema>;
 export type ClientInput = z.infer<typeof clientSchema>;
 export type InvoiceInput = z.infer<typeof invoiceSchema>;
+export type ProfileInput = z.infer<typeof profileSchema>;
