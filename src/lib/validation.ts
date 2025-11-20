@@ -1,38 +1,53 @@
 import { z } from "zod";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
+// Base validators
+export const phoneValidator = z
+  .string()
+  .refine((val) => isValidPhoneNumber(val), {
+    message:
+      "Invalid phone number format. Use international format (e.g., +33612345678)",
+  });
+
+export const emailValidator = z.email();
+
+// Optional versions with empty string handling (for forms)
+export const optionalPhone = z
+  .string()
+  .optional()
+  .nullable()
+  .or(z.literal(""))
+  .transform((val) => (val === "" ? null : val))
+  .refine((val) => !val || isValidPhoneNumber(val), {
+    message:
+      "Invalid phone number format. Use international format (e.g., +33612345678)",
+  });
+
+export const optionalEmail = z
+  .email()
+  .optional()
+  .nullable()
+  .or(z.literal(""))
+  .transform((val) => (val === "" ? null : val));
+
 export const productSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   name: z.string().min(1),
   description: z.string().optional().nullable(),
   price: z.number().int().nonnegative(), // price in cents (integer)
-  image_url: z.string().url().or(z.literal("")).optional().nullable(),
+  image_url: z.url().or(z.literal("")).optional().nullable(),
 });
 
 export const clientSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   name: z.string().min(1),
   address: z.string().optional().nullable(),
-  phone: z
-    .string()
-    .optional()
-    .nullable()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? null : val))
-    .refine((val) => !val || isValidPhoneNumber(val), {
-      message: "Invalid phone number format. Use international format (e.g., +33612345678)",
-    }),
-  email: z
-    .string()
-    .email()
-    .optional()
-    .nullable()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? null : val)),
+  phone: optionalPhone,
+  email: optionalEmail,
 });
 
 export const invoiceItemSchema = z.object({
-  product_id: z.string().uuid(),
+  product_id: z.uuid(),
   name: z.string().min(1),
   quantity: z.number().positive(), // can be fractional (e.g., 1.5 hours)
   price: z.number().int().nonnegative(), // unit price in cents (integer)
@@ -40,36 +55,22 @@ export const invoiceItemSchema = z.object({
 });
 
 export const invoiceSchema = z.object({
-  id: z.string().uuid().optional(),
-  client_id: z.string().uuid(),
+  id: z.uuid().optional(),
+  client_id: z.uuid(),
   items: z.array(invoiceItemSchema),
   total_amount: z.number().int().nonnegative(), // total amount in cents (integer)
   status: z.enum(["draft", "sent", "paid", "overdue"]).default("draft"),
   issue_date: z.string(),
   due_date: z.string().optional(),
-  pdf_url: z.string().url().optional().nullable(),
+  pdf_url: z.url().optional().nullable(),
   number: z.string(),
 });
 
 export const profileSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   full_name: z.string().optional().nullable(),
-  email: z
-    .string()
-    .email()
-    .optional()
-    .nullable()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? null : val)),
-  phone: z
-    .string()
-    .optional()
-    .nullable()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? null : val))
-    .refine((val) => !val || isValidPhoneNumber(val), {
-      message: "Invalid phone number format. Use international format (e.g., +33612345678)",
-    }),
+  email: optionalEmail,
+  phone: optionalPhone,
   address: z.string().optional().nullable(),
 });
 
