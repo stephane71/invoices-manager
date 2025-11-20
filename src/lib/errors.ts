@@ -1,4 +1,5 @@
-import { ZodError, ZodIssue } from "zod";
+import type { z } from "zod";
+import { ZodError } from "zod";
 
 /**
  * Field-specific error mapping for validation errors
@@ -21,7 +22,7 @@ export type ApiErrorResponse = {
  */
 export function getReadableErrorMessage(
   field: string,
-  issue: ZodIssue,
+  issue: z.core.$ZodIssue,
 ): string {
   const code = issue.code;
 
