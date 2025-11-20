@@ -16,6 +16,8 @@ import {
   type ClientFormData,
   type FieldErrors,
 } from "@/components/clients/ClientForm";
+import { clientSchema } from "@/lib/validation";
+import { getZodFieldErrors } from "@/lib/utils";
 
 const FORM_DATA_DEFAULT: ClientFormData = {
   name: "",
@@ -53,6 +55,30 @@ export default function ClientBlock({
   // UI state for the inline "direct new client" form
   const [showNewForm, setShowNewForm] = useState(false);
   const [formData, setFormData] = useState<ClientFormData>(FORM_DATA_DEFAULT);
+  const [localFieldErrors, setLocalFieldErrors] = useState<FieldErrors>({});
+
+  const validateForm = useCallback((data: ClientFormData) => {
+    const result = clientSchema.safeParse({
+      name: data.name.trim(),
+      email: data.email.trim() || undefined,
+      phone: data.phone.trim() || undefined,
+      address: data.address.trim() || undefined,
+    });
+
+    if (!result.success) {
+      setLocalFieldErrors(getZodFieldErrors<FieldErrors>(result.error));
+    } else {
+      setLocalFieldErrors({});
+    }
+  }, []);
+
+  const handleFormChange = useCallback(
+    (data: ClientFormData) => {
+      setFormData(data);
+      validateForm(data);
+    },
+    [validateForm],
+  );
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
@@ -151,8 +177,8 @@ export default function ClientBlock({
         <div className="mt-2 grid gap-2 rounded-md border p-3">
           <ClientForm
             value={formData}
-            onChange={setFormData}
-            fieldErrors={clientFormErrors}
+            onChange={handleFormChange}
+            fieldErrors={{ ...localFieldErrors, ...clientFormErrors }}
             error={error}
           >
             <Button

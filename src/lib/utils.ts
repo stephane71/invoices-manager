@@ -1,6 +1,24 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { APP_LOCALE, PRICE_PRECISION } from "@/lib/constants";
+import { z } from "zod";
+
+/**
+ * Extract field errors from a Zod SafeParseError result
+ * @param error - The Zod error object from safeParse
+ * @returns An object mapping field names to error messages
+ */
+export function getZodFieldErrors<T>(error: z.ZodError): T {
+  const flattened = z.flattenError(error);
+  const errors = {} as T;
+  for (const [field, messages] of Object.entries(flattened.fieldErrors)) {
+    const msgArray = messages as string[];
+    if (msgArray && msgArray.length > 0) {
+      errors[field as keyof T] = msgArray[0] as T[keyof T];
+    }
+  }
+  return errors;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

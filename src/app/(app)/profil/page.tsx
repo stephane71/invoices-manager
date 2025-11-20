@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, User2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export default function ProfilPage() {
   const t = useTranslations("Profile");
@@ -18,6 +19,7 @@ export default function ProfilPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string>("");
 
   useEffect(() => {
     let cancelled = false;
@@ -54,11 +56,28 @@ export default function ProfilPage() {
     };
   }, [t]);
 
+  const handlePhoneBlur = () => {
+    const phoneValue = phone.trim();
+    let errorMessage = "";
+    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
+      errorMessage = t("error.invalidPhone");
+    }
+    setPhoneError(errorMessage);
+  };
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     setSuccess(null);
+
+    // Validate phone before submitting
+    const phoneValue = phone.trim();
+    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
+      setPhoneError(t("error.invalidPhone"));
+      setSaving(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/profile", {
@@ -145,11 +164,13 @@ export default function ProfilPage() {
               placeholder={t("form.phonePlaceholder")}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="pl-9"
+              onBlur={handlePhoneBlur}
+              className={`pl-9 ${phoneError ? "border-red-500" : ""}`}
               required
               disabled={loading || saving}
             />
           </div>
+          {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
         </div>
 
         {/* Address */}

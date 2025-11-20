@@ -1,9 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { ClientForm, type FieldErrors } from "@/components/clients/ClientForm";
+import {
+  ClientForm,
+  type ClientFormData,
+  type FieldErrors,
+} from "@/components/clients/ClientForm";
+import { clientSchema } from "@/lib/validation";
+import { getZodFieldErrors } from "@/lib/utils";
 
 const ERROR_DEFAULT = "";
 
@@ -20,6 +26,32 @@ export default function NewClientPage() {
   const router = useRouter();
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
+
+  const validateForm = useCallback(
+    (data: ClientFormData) => {
+      const result = clientSchema.safeParse({
+        name: data.name.trim(),
+        email: data.email.trim() || undefined,
+        phone: data.phone.trim() || undefined,
+        address: data.address.trim() || undefined,
+      });
+
+      if (!result.success) {
+        setFieldErrors(getZodFieldErrors<FieldErrors>(result.error));
+      } else {
+        setFieldErrors({});
+      }
+    },
+    [setFieldErrors],
+  );
+
+  const handleFormChange = useCallback(
+    (data: ClientFormData) => {
+      setForm(data);
+      validateForm(data);
+    },
+    [validateForm],
+  );
 
   async function save() {
     setLoading(true);
@@ -65,7 +97,7 @@ export default function NewClientPage() {
       <h1 className="text-xl font-semibold">{t("new.title")}</h1>
       <ClientForm
         value={form}
-        onChange={setForm}
+        onChange={handleFormChange}
         error={error}
         fieldErrors={fieldErrors}
       >
