@@ -16,14 +16,9 @@ import {
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { productFormSchema } from "@/lib/validation";
 
-const productSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string(),
-  price: z.number().int().nonnegative("Price must be positive"),
-});
-
-type ProductFormData = z.infer<typeof productSchema>;
+type ProductFormData = z.infer<typeof productFormSchema>;
 
 export default function ProductDetailPage({
   params,
@@ -41,7 +36,7 @@ export default function ProductDetailPage({
   const c = useTranslations("Common");
 
   const form = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: "",
       description: "",

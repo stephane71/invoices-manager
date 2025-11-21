@@ -2,19 +2,16 @@ import { Control, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
   Field,
+  FieldError,
   FieldGroup,
   FieldLabel,
-  FieldError,
 } from "@/components/ui/field";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
+import { z } from "zod";
+import { clientFormSchema } from "@/lib/validation";
 
-export interface ClientFormData {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-}
+export type ClientFormData = z.infer<typeof clientFormSchema>;
 
 export interface FieldErrors {
   name?: string;
@@ -102,7 +99,9 @@ export function ClientForm({
         control={control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>{t("new.form.address")}</FieldLabel>
+            <FieldLabel htmlFor={field.name}>
+              {t("new.form.address")}
+            </FieldLabel>
             <textarea
               {...field}
               id={field.name}

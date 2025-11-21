@@ -38,6 +38,13 @@ export const productSchema = z.object({
   image_url: z.url().or(z.literal("")).optional().nullable(),
 });
 
+// Form-specific schema for React Hook Form (uses string types, no transforms)
+export const productFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string(),
+  price: z.number().int().nonnegative("Price must be positive"),
+});
+
 export const clientSchema = z.object({
   id: z.uuid().optional(),
   name: z.string().min(1),
