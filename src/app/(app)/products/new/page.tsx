@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,9 @@ import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
 import {
   Field,
+  FieldError,
   FieldGroup,
   FieldLabel,
-  FieldError,
 } from "@/components/ui/field";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
@@ -28,7 +28,7 @@ type ProductFormData = z.infer<typeof productSchema>;
 export default function NewProductPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
-    setImageUrl(url)
+    setImageUrl(url),
   );
   const router = useRouter();
   const t = useTranslations("Products");
@@ -43,18 +43,45 @@ export default function NewProductPage() {
     },
   });
 
-  const { control, handleSubmit, formState: { isSubmitting } } = form;
+  const [error, setError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    setError: setFieldError,
+    formState: { isSubmitting },
+  } = form;
 
   async function onSubmit(data: ProductFormData) {
-    const res = await fetch(`/api/products`, {
-      method: "POST",
-      body: JSON.stringify({
-        ...data,
-        image_url: imageUrl,
-      }),
-    });
-    if (res.ok) {
-      router.push("/products");
+    setError("");
+
+    try {
+      const res = await fetch(`/api/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          image_url: imageUrl,
+        }),
+      });
+
+      if (res.ok) {
+        router.push("/products");
+      } else {
+        const responseData = await res.json();
+
+        if (responseData.fields) {
+          Object.entries(responseData.fields).forEach(([key, message]) => {
+            setFieldError(key as keyof ProductFormData, {
+              type: "server",
+              message: message as string,
+            });
+          });
+        } else {
+          setError(responseData.error || t("new.error.createFail"));
+        }
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("new.error.createFail"));
     }
   }
 
@@ -68,7 +95,9 @@ export default function NewProductPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("new.form.name")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.name")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -76,7 +105,9 @@ export default function NewProductPage() {
                   aria-invalid={fieldState.invalid}
                   disabled={isSubmitting || uploading}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -86,7 +117,9 @@ export default function NewProductPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("new.form.description")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.description")}
+                </FieldLabel>
                 <textarea
                   {...field}
                   id={field.name}
@@ -94,7 +127,9 @@ export default function NewProductPage() {
                   aria-invalid={fieldState.invalid}
                   disabled={isSubmitting || uploading}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -104,14 +139,18 @@ export default function NewProductPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("new.form.price")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.price")}
+                </FieldLabel>
                 <PriceInput
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="0,00"
                   disabled={isSubmitting || uploading}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -146,6 +185,7 @@ export default function NewProductPage() {
             </Button>
           </div>
         </FieldGroup>
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </form>
     </div>
   );

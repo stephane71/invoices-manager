@@ -1,7 +1,7 @@
 "use client";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,9 @@ import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
 import {
   Field,
+  FieldError,
   FieldGroup,
   FieldLabel,
-  FieldError,
 } from "@/components/ui/field";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
@@ -33,7 +33,7 @@ export default function ProductDetailPage({
   const { id } = use(params);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
-    setImageUrl(url)
+    setImageUrl(url),
   );
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -49,7 +49,14 @@ export default function ProductDetailPage({
     },
   });
 
-  const { control, handleSubmit, reset, formState: { isSubmitting } } = form;
+  const [error, setError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError: setFieldError,
+    formState: { isSubmitting },
+  } = form;
 
   useEffect(() => {
     let active = true;
@@ -73,15 +80,36 @@ export default function ProductDetailPage({
   }, [id, reset]);
 
   async function onSubmit(data: ProductFormData) {
-    const res = await fetch(`/api/products/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        ...data,
-        image_url: imageUrl,
-      }),
-    });
-    if (res.ok) {
-      router.push("/products");
+    setError("");
+
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          image_url: imageUrl,
+        }),
+      });
+
+      if (res.ok) {
+        router.push("/products");
+      } else {
+        const responseData = await res.json();
+
+        if (responseData.fields) {
+          Object.entries(responseData.fields).forEach(([key, message]) => {
+            setFieldError(key as keyof ProductFormData, {
+              type: "server",
+              message: message as string,
+            });
+          });
+        } else {
+          setError(responseData.error || t("edit.error.saveFail"));
+        }
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("edit.error.saveFail"));
     }
   }
 
@@ -109,7 +137,9 @@ export default function ProductDetailPage({
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("new.form.name")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.name")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -117,7 +147,9 @@ export default function ProductDetailPage({
                   aria-invalid={fieldState.invalid}
                   disabled={isSubmitting || uploading}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -127,7 +159,9 @@ export default function ProductDetailPage({
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("new.form.description")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.description")}
+                </FieldLabel>
                 <textarea
                   {...field}
                   id={field.name}
@@ -135,7 +169,9 @@ export default function ProductDetailPage({
                   aria-invalid={fieldState.invalid}
                   disabled={isSubmitting || uploading}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -145,14 +181,18 @@ export default function ProductDetailPage({
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("new.form.price")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.price")}
+                </FieldLabel>
                 <PriceInput
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="0,00"
                   disabled={isSubmitting || uploading}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -181,11 +221,17 @@ export default function ProductDetailPage({
             <Button type="submit" disabled={isSubmitting || uploading}>
               {c("save")}
             </Button>
-            <Button type="button" variant="destructive" onClick={remove} disabled={isSubmitting}>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={remove}
+              disabled={isSubmitting}
+            >
               {c("delete")}
             </Button>
           </div>
         </FieldGroup>
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </form>
     </div>
   );

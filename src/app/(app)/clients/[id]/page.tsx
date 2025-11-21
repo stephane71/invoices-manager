@@ -100,9 +100,6 @@ export default function ClientDetailPage({
   }
 
   async function remove() {
-    if (!confirm(t("confirm.delete"))) {
-      return;
-    }
     const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
     if (res.ok) {
       router.push("/clients");
