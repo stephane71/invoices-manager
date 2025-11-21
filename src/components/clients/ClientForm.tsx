@@ -44,6 +44,7 @@ export function ClientForm({
           onChange={(e) => onChange({ ...value, name: e.target.value })}
           className={fieldErrors.name ? "border-red-500" : ""}
           placeholder={t("new.form.namePlaceholder")}
+          icon="User"
         />
         {fieldErrors.name && (
           <p className="text-xs text-red-600">{fieldErrors.name}</p>
@@ -57,6 +58,7 @@ export function ClientForm({
           onChange={(e) => onChange({ ...value, email: e.target.value })}
           className={fieldErrors.email ? "border-red-500" : ""}
           placeholder={t("new.form.emailPlaceholder")}
+          icon="Mail"
         />
         {fieldErrors.email && (
           <p className="text-xs text-red-600">{fieldErrors.email}</p>
@@ -70,6 +72,7 @@ export function ClientForm({
           onChange={(e) => onChange({ ...value, phone: e.target.value })}
           className={fieldErrors.phone ? "border-red-500" : ""}
           placeholder={t("new.form.phonePlaceholder")}
+          icon="Phone"
         />
         {fieldErrors.phone && (
           <p className="text-xs text-red-600">{fieldErrors.phone}</p>

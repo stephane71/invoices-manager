@@ -4,7 +4,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone, User2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
@@ -121,73 +120,62 @@ export default function ProfilPage() {
         {/* Full name */}
         <div className="space-y-2">
           <Label htmlFor="fullName">{t("form.fullName")}</Label>
-          <div className="relative">
-            <User2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              id="fullName"
-              placeholder={t("form.fullNamePlaceholder")}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="pl-9"
-              required
-              disabled={loading || saving}
-            />
-          </div>
+          <Input
+            id="fullName"
+            placeholder={t("form.fullNamePlaceholder")}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            icon="User"
+            required
+            disabled={loading || saving}
+          />
         </div>
 
         {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">{t("form.email")}</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              id="email"
-              type="email"
-              placeholder={t("form.emailPlaceholder")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-9"
-              required
-              disabled={loading || saving}
-            />
-          </div>
+          <Input
+            id="email"
+            type="email"
+            placeholder={t("form.emailPlaceholder")}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            icon="Mail"
+            required
+            disabled={loading || saving}
+          />
         </div>
 
         {/* Phone */}
         <div className="space-y-2">
           <Label htmlFor="phone">{t("form.phone")}</Label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              id="phone"
-              type="tel"
-              placeholder={t("form.phonePlaceholder")}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              onBlur={handlePhoneBlur}
-              className={`pl-9 ${phoneError ? "border-red-500" : ""}`}
-              required
-              disabled={loading || saving}
-            />
-          </div>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder={t("form.phonePlaceholder")}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            onBlur={handlePhoneBlur}
+            icon="Phone"
+            className={phoneError ? "border-red-500" : ""}
+            required
+            disabled={loading || saving}
+          />
           {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
         </div>
 
         {/* Address */}
         <div className="space-y-2">
           <Label htmlFor="address">{t("form.address")}</Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              id="address"
-              placeholder={t("form.addressPlaceholder")}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="pl-9"
-              required
-              disabled={loading || saving}
-            />
-          </div>
+          <Input
+            id="address"
+            placeholder={t("form.addressPlaceholder")}
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            icon="MapPin"
+            required
+            disabled={loading || saving}
+          />
         </div>
 
         <div className="pt-2">
