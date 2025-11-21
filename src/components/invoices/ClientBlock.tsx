@@ -1,8 +1,7 @@
 "use client";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import type { Client } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -19,19 +18,7 @@ import {
   type ClientFormData,
   type FieldErrors,
 } from "@/components/clients/ClientForm";
-import { isValidPhoneNumber } from "libphonenumber-js";
-import { useState } from "react";
-
-// Form schema with string types
-const clientFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email").or(z.literal("")),
-  phone: z.string().refine(
-    (val) => !val || isValidPhoneNumber(val),
-    "Invalid phone number"
-  ),
-  address: z.string(),
-});
+import { clientFormSchema } from "@/lib/validation";
 
 const FORM_DATA_DEFAULT: ClientFormData = {
   name: "",
@@ -74,7 +61,13 @@ export default function ClientBlock({
     defaultValues: FORM_DATA_DEFAULT,
   });
 
-  const { control, reset, watch, setError: setFieldError, formState: { errors } } = form;
+  const {
+    control,
+    reset,
+    watch,
+    setError: setFieldError,
+    formState: { errors },
+  } = form;
   const formData = watch();
 
   // Apply external errors from parent

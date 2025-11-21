@@ -3,25 +3,13 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
   ClientForm,
   type ClientFormData,
 } from "@/components/clients/ClientForm";
-import { isValidPhoneNumber } from "libphonenumber-js";
-
-// Form schema with string types (empty string for optional fields)
-const clientFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email").or(z.literal("")),
-  phone: z.string().refine(
-    (val) => !val || isValidPhoneNumber(val),
-    "Invalid phone number"
-  ),
-  address: z.string(),
-});
+import { clientFormSchema } from "@/lib/validation";
 
 export default function ClientDetailPage({
   params,
@@ -45,7 +33,13 @@ export default function ClientDetailPage({
     },
   });
 
-  const { control, handleSubmit, reset, setError: setFieldError, formState: { isSubmitting } } = form;
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError: setFieldError,
+    formState: { isSubmitting },
+  } = form;
 
   useEffect(() => {
     let active = true;
@@ -127,7 +121,12 @@ export default function ClientDetailPage({
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? c("saving") : c("save")}
           </Button>
-          <Button type="button" variant="destructive" onClick={remove} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={remove}
+            disabled={isSubmitting}
+          >
             {c("delete")}
           </Button>
         </ClientForm>

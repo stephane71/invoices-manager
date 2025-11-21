@@ -3,25 +3,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
   ClientForm,
   type ClientFormData,
 } from "@/components/clients/ClientForm";
-import { isValidPhoneNumber } from "libphonenumber-js";
-
-// Form schema with string types (empty string for optional fields)
-const clientFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email").or(z.literal("")),
-  phone: z.string().refine(
-    (val) => !val || isValidPhoneNumber(val),
-    "Invalid phone number"
-  ),
-  address: z.string(),
-});
+import { clientFormSchema } from "@/lib/validation";
 
 export default function NewClientPage() {
   const [error, setError] = useState("");
@@ -39,7 +27,12 @@ export default function NewClientPage() {
     },
   });
 
-  const { control, handleSubmit, setError: setFieldError, formState: { isSubmitting } } = form;
+  const {
+    control,
+    handleSubmit,
+    setError: setFieldError,
+    formState: { isSubmitting },
+  } = form;
 
   async function onSubmit(data: ClientFormData) {
     setError("");

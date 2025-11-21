@@ -46,6 +46,16 @@ export const clientSchema = z.object({
   email: optionalEmail,
 });
 
+// Form-specific schema for React Hook Form (uses string types, no transforms)
+export const clientFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email("Invalid email").or(z.literal("")),
+  phone: z.string().refine((val) => !val || isValidPhoneNumber(val), {
+    message: "Invalid phone number format",
+  }),
+  address: z.string(),
+});
+
 export const invoiceItemSchema = z.object({
   product_id: z.uuid(),
   name: z.string().min(1),
