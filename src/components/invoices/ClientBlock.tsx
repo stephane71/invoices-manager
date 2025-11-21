@@ -1,5 +1,8 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import type { Client } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -16,8 +19,19 @@ import {
   type ClientFormData,
   type FieldErrors,
 } from "@/components/clients/ClientForm";
-import { clientSchema } from "@/lib/validation";
-import { getZodFieldErrors } from "@/lib/utils";
+import { isValidPhoneNumber } from "libphonenumber-js";
+import { useState } from "react";
+
+// Form schema with string types
+const clientFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email").or(z.literal("")),
+  phone: z.string().refine(
+    (val) => !val || isValidPhoneNumber(val),
+    "Invalid phone number"
+  ),
+  address: z.string(),
+});
 
 const FORM_DATA_DEFAULT: ClientFormData = {
   name: "",
@@ -54,36 +68,33 @@ export default function ClientBlock({
 
   // UI state for the inline "direct new client" form
   const [showNewForm, setShowNewForm] = useState(false);
-  const [formData, setFormData] = useState<ClientFormData>(FORM_DATA_DEFAULT);
-  const [localFieldErrors, setLocalFieldErrors] = useState<FieldErrors>({});
 
-  const validateForm = useCallback((data: ClientFormData) => {
-    const result = clientSchema.safeParse({
-      name: data.name.trim(),
-      email: data.email.trim() || undefined,
-      phone: data.phone.trim() || undefined,
-      address: data.address.trim() || undefined,
-    });
+  const form = useForm<ClientFormData>({
+    resolver: zodResolver(clientFormSchema),
+    defaultValues: FORM_DATA_DEFAULT,
+  });
 
-    if (!result.success) {
-      setLocalFieldErrors(getZodFieldErrors<FieldErrors>(result.error));
-    } else {
-      setLocalFieldErrors({});
+  const { control, reset, watch, setError: setFieldError, formState: { errors } } = form;
+  const formData = watch();
+
+  // Apply external errors from parent
+  useEffect(() => {
+    if (clientFormErrors) {
+      Object.entries(clientFormErrors).forEach(([key, message]) => {
+        if (message) {
+          setFieldError(key as keyof ClientFormData, {
+            type: "server",
+            message,
+          });
+        }
+      });
     }
-  }, []);
-
-  const handleFormChange = useCallback(
-    (data: ClientFormData) => {
-      setFormData(data);
-      validateForm(data);
-    },
-    [validateForm],
-  );
+  }, [clientFormErrors, setFieldError]);
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
-    setFormData(FORM_DATA_DEFAULT);
-  }, []);
+    reset(FORM_DATA_DEFAULT);
+  }, [reset]);
 
   // When user selects an existing client, collapse and reset the direct-new form
   const handleSelect = useCallback(
@@ -122,13 +133,18 @@ export default function ClientBlock({
       return;
     }
 
+    // Check for validation errors before submitting
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
     onRequestCreateNewClientAction({
       name,
-      email: formData.email.trim() ? formData.email.trim() : undefined,
-      phone: formData.phone.trim() ? formData.phone.trim() : undefined,
-      address: formData.address.trim() ? formData.address.trim() : undefined,
+      email: formData.email.trim() || undefined,
+      phone: formData.phone.trim() || undefined,
+      address: formData.address.trim() || undefined,
     });
-  }, [showNewForm, formData, onRequestCreateNewClientAction]);
+  }, [showNewForm, formData, onRequestCreateNewClientAction, errors]);
 
   return (
     <div className="relative">
@@ -175,12 +191,7 @@ export default function ClientBlock({
         </Button>
       ) : (
         <div className="mt-2 grid gap-2 rounded-md border p-3">
-          <ClientForm
-            value={formData}
-            onChange={handleFormChange}
-            fieldErrors={{ ...localFieldErrors, ...clientFormErrors }}
-            error={error}
-          >
+          <ClientForm control={control} disabled={isLoading}>
             <Button
               variant="secondary"
               size="lg"
@@ -193,6 +204,7 @@ export default function ClientBlock({
               {t("new.cancel")}
             </Button>
           </ClientForm>
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
       )}
     </div>

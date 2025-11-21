@@ -1,70 +1,55 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
   ClientForm,
   type ClientFormData,
-  type FieldErrors,
 } from "@/components/clients/ClientForm";
-import { clientSchema } from "@/lib/validation";
-import { getZodFieldErrors } from "@/lib/utils";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
-const ERROR_DEFAULT = "";
+// Form schema with string types (empty string for optional fields)
+const clientFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email").or(z.literal("")),
+  phone: z.string().refine(
+    (val) => !val || isValidPhoneNumber(val),
+    "Invalid phone number"
+  ),
+  address: z.string(),
+});
 
 export default function NewClientPage() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    address: "",
-    phone: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(ERROR_DEFAULT);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [error, setError] = useState("");
   const router = useRouter();
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
 
-  const validateForm = useCallback(
-    (data: ClientFormData) => {
-      const result = clientSchema.safeParse({
+  const form = useForm<ClientFormData>({
+    resolver: zodResolver(clientFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      address: "",
+      phone: "",
+    },
+  });
+
+  const { control, handleSubmit, setError: setFieldError, formState: { isSubmitting } } = form;
+
+  async function onSubmit(data: ClientFormData) {
+    setError("");
+
+    try {
+      const clientData = {
         name: data.name.trim(),
         email: data.email.trim() || undefined,
         phone: data.phone.trim() || undefined,
         address: data.address.trim() || undefined,
-      });
-
-      if (!result.success) {
-        setFieldErrors(getZodFieldErrors<FieldErrors>(result.error));
-      } else {
-        setFieldErrors({});
-      }
-    },
-    [setFieldErrors],
-  );
-
-  const handleFormChange = useCallback(
-    (data: ClientFormData) => {
-      setForm(data);
-      validateForm(data);
-    },
-    [validateForm],
-  );
-
-  async function save() {
-    setLoading(true);
-    setError(ERROR_DEFAULT);
-    setFieldErrors({});
-
-    try {
-      // Prepare the client data, converting empty strings to undefined
-      const clientData = {
-        name: form.name.trim(),
-        email: form.email.trim() ? form.email.trim() : undefined,
-        phone: form.phone.trim() ? form.phone.trim() : undefined,
-        address: form.address.trim() ? form.address.trim() : undefined,
       };
 
       const res = await fetch(`/api/clients`, {
@@ -76,35 +61,35 @@ export default function NewClientPage() {
       if (res.ok) {
         router.push("/clients");
       } else {
-        const data = await res.json();
+        const responseData = await res.json();
 
-        // If the API returns field-specific errors, use them
-        if (data.fields) {
-          setFieldErrors(data.fields);
+        if (responseData.fields) {
+          Object.entries(responseData.fields).forEach(([key, message]) => {
+            setFieldError(key as keyof ClientFormData, {
+              type: "server",
+              message: message as string,
+            });
+          });
         } else {
-          setError(data.error || t("new.error.createFail"));
+          setError(responseData.error || t("new.error.createFail"));
         }
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t("new.error.createFail"));
-    } finally {
-      setLoading(false);
     }
   }
 
   return (
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">{t("new.title")}</h1>
-      <ClientForm
-        value={form}
-        onChange={handleFormChange}
-        error={error}
-        fieldErrors={fieldErrors}
-      >
-        <Button onClick={save} disabled={loading}>
-          {loading ? c("saving") : t("new.createButton")}
-        </Button>
-      </ClientForm>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ClientForm control={control} disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? c("saving") : t("new.createButton")}
+          </Button>
+        </ClientForm>
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      </form>
     </div>
   );
 }

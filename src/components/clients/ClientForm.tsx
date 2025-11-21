@@ -1,5 +1,11 @@
+import { Control, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
@@ -18,80 +24,99 @@ export interface FieldErrors {
 }
 
 interface ClientFormProps {
-  value: ClientFormData;
-  onChange: (value: ClientFormData) => void;
-  error?: string;
-  fieldErrors?: FieldErrors;
+  control: Control<ClientFormData>;
+  disabled?: boolean;
   children?: ReactNode;
 }
 
 export function ClientForm({
-  value,
-  onChange,
-  error = "",
-  fieldErrors = {},
+  control,
+  disabled = false,
   children,
 }: ClientFormProps) {
   const t = useTranslations("Clients");
 
   return (
-    <>
-      <div className="grid gap-2">
-        <Label>{t("new.form.name")}</Label>
-        <Input
-          type="text"
-          value={value.name}
-          onChange={(e) => onChange({ ...value, name: e.target.value })}
-          className={fieldErrors.name ? "border-red-500" : ""}
-          placeholder={t("new.form.namePlaceholder")}
-          icon="User"
-        />
-        {fieldErrors.name && (
-          <p className="text-xs text-red-600">{fieldErrors.name}</p>
+    <FieldGroup>
+      <Controller
+        name="name"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>{t("new.form.name")}</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              placeholder={t("new.form.namePlaceholder")}
+              icon="User"
+              aria-invalid={fieldState.invalid}
+              disabled={disabled}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         )}
-      </div>
-      <div className="grid gap-2">
-        <Label>{t("new.form.email")}</Label>
-        <Input
-          type="email"
-          value={value.email}
-          onChange={(e) => onChange({ ...value, email: e.target.value })}
-          className={fieldErrors.email ? "border-red-500" : ""}
-          placeholder={t("new.form.emailPlaceholder")}
-          icon="Mail"
-        />
-        {fieldErrors.email && (
-          <p className="text-xs text-red-600">{fieldErrors.email}</p>
+      />
+
+      <Controller
+        name="email"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>{t("new.form.email")}</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              type="email"
+              placeholder={t("new.form.emailPlaceholder")}
+              icon="Mail"
+              aria-invalid={fieldState.invalid}
+              disabled={disabled}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         )}
-      </div>
-      <div className="grid gap-2">
-        <Label>{t("new.form.phone")}</Label>
-        <Input
-          type="tel"
-          value={value.phone}
-          onChange={(e) => onChange({ ...value, phone: e.target.value })}
-          className={fieldErrors.phone ? "border-red-500" : ""}
-          placeholder={t("new.form.phonePlaceholder")}
-          icon="Phone"
-        />
-        {fieldErrors.phone && (
-          <p className="text-xs text-red-600">{fieldErrors.phone}</p>
+      />
+
+      <Controller
+        name="phone"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>{t("new.form.phone")}</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              type="tel"
+              placeholder={t("new.form.phonePlaceholder")}
+              icon="Phone"
+              aria-invalid={fieldState.invalid}
+              disabled={disabled}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         )}
-      </div>
-      <div className="grid gap-2">
-        <Label>{t("new.form.address")}</Label>
-        <textarea
-          className={`min-h-20 rounded-md border px-3 py-2 bg-background ${fieldErrors.address ? "border-red-500" : ""}`}
-          value={value.address}
-          onChange={(e) => onChange({ ...value, address: e.target.value })}
-          placeholder={t("new.form.addressPlaceholder")}
-        />
-        {fieldErrors.address && (
-          <p className="text-xs text-red-600">{fieldErrors.address}</p>
+      />
+
+      <Controller
+        name="address"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>{t("new.form.address")}</FieldLabel>
+            <textarea
+              {...field}
+              id={field.name}
+              className={`min-h-20 rounded-md border px-3 py-2 bg-background ${fieldState.invalid ? "border-destructive" : ""}`}
+              placeholder={t("new.form.addressPlaceholder")}
+              aria-invalid={fieldState.invalid}
+              disabled={disabled}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         )}
-      </div>
+      />
+
       {children && <div className="flex gap-2">{children}</div>}
-      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-    </>
+    </FieldGroup>
   );
 }
