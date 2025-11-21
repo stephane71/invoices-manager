@@ -1,94 +1,187 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { productFormSchema } from "@/lib/validation";
+
+type ProductFormData = z.infer<typeof productFormSchema>;
 
 export default function NewProductPage() {
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    price: 0,
-    image_url: "" as string | null,
-  });
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
-    setForm((f) => ({ ...f, image_url: url })),
+    setImageUrl(url),
   );
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("Products");
   const c = useTranslations("Common");
 
-  async function save() {
-    setLoading(true);
-    const res = await fetch(`/api/products`, {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
-    setLoading(false);
-    if (res.ok) {
-      router.push("/products");
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+    },
+  });
+
+  const [error, setError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    setError: setFieldError,
+    formState: { isSubmitting },
+  } = form;
+
+  async function onSubmit(data: ProductFormData) {
+    setError("");
+
+    try {
+      const res = await fetch(`/api/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          image_url: imageUrl,
+        }),
+      });
+
+      if (res.ok) {
+        router.push("/products");
+      } else {
+        const responseData = await res.json();
+
+        if (responseData.fields) {
+          Object.entries(responseData.fields).forEach(([key, message]) => {
+            setFieldError(key as keyof ProductFormData, {
+              type: "server",
+              message: message as string,
+            });
+          });
+        } else {
+          setError(responseData.error || t("new.error.createFail"));
+        }
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("new.error.createFail"));
     }
   }
 
   return (
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">{t("new.title")}</h1>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.name")}</label>
-        <input
-          className="h-10 rounded-md border px-3 bg-background"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.description")}</label>
-        <textarea
-          className="min-h-20 rounded-md border px-3 py-2 bg-background"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.price")}</label>
-        <PriceInput
-          value={form.price}
-          onChange={(cents) => setForm({ ...form, price: cents })}
-          placeholder="0,00"
-        />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.image")}</label>
-        <input
-          type="file"
-          accept="image/*"
-          className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
-          onChange={(e) => onSelectImage(e.target.files?.[0])}
-          disabled={uploading}
-        />
-        {form.image_url ? (
-          <Image
-            src={form.image_url}
-            alt={c("preview")}
-            className="h-16 w-16 object-cover rounded"
-            width={64}
-            height={64}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FieldGroup>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.name")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  icon="Package"
+                  aria-invalid={fieldState.invalid}
+                  disabled={isSubmitting || uploading}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
           />
-        ) : null}
-      </div>
-      <div className="flex gap-2">
-        <Button onClick={save} disabled={loading || uploading}>
-          {loading
-            ? c("saving")
-            : uploading
-              ? c("uploading")
-              : t("new.createButton")}
-        </Button>
-      </div>
+
+          <Controller
+            name="description"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.description")}
+                </FieldLabel>
+                <textarea
+                  {...field}
+                  id={field.name}
+                  className="min-h-20 rounded-md border px-3 py-2 bg-background"
+                  aria-invalid={fieldState.invalid}
+                  disabled={isSubmitting || uploading}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="price"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.price")}
+                </FieldLabel>
+                <PriceInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="0,00"
+                  disabled={isSubmitting || uploading}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <Field>
+            <FieldLabel>{t("new.form.image")}</FieldLabel>
+            <input
+              type="file"
+              accept="image/*"
+              className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
+              onChange={(e) => onSelectImage(e.target.files?.[0])}
+              disabled={uploading || isSubmitting}
+            />
+            {imageUrl && (
+              <Image
+                src={imageUrl}
+                alt={c("preview")}
+                className="h-16 w-16 object-cover rounded"
+                width={64}
+                height={64}
+              />
+            )}
+          </Field>
+
+          <div className="flex gap-2">
+            <Button type="submit" disabled={isSubmitting || uploading}>
+              {isSubmitting
+                ? c("saving")
+                : uploading
+                  ? c("uploading")
+                  : t("new.createButton")}
+            </Button>
+          </div>
+        </FieldGroup>
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      </form>
     </div>
   );
 }

@@ -1,24 +1,50 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
 import { useTranslations } from "next-intl";
 import { isValidPhoneNumber } from "libphonenumber-js";
+
+const profileSchema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().refine(
+    (val) => !val || isValidPhoneNumber(val),
+    "Invalid phone number"
+  ),
+  address: z.string().min(1, "Address is required"),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfilPage() {
   const t = useTranslations("Profile");
   const c = useTranslations("Common");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [phoneError, setPhoneError] = useState<string>("");
+
+  const form = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      address: "",
+    },
+  });
+
+  const { control, handleSubmit, reset, formState: { isSubmitting } } = form;
 
   useEffect(() => {
     let cancelled = false;
@@ -32,10 +58,12 @@ export default function ProfilPage() {
         const json = await res.json();
         const p = json?.data;
         if (p && !cancelled) {
-          setFullName(p.full_name || "");
-          setEmail(p.email || "");
-          setPhone(p.phone || "");
-          setAddress(p.address || "");
+          reset({
+            fullName: p.full_name || "",
+            email: p.email || "",
+            phone: p.phone || "",
+            address: p.address || "",
+          });
         }
       } catch (e) {
         if (!cancelled) {
@@ -53,40 +81,21 @@ export default function ProfilPage() {
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [t, reset]);
 
-  const handlePhoneBlur = () => {
-    const phoneValue = phone.trim();
-    let errorMessage = "";
-    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      errorMessage = t("error.invalidPhone");
-    }
-    setPhoneError(errorMessage);
-  };
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setSaving(true);
+  async function onSubmit(data: ProfileFormData) {
     setError(null);
     setSuccess(null);
-
-    // Validate phone before submitting
-    const phoneValue = phone.trim();
-    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      setPhoneError(t("error.invalidPhone"));
-      setSaving(false);
-      return;
-    }
 
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          full_name: fullName,
-          email,
-          phone,
-          address,
+          full_name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
         }),
       });
       if (!res.ok) {
@@ -96,8 +105,6 @@ export default function ProfilPage() {
       setSuccess(t("status.updated"));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error.unknown"));
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -116,73 +123,96 @@ export default function ProfilPage() {
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-6">
-        {/* Full name */}
-        <div className="space-y-2">
-          <Label htmlFor="fullName">{t("form.fullName")}</Label>
-          <Input
-            id="fullName"
-            placeholder={t("form.fullNamePlaceholder")}
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            icon="User"
-            required
-            disabled={loading || saving}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FieldGroup>
+          {/* Full name */}
+          <Controller
+            name="fullName"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("form.fullName")}</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("form.fullNamePlaceholder")}
+                  icon="User"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
           />
-        </div>
 
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">{t("form.email")}</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder={t("form.emailPlaceholder")}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            icon="Mail"
-            required
-            disabled={loading || saving}
+          {/* Email */}
+          <Controller
+            name="email"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("form.email")}</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="email"
+                  placeholder={t("form.emailPlaceholder")}
+                  icon="Mail"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
           />
-        </div>
 
-        {/* Phone */}
-        <div className="space-y-2">
-          <Label htmlFor="phone">{t("form.phone")}</Label>
-          <Input
-            id="phone"
-            type="tel"
-            placeholder={t("form.phonePlaceholder")}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            onBlur={handlePhoneBlur}
-            icon="Phone"
-            className={phoneError ? "border-red-500" : ""}
-            required
-            disabled={loading || saving}
+          {/* Phone */}
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("form.phone")}</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="tel"
+                  placeholder={t("form.phonePlaceholder")}
+                  icon="Phone"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
           />
-          {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
-        </div>
 
-        {/* Address */}
-        <div className="space-y-2">
-          <Label htmlFor="address">{t("form.address")}</Label>
-          <Input
-            id="address"
-            placeholder={t("form.addressPlaceholder")}
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            icon="MapPin"
-            required
-            disabled={loading || saving}
+          {/* Address */}
+          <Controller
+            name="address"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("form.address")}</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("form.addressPlaceholder")}
+                  icon="MapPin"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
           />
-        </div>
 
-        <div className="pt-2">
-          <Button type="submit" disabled={loading || saving}>
-            {saving ? c("saving") : c("save")}
-          </Button>
-        </div>
+          <div className="pt-2">
+            <Button type="submit" disabled={loading || isSubmitting}>
+              {isSubmitting ? c("saving") : c("save")}
+            </Button>
+          </div>
+        </FieldGroup>
       </form>
     </div>
   );

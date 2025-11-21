@@ -2,6 +2,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import ClientBlock from "@/components/invoices/ClientBlock";
@@ -316,28 +322,30 @@ export default function NewInvoicePage() {
       <div className="pb-28">
         <h1 className="text-xl font-semibold mb-4">{t("new.title")}</h1>
 
-        <div className="space-y-4 mb-8">
-          <div className="grid gap-2">
-            <label className="text-sm">{t("new.number")}</label>
-            <input
+        <FieldGroup className="mb-8">
+          <Field>
+            <FieldLabel htmlFor="number">{t("new.number")}</FieldLabel>
+            <Input
+              id="number"
               type="text"
-              className="h-10 rounded-md border px-3 bg-background"
+              icon="FileText"
               value={number}
               onChange={(e) => setNumber(e.target.value)}
               placeholder={t("new.numberPlaceholder")}
               required
             />
-          </div>
-          <div className="grid gap-2">
-            <label className="text-sm">{t("new.issueDate")}</label>
-            <input
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="issueDate">{t("new.issueDate")}</FieldLabel>
+            <Input
+              id="issueDate"
               type="date"
-              className="h-10 rounded-md border px-3 bg-background"
+              icon="Calendar"
               value={issueDate}
               onChange={(e) => setIssueDate(e.target.value)}
             />
-          </div>
-        </div>
+          </Field>
+        </FieldGroup>
 
         <ClientBlock
           clients={clients}
