@@ -1,9 +1,17 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import ClientBlock from "@/components/invoices/ClientBlock";
@@ -18,6 +26,34 @@ import ArticlesBlock, {
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
+
+// Zod schema for invoice form validation
+const invoiceItemSchema = z.object({
+  product_id: z.string().min(1, "Product is required"),
+  name: z.string().min(1, "Name is required"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  price: z.number().min(0),
+  total: z.number().min(0),
+  quantityInput: z.string().optional(),
+});
+
+const invoiceFormSchema = z.object({
+  number: z.string().min(1, "Invoice number is required"),
+  clientId: z.string().min(1, "Client is required"),
+  issueDate: z.string().min(1),
+  items: z
+    .array(invoiceItemSchema)
+    .min(1, "At least one article is required")
+    .refine(
+      (items) =>
+        items.every(
+          (item) => item.product_id && item.name && item.quantity > 0,
+        ),
+      { message: "All articles must be complete" },
+    ),
+});
+
+type InvoiceFormData = z.infer<typeof invoiceFormSchema>;
 
 const ERROR_DEFAULT = "";
 const FIELD_ERROR_DEFAULT = undefined;
@@ -34,7 +70,6 @@ export default function NewInvoicePage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(ERROR_DEFAULT);
   const [clientFieldErrors, setClientFieldErrors] = useState<
     FieldErrors | typeof FIELD_ERROR_DEFAULT
@@ -42,19 +77,37 @@ export default function NewInvoicePage() {
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
-  const [number, setNumber] = useState("");
-  const [clientId, setClientId] = useState("");
-  const [issueDate, setIssueDate] = useState(todayISO());
-  const [items, setItems] = useState<Item[]>([
-    {
-      product_id: "",
-      name: "",
-      quantity: 1,
-      price: 0, // in cents
-      total: 0, // in cents
-      quantityInput: "1",
+  const form = useForm<InvoiceFormData>({
+    resolver: zodResolver(invoiceFormSchema),
+    defaultValues: {
+      number: "",
+      clientId: "",
+      issueDate: todayISO(),
+      items: [
+        {
+          product_id: "",
+          name: "",
+          quantity: 1,
+          price: 0,
+          total: 0,
+          quantityInput: "1",
+        },
+      ],
     },
-  ]);
+    mode: "onChange",
+  });
+
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting, errors, isValid },
+  } = form;
+
+  const number = watch("number");
+  const clientId = watch("clientId");
+  const issueDate = watch("issueDate");
+  const items = watch("items");
 
   useEffect(() => {
     let active = true;
@@ -98,7 +151,7 @@ export default function NewInvoicePage() {
       setError(ERROR_DEFAULT);
 
       const newId = await wrap(() => createClientFromSelection(clientData));
-      setClientId(newId);
+      setValue("clientId", newId);
       // Optimistic update without triggering a new request
       // Ensure the new client appears in the select immediately
       setClients((prev) => {
@@ -133,164 +186,137 @@ export default function NewInvoicePage() {
   };
 
   function addItem() {
-    setItems((prev) => [
-      ...prev,
+    setValue("items", [
+      ...items,
       {
         product_id: "",
         name: "",
         quantity: 1,
-        price: 0, // in cents
-        total: 0, // in cents
+        price: 0,
+        total: 0,
         quantityInput: "1",
       },
     ]);
   }
 
   function removeItem(index: number) {
-    setItems((prev) => prev.filter((_, i) => i !== index));
+    setValue(
+      "items",
+      items.filter((_, i) => i !== index),
+    );
   }
 
   function onChangeProduct(index: number, productId: string) {
-    setItems((prev) => {
-      const next = [...prev];
-      const prod = products.find((p) => p.id === productId);
-      const priceCents = prod?.price || 0; // price is already in cents from DB
-      const name = prod?.name || "";
-      const existing = next[index];
-      const qty = existing?.quantity ?? 0;
-      const quantityInput = existing?.quantityInput ?? (qty ? String(qty) : "");
-      const totalCents = Math.round(priceCents * qty); // total in cents
-      next[index] = {
-        ...existing,
-        product_id: productId,
-        name,
-        quantity: qty,
-        price: priceCents,
-        total: totalCents,
-        quantityInput,
-      } as Item;
-      return next;
-    });
+    const next = [...items];
+    const prod = products.find((p) => p.id === productId);
+    const priceCents = prod?.price || 0;
+    const name = prod?.name || "";
+    const existing = next[index];
+    const qty = existing?.quantity ?? 0;
+    const quantityInput = existing?.quantityInput ?? (qty ? String(qty) : "");
+    const totalCents = Math.round(priceCents * qty);
+    next[index] = {
+      ...existing,
+      product_id: productId,
+      name,
+      quantity: qty,
+      price: priceCents,
+      total: totalCents,
+      quantityInput,
+    } as Item;
+    setValue("items", next);
   }
 
   function onChangeQty(index: number, rawValue: string) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
+    const next = [...items];
+    const item = next[index];
 
-      // Allow temporary empty string while typing
-      if (rawValue === "") {
-        next[index] = {
-          ...item,
-          quantityInput: "",
-          quantity: 0,
-          total: 0,
-        } as Item;
-        return next;
-      }
-
-      // Parse positive integer quantity
-      const parsed = parseInt(rawValue, 10);
-      if (!Number.isFinite(parsed) || parsed < 1) {
-        next[index] = {
-          ...item,
-          quantityInput: rawValue,
-          quantity: 0,
-          total: 0,
-        } as Item;
-        return next;
-      }
-
-      const quantity = Math.floor(parsed);
-      const priceCents = Number(item.price) || 0; // price in cents
-      const totalCents = Math.round(priceCents * quantity); // total in cents
+    // Allow temporary empty string while typing
+    if (rawValue === "") {
       next[index] = {
         ...item,
-        quantityInput: String(quantity),
-        quantity,
-        total: totalCents,
+        quantityInput: "",
+        quantity: 0,
+        total: 0,
       } as Item;
-      return next;
-    });
+      setValue("items", next);
+      return;
+    }
+
+    // Parse positive integer quantity
+    const parsed = parseInt(rawValue, 10);
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      next[index] = {
+        ...item,
+        quantityInput: rawValue,
+        quantity: 0,
+        total: 0,
+      } as Item;
+      setValue("items", next);
+      return;
+    }
+
+    const quantity = Math.floor(parsed);
+    const priceCents = Number(item.price) || 0;
+    const totalCents = Math.round(priceCents * quantity);
+    next[index] = {
+      ...item,
+      quantityInput: String(quantity),
+      quantity,
+      total: totalCents,
+    } as Item;
+    setValue("items", next);
   }
 
   function onBlurQty(index: number) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
-      const raw = (item as Item).quantityInput ?? String(item.quantity ?? "");
-      if (raw === "" || item.quantity === 0) {
-        const quantity = 1;
-        const priceCents = Number(item.price) || 0; // price in cents
-        const totalCents = Math.round(priceCents * quantity); // total in cents
-        next[index] = {
-          ...item,
-          quantityInput: "1",
-          quantity,
-          total: totalCents,
-        } as Item;
-      }
-      return next;
-    });
+    const next = [...items];
+    const item = next[index];
+    const raw = (item as Item).quantityInput ?? String(item.quantity ?? "");
+    if (raw === "" || item.quantity === 0) {
+      const quantity = 1;
+      const priceCents = Number(item.price) || 0;
+      const totalCents = Math.round(priceCents * quantity);
+      next[index] = {
+        ...item,
+        quantityInput: "1",
+        quantity,
+        total: totalCents,
+      } as Item;
+      setValue("items", next);
+    }
   }
 
   function onChangePrice(index: number, cents: number) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
-      const qty = Number(item.quantity) || 0;
-      const totalCents = Math.round(cents * qty); // total in cents
-      next[index] = {
-        ...item,
-        price: cents,
-        total: totalCents,
-      } as Item;
-      return next;
-    });
+    const next = [...items];
+    const item = next[index];
+    const qty = Number(item.quantity) || 0;
+    const totalCents = Math.round(cents * qty);
+    next[index] = {
+      ...item,
+      price: cents,
+      total: totalCents,
+    } as Item;
+    setValue("items", next);
   }
 
-  async function save() {
+  async function onSubmit(data: InvoiceFormData) {
     setError(ERROR_DEFAULT);
 
-    if (!number.trim()) {
-      setError(t("new.error.numberRequired"));
-      return;
-    }
-    if (!clientId) {
-      setError(t("new.error.clientRequired"));
-      return;
-    }
-    if (items.length === 0) {
-      setError(t("new.error.itemsRequired"));
-      return;
-    }
-    // validate all items
-    const valid = items.every(
-      (it) => it.product_id && it.name && it.quantity > 0,
-    );
-    if (!valid) {
-      setError(t("new.error.itemsIncomplete"));
-      return;
-    }
-
-    setSaving(true);
     try {
       const res = await fetch("/api/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          number: number.trim(),
-          client_id: clientId,
-          items,
+          number: data.number.trim(),
+          client_id: data.clientId,
+          items: data.items,
           total_amount: +totalAmount.toFixed(2),
-          issue_date: issueDate,
-          // status omitted to use default "draft"
+          issue_date: data.issueDate,
         }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}) as never);
         const serverMessage: string | undefined = err?.error || err?.message;
-        // If the backend signals a duplicate number (409), or the message suggests it
         if (
           res.status === 409 ||
           /duplicate|exists|unique/i.test(String(serverMessage))
@@ -304,10 +330,11 @@ export default function NewInvoicePage() {
       const message =
         e instanceof Error ? e.message : t("new.error.createFail");
       setError(message);
-    } finally {
-      setSaving(false);
     }
   }
+
+  // Check if form can be submitted (has number, client, and valid articles)
+  const canSubmit = isValid && !isSubmitting;
 
   if (loading) {
     return <div className="p-4">{c("loading")}</div>;
@@ -326,10 +353,11 @@ export default function NewInvoicePage() {
               type="text"
               icon="FileText"
               value={number}
-              onChange={(e) => setNumber(e.target.value)}
+              onChange={(e) => setValue("number", e.target.value)}
               placeholder={t("new.numberPlaceholder")}
               required
             />
+            {errors.number && <FieldError>{errors.number.message}</FieldError>}
           </Field>
           <Field>
             <FieldLabel htmlFor="issueDate">{t("new.issueDate")}</FieldLabel>
@@ -338,7 +366,7 @@ export default function NewInvoicePage() {
               type="date"
               icon="Calendar"
               value={issueDate}
-              onChange={(e) => setIssueDate(e.target.value)}
+              onChange={(e) => setValue("issueDate", e.target.value)}
             />
           </Field>
         </FieldGroup>
@@ -346,11 +374,11 @@ export default function NewInvoicePage() {
         <ClientBlock
           clients={clients}
           clientId={clientId}
-          onSelectClientAction={setClientId}
+          onSelectClientAction={(id) => setValue("clientId", id)}
           onRequestCreateNewClientAction={onRequestCreateNewClient}
           isLoading={clientBlockLoading}
           clientFormErrors={clientFieldErrors}
-          error={error}
+          error={errors.clientId?.message}
         />
 
         <ArticlesBlock
@@ -363,6 +391,11 @@ export default function NewInvoicePage() {
           onBlurQtyAction={onBlurQty}
           onChangePriceAction={onChangePrice}
         />
+        {errors.items && (
+          <p className="mt-2 text-sm text-red-600">
+            {errors.items.message || errors.items.root?.message}
+          </p>
+        )}
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </div>
@@ -378,12 +411,12 @@ export default function NewInvoicePage() {
             <Button
               variant="outline"
               onClick={() => router.push("/invoices")}
-              disabled={saving}
+              disabled={isSubmitting}
             >
               {c("cancel")}
             </Button>
-            <Button onClick={save} disabled={saving}>
-              {saving ? c("saving") : t("new.create")}
+            <Button onClick={handleSubmit(onSubmit)} disabled={!canSubmit}>
+              {isSubmitting ? c("saving") : t("new.create")}
             </Button>
           </div>
         </div>
