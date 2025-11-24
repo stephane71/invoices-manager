@@ -1,24 +1,14 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { PriceInput } from "@/components/ui/price-input";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { productFormSchema } from "@/lib/validation";
-
-type ProductFormData = z.infer<typeof productFormSchema>;
+import { ProductForm, productFormSchema } from "@/components/products/products";
+import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 
 export default function NewProductPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -29,7 +19,7 @@ export default function NewProductPage() {
   const t = useTranslations("Products");
   const c = useTranslations("Common");
 
-  const form = useForm<ProductFormData>({
+  const form = useForm<ProductForm>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: "",
@@ -46,7 +36,7 @@ export default function NewProductPage() {
     formState: { isSubmitting },
   } = form;
 
-  async function onSubmit(data: ProductFormData) {
+  async function onSubmit(data: ProductForm) {
     setError("");
 
     try {
@@ -66,7 +56,7 @@ export default function NewProductPage() {
 
         if (responseData.fields) {
           Object.entries(responseData.fields).forEach(([key, message]) => {
-            setFieldError(key as keyof ProductFormData, {
+            setFieldError(key as keyof ProductForm, {
               type: "server",
               message: message as string,
             });
@@ -84,102 +74,21 @@ export default function NewProductPage() {
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">{t("new.title")}</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <FieldGroup>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>
-                  {t("new.form.name")}
-                </FieldLabel>
-                <Input
-                  {...field}
-                  id={field.name}
-                  icon="Package"
-                  aria-invalid={fieldState.invalid}
-                  disabled={isSubmitting || uploading}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
+        <ProductFieldGroup
+          imageUrl={imageUrl}
+          onSelectImage={onSelectImage}
+          control={control}
+          disabled={isSubmitting || uploading}
+        >
+          <Button type="submit" disabled={isSubmitting || uploading}>
+            {isSubmitting
+              ? c("saving")
+              : uploading
+                ? c("uploading")
+                : t("new.createButton")}
+          </Button>
+        </ProductFieldGroup>
 
-          <Controller
-            name="description"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>
-                  {t("new.form.description")}
-                </FieldLabel>
-                <textarea
-                  {...field}
-                  id={field.name}
-                  className="min-h-20 rounded-md border px-3 py-2 bg-background"
-                  aria-invalid={fieldState.invalid}
-                  disabled={isSubmitting || uploading}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <Controller
-            name="price"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>
-                  {t("new.form.price")}
-                </FieldLabel>
-                <PriceInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="0,00"
-                  disabled={isSubmitting || uploading}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <Field>
-            <FieldLabel>{t("new.form.image")}</FieldLabel>
-            <input
-              type="file"
-              accept="image/*"
-              className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
-              onChange={(e) => onSelectImage(e.target.files?.[0])}
-              disabled={uploading || isSubmitting}
-            />
-            {imageUrl && (
-              <Image
-                src={imageUrl}
-                alt={c("preview")}
-                className="h-16 w-16 object-cover rounded"
-                width={64}
-                height={64}
-              />
-            )}
-          </Field>
-
-          <div className="flex gap-2">
-            <Button type="submit" disabled={isSubmitting || uploading}>
-              {isSubmitting
-                ? c("saving")
-                : uploading
-                  ? c("uploading")
-                  : t("new.createButton")}
-            </Button>
-          </div>
-        </FieldGroup>
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </form>
     </div>
