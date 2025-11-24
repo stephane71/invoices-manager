@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import {
-  ClientForm,
+  ClientFieldGroup,
   type ClientFormData,
   type FieldErrors,
-} from "@/components/clients/ClientForm";
+} from "@/components/clients/ClientFieldGroup";
 import { clientFormSchema } from "@/lib/validation";
 
 const FORM_DATA_DEFAULT: ClientFormData = {
@@ -184,7 +184,7 @@ export default function ClientBlock({
         </Button>
       ) : (
         <div className="mt-2 grid gap-2 rounded-md border p-3">
-          <ClientForm control={control} disabled={isLoading}>
+          <ClientFieldGroup control={control} disabled={isLoading}>
             <Button
               variant="secondary"
               size="lg"
@@ -196,7 +196,7 @@ export default function ClientBlock({
             <Button variant="ghost" size="lg" onClick={resetNewForm}>
               {t("new.cancel")}
             </Button>
-          </ClientForm>
+          </ClientFieldGroup>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
       )}

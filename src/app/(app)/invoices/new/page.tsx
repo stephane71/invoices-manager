@@ -3,11 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import ClientBlock from "@/components/invoices/ClientBlock";
@@ -21,7 +17,7 @@ import ArticlesBlock, {
 } from "@/components/invoices/ArticlesBlock";
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
-import type { FieldErrors } from "@/components/clients/ClientForm";
+import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
 
 const ERROR_DEFAULT = "";
 const FIELD_ERROR_DEFAULT = undefined;

@@ -6,9 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
-  ClientForm,
+  ClientFieldGroup,
   type ClientFormData,
-} from "@/components/clients/ClientForm";
+} from "@/components/clients/ClientFieldGroup";
 import { clientFormSchema } from "@/lib/validation";
 
 export default function ClientDetailPage({
@@ -114,7 +114,7 @@ export default function ClientDetailPage({
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">{t("edit.title")}</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <ClientForm control={control} disabled={isSubmitting}>
+        <ClientFieldGroup control={control} disabled={isSubmitting}>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? c("saving") : c("save")}
           </Button>
@@ -126,7 +126,7 @@ export default function ClientDetailPage({
           >
             {c("delete")}
           </Button>
-        </ClientForm>
+        </ClientFieldGroup>
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       </form>
     </div>

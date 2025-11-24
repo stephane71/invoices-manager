@@ -26,7 +26,7 @@ interface ClientFormProps {
   children?: ReactNode;
 }
 
-export function ClientForm({
+export function ClientFieldGroup({
   control,
   disabled = false,
   children,
