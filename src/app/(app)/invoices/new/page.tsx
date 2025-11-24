@@ -1,17 +1,10 @@
 "use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
 import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import ClientBlock from "@/components/invoices/ClientBlock";
@@ -20,40 +13,17 @@ import {
   useCreateNewClientFromNewInvoice,
 } from "@/hooks/useCreateNewClientFromNewInvoice";
 import { useMinDelay } from "@/hooks/useMinDelay";
-import ArticlesBlock, {
-  type InvoiceItem,
-} from "@/components/invoices/ArticlesBlock";
+import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
-
-// Zod schema for invoice form validation
-const invoiceItemSchema = z.object({
-  product_id: z.string().min(1, "Product is required"),
-  name: z.string().min(1, "Name is required"),
-  quantity: z.number().min(1, "Quantity must be at least 1"),
-  price: z.number().min(0),
-  total: z.number().min(0),
-  quantityInput: z.string().optional(),
-});
-
-const invoiceFormSchema = z.object({
-  number: z.string().min(1, "Invoice number is required"),
-  clientId: z.string().min(1, "Client is required"),
-  issueDate: z.string().min(1),
-  items: z
-    .array(invoiceItemSchema)
-    .min(1, "At least one article is required")
-    .refine(
-      (items) =>
-        items.every(
-          (item) => item.product_id && item.name && item.quantity > 0,
-        ),
-      { message: "All articles must be complete" },
-    ),
-});
-
-type InvoiceFormData = z.infer<typeof invoiceFormSchema>;
+import {
+  INVOICE_ITEM_EMPTY,
+  InvoiceForm,
+  invoiceFormSchema,
+  InvoiceItem,
+} from "@/components/invoices/invoices";
+import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
 
 const ERROR_DEFAULT = "";
 const FIELD_ERROR_DEFAULT = undefined;
@@ -61,9 +31,6 @@ const FIELD_ERROR_DEFAULT = undefined;
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
-
-// Replace local Item type with the shared InvoiceItem
-type Item = InvoiceItem;
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -77,22 +44,13 @@ export default function NewInvoicePage() {
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
-  const form = useForm<InvoiceFormData>({
+  const form = useForm<InvoiceForm>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
       number: "",
       clientId: "",
       issueDate: todayISO(),
-      items: [
-        {
-          product_id: "",
-          name: "",
-          quantity: 1,
-          price: 0,
-          total: 0,
-          quantityInput: "1",
-        },
-      ],
+      items: [INVOICE_ITEM_EMPTY],
     },
     mode: "onChange",
   });
@@ -101,12 +59,11 @@ export default function NewInvoicePage() {
     watch,
     setValue,
     handleSubmit,
-    formState: { isSubmitting, errors, isValid },
+    control,
+    formState: { isSubmitting, errors },
   } = form;
 
-  const number = watch("number");
   const clientId = watch("clientId");
-  const issueDate = watch("issueDate");
   const items = watch("items");
 
   useEffect(() => {
@@ -186,17 +143,7 @@ export default function NewInvoicePage() {
   };
 
   function addItem() {
-    setValue("items", [
-      ...items,
-      {
-        product_id: "",
-        name: "",
-        quantity: 1,
-        price: 0,
-        total: 0,
-        quantityInput: "1",
-      },
-    ]);
+    setValue("items", [...items, INVOICE_ITEM_EMPTY]);
   }
 
   function removeItem(index: number) {
@@ -206,100 +153,13 @@ export default function NewInvoicePage() {
     );
   }
 
-  function onChangeProduct(index: number, productId: string) {
+  function updateItem(index: number, updatedItem: InvoiceItem) {
     const next = [...items];
-    const prod = products.find((p) => p.id === productId);
-    const priceCents = prod?.price || 0;
-    const name = prod?.name || "";
-    const existing = next[index];
-    const qty = existing?.quantity ?? 0;
-    const quantityInput = existing?.quantityInput ?? (qty ? String(qty) : "");
-    const totalCents = Math.round(priceCents * qty);
-    next[index] = {
-      ...existing,
-      product_id: productId,
-      name,
-      quantity: qty,
-      price: priceCents,
-      total: totalCents,
-      quantityInput,
-    } as Item;
+    next[index] = updatedItem;
     setValue("items", next);
   }
 
-  function onChangeQty(index: number, rawValue: string) {
-    const next = [...items];
-    const item = next[index];
-
-    // Allow temporary empty string while typing
-    if (rawValue === "") {
-      next[index] = {
-        ...item,
-        quantityInput: "",
-        quantity: 0,
-        total: 0,
-      } as Item;
-      setValue("items", next);
-      return;
-    }
-
-    // Parse positive integer quantity
-    const parsed = parseInt(rawValue, 10);
-    if (!Number.isFinite(parsed) || parsed < 1) {
-      next[index] = {
-        ...item,
-        quantityInput: rawValue,
-        quantity: 0,
-        total: 0,
-      } as Item;
-      setValue("items", next);
-      return;
-    }
-
-    const quantity = Math.floor(parsed);
-    const priceCents = Number(item.price) || 0;
-    const totalCents = Math.round(priceCents * quantity);
-    next[index] = {
-      ...item,
-      quantityInput: String(quantity),
-      quantity,
-      total: totalCents,
-    } as Item;
-    setValue("items", next);
-  }
-
-  function onBlurQty(index: number) {
-    const next = [...items];
-    const item = next[index];
-    const raw = (item as Item).quantityInput ?? String(item.quantity ?? "");
-    if (raw === "" || item.quantity === 0) {
-      const quantity = 1;
-      const priceCents = Number(item.price) || 0;
-      const totalCents = Math.round(priceCents * quantity);
-      next[index] = {
-        ...item,
-        quantityInput: "1",
-        quantity,
-        total: totalCents,
-      } as Item;
-      setValue("items", next);
-    }
-  }
-
-  function onChangePrice(index: number, cents: number) {
-    const next = [...items];
-    const item = next[index];
-    const qty = Number(item.quantity) || 0;
-    const totalCents = Math.round(cents * qty);
-    next[index] = {
-      ...item,
-      price: cents,
-      total: totalCents,
-    } as Item;
-    setValue("items", next);
-  }
-
-  async function onSubmit(data: InvoiceFormData) {
+  async function onSubmit(data: InvoiceForm) {
     setError(ERROR_DEFAULT);
 
     try {
@@ -333,9 +193,6 @@ export default function NewInvoicePage() {
     }
   }
 
-  // Check if form can be submitted (has number, client, and valid articles)
-  const canSubmit = isValid && !isSubmitting;
-
   if (loading) {
     return <div className="p-4">{c("loading")}</div>;
   }
@@ -345,31 +202,7 @@ export default function NewInvoicePage() {
       <div className="pb-28">
         <h1 className="text-xl font-semibold mb-4">{t("new.title")}</h1>
 
-        <FieldGroup className="mb-8">
-          <Field>
-            <FieldLabel htmlFor="number">{t("new.number")}</FieldLabel>
-            <Input
-              id="number"
-              type="text"
-              icon="FileText"
-              value={number}
-              onChange={(e) => setValue("number", e.target.value)}
-              placeholder={t("new.numberPlaceholder")}
-              required
-            />
-            {errors.number && <FieldError>{errors.number.message}</FieldError>}
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="issueDate">{t("new.issueDate")}</FieldLabel>
-            <Input
-              id="issueDate"
-              type="date"
-              icon="Calendar"
-              value={issueDate}
-              onChange={(e) => setValue("issueDate", e.target.value)}
-            />
-          </Field>
-        </FieldGroup>
+        <InvoiceFieldGroup control={control} />
 
         <ClientBlock
           clients={clients}
@@ -381,26 +214,43 @@ export default function NewInvoicePage() {
           error={errors.clientId?.message}
         />
 
-        <ArticlesBlock
-          products={products}
-          items={items}
-          onAddAction={addItem}
-          onRemoveAction={removeItem}
-          onChangeProductAction={onChangeProduct}
-          onChangeQtyAction={onChangeQty}
-          onBlurQtyAction={onBlurQty}
-          onChangePriceAction={onChangePrice}
-        />
-        {errors.items && (
-          <p className="mt-2 text-sm text-red-600">
-            {errors.items.message || errors.items.root?.message}
-          </p>
-        )}
+        <div>
+          <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("new.items")}
+          </div>
 
-        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+          <div className="space-y-2">
+            {items.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
+            ) : (
+              <div className="space-y-2">
+                {items.map((item, idx) => (
+                  <ArticleFieldGroup
+                    key={idx}
+                    item={item}
+                    products={products}
+                    onChange={(updatedItem) => updateItem(idx, updatedItem)}
+                    onRemove={() => removeItem(idx)}
+                  />
+                ))}
+              </div>
+            )}
+            <div className="flex items-center justify-end">
+              <Button size="lg" variant="secondary" onClick={addItem}>
+                {t("new.addItem")}
+              </Button>
+            </div>
+          </div>
+          {errors.items && (
+            <p className="mt-2 text-sm text-red-600">
+              {errors.items.message || errors.items.root?.message}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
+        {error && <div className="text-sm text-red-600">{"Message error"}</div>}
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
             {t("new.total")}{" "}
@@ -415,7 +265,7 @@ export default function NewInvoicePage() {
             >
               {c("cancel")}
             </Button>
-            <Button onClick={handleSubmit(onSubmit)} disabled={!canSubmit}>
+            <Button onClick={handleSubmit(onSubmit)}>
               {isSubmitting ? c("saving") : t("new.create")}
             </Button>
           </div>

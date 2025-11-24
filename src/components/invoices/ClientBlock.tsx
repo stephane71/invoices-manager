@@ -63,12 +63,10 @@ export default function ClientBlock({
   const {
     control,
     reset,
-    watch,
     handleSubmit,
     setError: setFieldError,
     formState: { errors },
   } = form;
-  const formData = watch();
 
   // Apply external errors from parent
   useEffect(() => {
@@ -115,29 +113,31 @@ export default function ClientBlock({
     }
   }, [clientId, showNewForm, resetNewForm]);
 
-  // Trigger creation request to parent when at least the name is provided
-  const onSubmit = useCallback(() => {
-    if (!showNewForm) {
-      return;
-    }
+  const onSubmit = useCallback(
+    (data: ClientForm) => {
+      if (!showNewForm) {
+        return;
+      }
 
-    const name = formData.name.trim();
-    if (!name) {
-      return;
-    }
+      const name = data.name.trim();
+      if (!name) {
+        return;
+      }
 
-    // Check for validation errors before submitting
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
+      // Check for validation errors before submitting
+      if (Object.keys(errors).length > 0) {
+        return;
+      }
 
-    onRequestCreateNewClientAction({
-      name,
-      email: formData.email.trim() || undefined,
-      phone: formData.phone.trim() || undefined,
-      address: formData.address.trim() || undefined,
-    });
-  }, [showNewForm, formData, onRequestCreateNewClientAction, errors]);
+      onRequestCreateNewClientAction({
+        name,
+        email: data.email.trim() || undefined,
+        phone: data.phone.trim() || undefined,
+        address: data.address.trim() || undefined,
+      });
+    },
+    [showNewForm, onRequestCreateNewClientAction, errors],
+  );
 
   return (
     <div className="relative">
@@ -186,12 +186,7 @@ export default function ClientBlock({
         <div className="mt-2 grid gap-2 rounded-md border p-3">
           <form onSubmit={handleSubmit(onSubmit)}>
             <ClientFieldGroup control={control} disabled={isLoading}>
-              <Button
-                variant="secondary"
-                size="lg"
-                type="submit"
-                disabled={!formData.name.trim()}
-              >
+              <Button variant="secondary" size="lg" type="submit">
                 {t("new.createClient")}
               </Button>
               <Button variant="ghost" size="lg" onClick={resetNewForm}>
