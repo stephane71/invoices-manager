@@ -8,10 +8,7 @@ import {
 } from "@/components/ui/field";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
-import { z } from "zod";
-import { clientFormSchema } from "@/lib/validation";
-
-export type ClientFormData = z.infer<typeof clientFormSchema>;
+import { ClientForm } from "@/components/clients/clients";
 
 export interface FieldErrors {
   name?: string;
@@ -21,7 +18,7 @@ export interface FieldErrors {
 }
 
 interface ClientFormProps {
-  control: Control<ClientFormData>;
+  control: Control<ClientForm>;
   disabled?: boolean;
   children?: ReactNode;
 }

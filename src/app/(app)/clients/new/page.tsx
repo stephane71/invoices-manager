@@ -5,11 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import {
-  ClientFieldGroup,
-  type ClientFormData,
-} from "@/components/clients/ClientFieldGroup";
-import { clientFormSchema } from "@/lib/validation";
+import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
+import { ClientForm, clientFormSchema } from "@/components/clients/clients";
 
 export default function NewClientPage() {
   const [error, setError] = useState("");
@@ -17,7 +14,7 @@ export default function NewClientPage() {
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
 
-  const form = useForm<ClientFormData>({
+  const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
       name: "",
@@ -34,7 +31,7 @@ export default function NewClientPage() {
     formState: { isSubmitting },
   } = form;
 
-  async function onSubmit(data: ClientFormData) {
+  async function onSubmit(data: ClientForm) {
     setError("");
 
     try {
@@ -58,7 +55,7 @@ export default function NewClientPage() {
 
         if (responseData.fields) {
           Object.entries(responseData.fields).forEach(([key, message]) => {
-            setFieldError(key as keyof ClientFormData, {
+            setFieldError(key as keyof ClientForm, {
               type: "server",
               message: message as string,
             });

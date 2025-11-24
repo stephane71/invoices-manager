@@ -15,12 +15,11 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import {
   ClientFieldGroup,
-  type ClientFormData,
   type FieldErrors,
 } from "@/components/clients/ClientFieldGroup";
-import { clientFormSchema } from "@/lib/validation";
+import { ClientForm, clientFormSchema } from "@/components/clients/clients";
 
-const FORM_DATA_DEFAULT: ClientFormData = {
+const FORM_DATA_DEFAULT: ClientForm = {
   name: "",
   email: "",
   phone: "",
@@ -56,7 +55,7 @@ export default function ClientBlock({
   // UI state for the inline "direct new client" form
   const [showNewForm, setShowNewForm] = useState(false);
 
-  const form = useForm<ClientFormData>({
+  const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: FORM_DATA_DEFAULT,
   });
@@ -76,7 +75,7 @@ export default function ClientBlock({
     if (clientFormErrors) {
       Object.entries(clientFormErrors).forEach(([key, message]) => {
         if (message) {
-          setFieldError(key as keyof ClientFormData, {
+          setFieldError(key as keyof ClientForm, {
             type: "server",
             message,
           });
