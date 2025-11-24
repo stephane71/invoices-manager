@@ -65,6 +65,7 @@ export default function ClientBlock({
     control,
     reset,
     watch,
+    handleSubmit,
     setError: setFieldError,
     formState: { errors },
   } = form;
@@ -116,7 +117,7 @@ export default function ClientBlock({
   }, [clientId, showNewForm, resetNewForm]);
 
   // Trigger creation request to parent when at least the name is provided
-  const triggerCreateIfEligible = useCallback(() => {
+  const onSubmit = useCallback(() => {
     if (!showNewForm) {
       return;
     }
@@ -184,20 +185,22 @@ export default function ClientBlock({
         </Button>
       ) : (
         <div className="mt-2 grid gap-2 rounded-md border p-3">
-          <ClientFieldGroup control={control} disabled={isLoading}>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={triggerCreateIfEligible}
-              disabled={!formData.name.trim()}
-            >
-              {t("new.createClient")}
-            </Button>
-            <Button variant="ghost" size="lg" onClick={resetNewForm}>
-              {t("new.cancel")}
-            </Button>
-          </ClientFieldGroup>
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ClientFieldGroup control={control} disabled={isLoading}>
+              <Button
+                variant="secondary"
+                size="lg"
+                type="submit"
+                disabled={!formData.name.trim()}
+              >
+                {t("new.createClient")}
+              </Button>
+              <Button variant="ghost" size="lg" onClick={resetNewForm}>
+                {t("new.cancel")}
+              </Button>
+            </ClientFieldGroup>
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          </form>
         </div>
       )}
     </div>
