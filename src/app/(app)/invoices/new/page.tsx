@@ -43,6 +43,8 @@ export default function NewInvoicePage() {
   const [clientFieldErrors, setClientFieldErrors] = useState<
     FieldErrors | typeof FIELD_ERROR_DEFAULT
   >();
+  const [profileIban, setProfileIban] = useState<string | null>(null);
+  const [profileBic, setProfileBic] = useState<string | null>(null);
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
@@ -53,8 +55,6 @@ export default function NewInvoicePage() {
       clientId: "",
       issueDate: todayISO(),
       items: [INVOICE_ITEM_EMPTY],
-      paymentIban: "",
-      paymentBic: "",
       paymentLink: "",
       paymentFreeText: "",
     },
@@ -74,15 +74,25 @@ export default function NewInvoicePage() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetch("/api/clients"), fetch("/api/products")])
-      .then(async ([c, p]) => {
+    Promise.all([
+      fetch("/api/clients"),
+      fetch("/api/products"),
+      fetch("/api/profile"),
+    ])
+      .then(async ([c, p, prof]) => {
         const clientsData = await c.json();
         const productsData = await p.json();
+        const profileData = await prof.json();
         if (!active) {
           return;
         }
         setClients(clientsData || []);
         setProducts(productsData || []);
+        // Set profile IBAN/BIC if available
+        if (profileData?.data) {
+          setProfileIban(profileData.data.payment_iban || null);
+          setProfileBic(profileData.data.payment_bic || null);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -186,8 +196,6 @@ export default function NewInvoicePage() {
           items: data.items,
           total_amount: +totalAmount.toFixed(2),
           issue_date: data.issueDate,
-          payment_iban: data.paymentIban?.trim() || null,
-          payment_bic: data.paymentBic?.trim() || null,
           payment_link: data.paymentLink?.trim() || null,
           payment_free_text: data.paymentFreeText?.trim() || null,
         }),
@@ -283,6 +291,29 @@ export default function NewInvoicePage() {
           <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t("new.payment.title")}
           </div>
+
+          {/* Display IBAN/BIC from profile (read-only) */}
+          {(profileIban || profileBic) && (
+            <div className="mb-4 rounded-md border border-muted bg-muted/20 p-4">
+              <div className="text-sm font-medium mb-2">
+                {t("new.payment.fromProfile")}
+              </div>
+              {profileIban && (
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-medium">IBAN:</span> {profileIban}
+                </div>
+              )}
+              {profileBic && (
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-medium">BIC:</span> {profileBic}
+                </div>
+              )}
+              <div className="text-xs text-muted-foreground mt-2">
+                {t("new.payment.editInProfile")}
+              </div>
+            </div>
+          )}
+
           <PaymentFieldGroup control={control} disabled={isSubmitting} />
         </div>
       </div>

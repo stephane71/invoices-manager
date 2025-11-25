@@ -64,9 +64,7 @@ export const invoiceSchema = z.object({
   due_date: z.string().optional(),
   pdf_url: z.url().optional().nullable(),
   number: z.string(),
-  // Payment information (all optional)
-  payment_iban: z.string().optional().nullable(),
-  payment_bic: z.string().optional().nullable(),
+  // Payment information (payment_link and payment_free_text only - IBAN/BIC are in profile)
   payment_link: z.string().optional().nullable(),
   payment_free_text: z.string().optional().nullable(),
 });
@@ -77,6 +75,8 @@ export const profileSchema = z.object({
   email: optionalEmail,
   phone: optionalPhone,
   address: z.string().optional().nullable(),
+  payment_iban: z.string().optional().nullable(),
+  payment_bic: z.string().optional().nullable(),
 });
 
 export type ProductInput = z.infer<typeof productSchema>;

@@ -62,14 +62,16 @@ export async function POST(
     // Build payment information text
     const paymentInfoParts: string[] = [];
 
-    // @ts-expect-error - payment fields will be added to invoice type via migration
-    if (invoice.payment_iban && invoice.payment_bic) {
+    // Get IBAN/BIC from profile (not from invoice)
+    // @ts-expect-error - payment fields will be added to profile type via migration
+    if (profile?.payment_iban && profile?.payment_bic) {
       paymentInfoParts.push(
-        // @ts-expect-error - payment fields will be added to invoice type via migration
-        `IBAN: ${invoice.payment_iban}\nBIC: ${invoice.payment_bic}`
+        // @ts-expect-error - payment fields will be added to profile type via migration
+        `IBAN: ${profile.payment_iban}\nBIC: ${profile.payment_bic}`
       );
     }
 
+    // Get payment link and free text from invoice
     // @ts-expect-error - payment fields will be added to invoice type via migration
     if (invoice.payment_link) {
       // @ts-expect-error - payment fields will be added to invoice type via migration

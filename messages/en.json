@@ -139,6 +139,8 @@
       },
       "payment": {
         "title": "Payment information",
+        "fromProfile": "Bank details (from your profile)",
+        "editInProfile": "To edit, go to your profile settings",
         "rib": "Bank details (RIB)",
         "iban": "IBAN",
         "ibanPlaceholder": "FR76 1234 5678 9012 3456 7890 123",
@@ -172,7 +174,13 @@
       "phone": "Phone",
       "phonePlaceholder": "+1 555 123 4567",
       "address": "Address",
-      "addressPlaceholder": "123 Main St, 10001 New York"
+      "addressPlaceholder": "123 Main St, 10001 New York",
+      "paymentSection": "Payment Information",
+      "paymentIban": "IBAN",
+      "paymentIbanPlaceholder": "FR76 1234 5678 9012 3456 7890 123",
+      "paymentBic": "BIC/SWIFT",
+      "paymentBicPlaceholder": "BNPAFRPPXXX",
+      "paymentHelp": "This information will be automatically included in your invoices"
     },
     "status": {
       "updated": "Profile updated"
