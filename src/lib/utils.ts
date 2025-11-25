@@ -1,7 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
+import { isValidPhoneNumber as isValidPhoneNumberFormLib } from "libphonenumber-js";
 import { twMerge } from "tailwind-merge";
-import { APP_LOCALE, PRICE_PRECISION } from "@/lib/constants";
 import { z } from "zod";
+import { APP_LOCALE, PRICE_PRECISION } from "@/lib/constants";
 
 /**
  * Extract field errors from a Zod SafeParseError result
@@ -102,3 +103,14 @@ export function numberToCurrency(
     maximumFractionDigits: precision,
   });
 }
+
+export const isValidPhoneNumber = (
+  phoneNumber: string | null | undefined,
+  { isOptional = true }: { isOptional?: boolean } = {},
+) => {
+  if (isOptional && !phoneNumber) {
+    return true;
+  }
+
+  return isValidPhoneNumberFormLib(phoneNumber || "");
+};

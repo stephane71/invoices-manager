@@ -1,11 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { centsToCurrency, parsePrice } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { centsToCurrency, parsePrice } from "@/lib/utils";
 
 export interface PriceInputProps
-  extends Omit<React.ComponentProps<typeof Input>, "value" | "onChange" | "type"> {
+  extends Omit<
+    React.ComponentProps<typeof Input>,
+    "value" | "onChange" | "type"
+  > {
   /**
    * Price value in cents (integer)
    */

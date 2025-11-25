@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Client } from "@/types/models";
-import type { FieldErrors } from "@/components/clients/ClientForm";
+import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
 
 export class ClientCreationError extends Error {
   fieldErrors?: FieldErrors;

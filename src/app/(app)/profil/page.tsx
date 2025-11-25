@@ -1,24 +1,59 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { isValidPhoneNumber } from "@/lib/utils";
+
+const profileSchema = z.object({
+  fullName: z.string().min(1, "Validation.name.required"),
+  email: z.email("Validation.email.invalid"),
+  phone: z
+    .string()
+    .refine(
+      (val) => isValidPhoneNumber(val, { isOptional: true }),
+      "Validation.phone.invalid",
+    ),
+  address: z.string().min(1, "Validation.address.required"),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfilPage() {
-  const t = useTranslations("Profile");
-  const c = useTranslations("Common");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const profilTranslate = useTranslations("Profile");
+  const commonTranslate = useTranslations("Common");
+  const translate = useTranslations();
+
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [phoneError, setPhoneError] = useState<string>("");
+
+  const form = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      address: "",
+    },
+  });
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = form;
 
   useEffect(() => {
     let cancelled = false;
@@ -27,19 +62,25 @@ export default function ProfilPage() {
         setError(null);
         const res = await fetch("/api/profile", { cache: "no-store" });
         if (!res.ok) {
-          throw new Error(t("error.load", { status: res.status }));
+          throw new Error(
+            profilTranslate("error.load", { status: res.status }),
+          );
         }
         const json = await res.json();
         const p = json?.data;
         if (p && !cancelled) {
-          setFullName(p.full_name || "");
-          setEmail(p.email || "");
-          setPhone(p.phone || "");
-          setAddress(p.address || "");
+          reset({
+            fullName: p.full_name || "",
+            email: p.email || "",
+            phone: p.phone || "",
+            address: p.address || "",
+          });
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : t("error.unknown"));
+          setError(
+            e instanceof Error ? e.message : profilTranslate("error.unknown"),
+          );
         }
       } finally {
         if (!cancelled) {
@@ -53,57 +94,40 @@ export default function ProfilPage() {
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [profilTranslate, reset]);
 
-  const handlePhoneBlur = () => {
-    const phoneValue = phone.trim();
-    let errorMessage = "";
-    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      errorMessage = t("error.invalidPhone");
-    }
-    setPhoneError(errorMessage);
-  };
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setSaving(true);
+  async function onSubmit(data: ProfileFormData) {
     setError(null);
     setSuccess(null);
-
-    // Validate phone before submitting
-    const phoneValue = phone.trim();
-    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      setPhoneError(t("error.invalidPhone"));
-      setSaving(false);
-      return;
-    }
 
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          full_name: fullName,
-          email,
-          phone,
-          address,
+          full_name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
         }),
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({ error: null }));
-        throw new Error(json.error || t("error.save", { status: res.status }));
+        throw new Error(
+          json.error || profilTranslate("error.save", { status: res.status }),
+        );
       }
-      setSuccess(t("status.updated"));
+      setSuccess(profilTranslate("status.updated"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("error.unknown"));
-    } finally {
-      setSaving(false);
+      setError(
+        e instanceof Error ? e.message : profilTranslate("error.unknown"),
+      );
     }
   }
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-semibold">{t("title")}</h1>
+      <h1 className="text-xl font-semibold">{profilTranslate("title")}</h1>
 
       {error && (
         <div className="text-sm text-red-600" role="alert">
@@ -116,73 +140,133 @@ export default function ProfilPage() {
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-6">
-        {/* Full name */}
-        <div className="space-y-2">
-          <Label htmlFor="fullName">{t("form.fullName")}</Label>
-          <Input
-            id="fullName"
-            placeholder={t("form.fullNamePlaceholder")}
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            icon="User"
-            required
-            disabled={loading || saving}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FieldGroup>
+          {/* Full name */}
+          <Controller
+            name="fullName"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.fullName")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={profilTranslate("form.fullNamePlaceholder")}
+                  icon="User"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
           />
-        </div>
 
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">{t("form.email")}</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder={t("form.emailPlaceholder")}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            icon="Mail"
-            required
-            disabled={loading || saving}
+          {/* Email */}
+          <Controller
+            name="email"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.email")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="email"
+                  placeholder={profilTranslate("form.emailPlaceholder")}
+                  icon="Mail"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
           />
-        </div>
 
-        {/* Phone */}
-        <div className="space-y-2">
-          <Label htmlFor="phone">{t("form.phone")}</Label>
-          <Input
-            id="phone"
-            type="tel"
-            placeholder={t("form.phonePlaceholder")}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            onBlur={handlePhoneBlur}
-            icon="Phone"
-            className={phoneError ? "border-red-500" : ""}
-            required
-            disabled={loading || saving}
+          {/* Phone */}
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.phone")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="tel"
+                  placeholder={profilTranslate("form.phonePlaceholder")}
+                  icon="Phone"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
           />
-          {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
-        </div>
 
-        {/* Address */}
-        <div className="space-y-2">
-          <Label htmlFor="address">{t("form.address")}</Label>
-          <Input
-            id="address"
-            placeholder={t("form.addressPlaceholder")}
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            icon="MapPin"
-            required
-            disabled={loading || saving}
+          {/* Address */}
+          <Controller
+            name="address"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.address")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={profilTranslate("form.addressPlaceholder")}
+                  icon="MapPin"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
           />
-        </div>
 
-        <div className="pt-2">
-          <Button type="submit" disabled={loading || saving}>
-            {saving ? c("saving") : c("save")}
-          </Button>
-        </div>
+          <div className="pt-2">
+            <Button type="submit" disabled={loading || isSubmitting}>
+              {isSubmitting
+                ? commonTranslate("saving")
+                : commonTranslate("save")}
+            </Button>
+          </div>
+        </FieldGroup>
       </form>
     </div>
   );

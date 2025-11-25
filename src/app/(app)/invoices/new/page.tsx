@@ -1,21 +1,30 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import type { Client, Product } from "@/types/models";
 import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
+import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import ClientBlock from "@/components/invoices/ClientBlock";
+import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
+import {
+  INVOICE_ITEM_EMPTY,
+  InvoiceForm,
+  invoiceFormSchema,
+  InvoiceItem,
+} from "@/components/invoices/invoices";
+import { Button } from "@/components/ui/button";
+import { FieldError } from "@/components/ui/field";
 import {
   ClientCreationError,
   useCreateNewClientFromNewInvoice,
 } from "@/hooks/useCreateNewClientFromNewInvoice";
 import { useMinDelay } from "@/hooks/useMinDelay";
-import ArticlesBlock, {
-  type InvoiceItem,
-} from "@/components/invoices/ArticlesBlock";
-import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
-import type { FieldErrors } from "@/components/clients/ClientForm";
+import { centsToCurrencyString } from "@/lib/utils";
+import type { Client, Product } from "@/types/models";
 
 const ERROR_DEFAULT = "";
 const FIELD_ERROR_DEFAULT = undefined;
@@ -24,15 +33,11 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-// Replace local Item type with the shared InvoiceItem
-type Item = InvoiceItem;
-
 export default function NewInvoicePage() {
   const router = useRouter();
   const [clients, setClients] = useState<Client[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(ERROR_DEFAULT);
   const [clientFieldErrors, setClientFieldErrors] = useState<
     FieldErrors | typeof FIELD_ERROR_DEFAULT
@@ -40,19 +45,27 @@ export default function NewInvoicePage() {
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
-  const [number, setNumber] = useState("");
-  const [clientId, setClientId] = useState("");
-  const [issueDate, setIssueDate] = useState(todayISO());
-  const [items, setItems] = useState<Item[]>([
-    {
-      product_id: "",
-      name: "",
-      quantity: 1,
-      price: 0, // in cents
-      total: 0, // in cents
-      quantityInput: "1",
+  const form = useForm<InvoiceForm>({
+    resolver: zodResolver(invoiceFormSchema),
+    defaultValues: {
+      number: "",
+      clientId: "",
+      issueDate: todayISO(),
+      items: [INVOICE_ITEM_EMPTY],
     },
-  ]);
+    mode: "onChange",
+  });
+
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    control,
+    formState: { isSubmitting, errors },
+  } = form;
+
+  const clientId = watch("clientId");
+  const items = watch("items");
 
   useEffect(() => {
     let active = true;
@@ -78,12 +91,15 @@ export default function NewInvoicePage() {
     [items],
   );
 
-  // Hook to create or resolve client selection from inline new client form
+  /* CLIENT */
+
+  const handleSelectClient = (id: string) => {
+    setValue("clientId", id, { shouldValidate: true });
+  };
+
   const createClientFromSelection = useCreateNewClientFromNewInvoice({});
-  // Loading controller to keep the client block overlay visible for at least 2 seconds
   const { pending: clientBlockLoading, wrap } = useMinDelay(2000);
 
-  // Called by ClientBlock when user completes the new client name
   const onRequestCreateNewClient = async (clientData: {
     name: string;
     email?: string;
@@ -96,7 +112,7 @@ export default function NewInvoicePage() {
       setError(ERROR_DEFAULT);
 
       const newId = await wrap(() => createClientFromSelection(clientData));
-      setClientId(newId);
+      setValue("clientId", newId, { shouldValidate: true });
       // Optimistic update without triggering a new request
       // Ensure the new client appears in the select immediately
       setClients((prev) => {
@@ -130,165 +146,46 @@ export default function NewInvoicePage() {
     }
   };
 
+  /* ARTICLES */
+
   function addItem() {
-    setItems((prev) => [
-      ...prev,
-      {
-        product_id: "",
-        name: "",
-        quantity: 1,
-        price: 0, // in cents
-        total: 0, // in cents
-        quantityInput: "1",
-      },
-    ]);
+    setValue("items", [...items, INVOICE_ITEM_EMPTY], { shouldValidate: true });
   }
 
   function removeItem(index: number) {
-    setItems((prev) => prev.filter((_, i) => i !== index));
+    setValue(
+      "items",
+      items.filter((_, i) => i !== index),
+      { shouldValidate: true },
+    );
   }
 
-  function onChangeProduct(index: number, productId: string) {
-    setItems((prev) => {
-      const next = [...prev];
-      const prod = products.find((p) => p.id === productId);
-      const priceCents = prod?.price || 0; // price is already in cents from DB
-      const name = prod?.name || "";
-      const existing = next[index];
-      const qty = existing?.quantity ?? 0;
-      const quantityInput = existing?.quantityInput ?? (qty ? String(qty) : "");
-      const totalCents = Math.round(priceCents * qty); // total in cents
-      next[index] = {
-        ...existing,
-        product_id: productId,
-        name,
-        quantity: qty,
-        price: priceCents,
-        total: totalCents,
-        quantityInput,
-      } as Item;
-      return next;
-    });
+  function updateItem(index: number, updatedItem: InvoiceItem) {
+    const next = [...items];
+    next[index] = updatedItem;
+    setValue("items", next, { shouldValidate: true });
   }
 
-  function onChangeQty(index: number, rawValue: string) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
+  /* INVOICE SUBMIT */
 
-      // Allow temporary empty string while typing
-      if (rawValue === "") {
-        next[index] = {
-          ...item,
-          quantityInput: "",
-          quantity: 0,
-          total: 0,
-        } as Item;
-        return next;
-      }
-
-      // Parse positive integer quantity
-      const parsed = parseInt(rawValue, 10);
-      if (!Number.isFinite(parsed) || parsed < 1) {
-        next[index] = {
-          ...item,
-          quantityInput: rawValue,
-          quantity: 0,
-          total: 0,
-        } as Item;
-        return next;
-      }
-
-      const quantity = Math.floor(parsed);
-      const priceCents = Number(item.price) || 0; // price in cents
-      const totalCents = Math.round(priceCents * quantity); // total in cents
-      next[index] = {
-        ...item,
-        quantityInput: String(quantity),
-        quantity,
-        total: totalCents,
-      } as Item;
-      return next;
-    });
-  }
-
-  function onBlurQty(index: number) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
-      const raw = (item as Item).quantityInput ?? String(item.quantity ?? "");
-      if (raw === "" || item.quantity === 0) {
-        const quantity = 1;
-        const priceCents = Number(item.price) || 0; // price in cents
-        const totalCents = Math.round(priceCents * quantity); // total in cents
-        next[index] = {
-          ...item,
-          quantityInput: "1",
-          quantity,
-          total: totalCents,
-        } as Item;
-      }
-      return next;
-    });
-  }
-
-  function onChangePrice(index: number, cents: number) {
-    setItems((prev) => {
-      const next = [...prev];
-      const item = next[index];
-      const qty = Number(item.quantity) || 0;
-      const totalCents = Math.round(cents * qty); // total in cents
-      next[index] = {
-        ...item,
-        price: cents,
-        total: totalCents,
-      } as Item;
-      return next;
-    });
-  }
-
-  async function save() {
+  async function onSubmit(data: InvoiceForm) {
     setError(ERROR_DEFAULT);
 
-    if (!number.trim()) {
-      setError(t("new.error.numberRequired"));
-      return;
-    }
-    if (!clientId) {
-      setError(t("new.error.clientRequired"));
-      return;
-    }
-    if (items.length === 0) {
-      setError(t("new.error.itemsRequired"));
-      return;
-    }
-    // validate all items
-    const valid = items.every(
-      (it) => it.product_id && it.name && it.quantity > 0,
-    );
-    if (!valid) {
-      setError(t("new.error.itemsIncomplete"));
-      return;
-    }
-
-    setSaving(true);
     try {
       const res = await fetch("/api/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          number: number.trim(),
-          client_id: clientId,
-          items,
+          number: data.number.trim(),
+          client_id: data.clientId,
+          items: data.items,
           total_amount: +totalAmount.toFixed(2),
-          issue_date: issueDate,
-          // status omitted to use default "draft"
+          issue_date: data.issueDate,
         }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}) as never);
         const serverMessage: string | undefined = err?.error || err?.message;
-        // If the backend signals a duplicate number (409), or the message suggests it
         if (
           res.status === 409 ||
           /duplicate|exists|unique/i.test(String(serverMessage))
@@ -302,8 +199,6 @@ export default function NewInvoicePage() {
       const message =
         e instanceof Error ? e.message : t("new.error.createFail");
       setError(message);
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -316,54 +211,68 @@ export default function NewInvoicePage() {
       <div className="pb-28">
         <h1 className="text-xl font-semibold mb-4">{t("new.title")}</h1>
 
-        <div className="space-y-4 mb-8">
-          <div className="grid gap-2">
-            <label className="text-sm">{t("new.number")}</label>
-            <input
-              type="text"
-              className="h-10 rounded-md border px-3 bg-background"
-              value={number}
-              onChange={(e) => setNumber(e.target.value)}
-              placeholder={t("new.numberPlaceholder")}
-              required
-            />
+        <InvoiceFieldGroup control={control} />
+
+        <div>
+          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("new.client")}
           </div>
-          <div className="grid gap-2">
-            <label className="text-sm">{t("new.issueDate")}</label>
-            <input
-              type="date"
-              className="h-10 rounded-md border px-3 bg-background"
-              value={issueDate}
-              onChange={(e) => setIssueDate(e.target.value)}
-            />
-          </div>
+
+          <ClientBlock
+            clients={clients}
+            clientId={clientId}
+            onSelectClientAction={handleSelectClient}
+            onRequestCreateNewClientAction={onRequestCreateNewClient}
+            isLoading={clientBlockLoading}
+            clientFormErrors={clientFieldErrors}
+          />
+          {errors.clientId && (
+            <FieldError>
+              {errors.clientId?.message ? t(errors.clientId.message) : ""}
+            </FieldError>
+          )}
         </div>
 
-        <ClientBlock
-          clients={clients}
-          clientId={clientId}
-          onSelectClientAction={setClientId}
-          onRequestCreateNewClientAction={onRequestCreateNewClient}
-          isLoading={clientBlockLoading}
-          clientFormErrors={clientFieldErrors}
-          error={error}
-        />
+        <div>
+          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("new.items")}
+          </div>
 
-        <ArticlesBlock
-          products={products}
-          items={items}
-          onAddAction={addItem}
-          onRemoveAction={removeItem}
-          onChangeProductAction={onChangeProduct}
-          onChangeQtyAction={onChangeQty}
-          onBlurQtyAction={onBlurQty}
-          onChangePriceAction={onChangePrice}
-        />
+          <div className="space-y-2">
+            <div className="space-y-2">
+              {items.map((item, idx) => (
+                <ArticleFieldGroup
+                  key={idx}
+                  item={item}
+                  products={products}
+                  onChange={(updatedItem) => updateItem(idx, updatedItem)}
+                  onRemove={() => removeItem(idx)}
+                />
+              ))}
+            </div>
 
-        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            <div className="flex items-center justify-end">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="w-full"
+                onClick={addItem}
+              >
+                {t("new.addItem")}
+              </Button>
+            </div>
+          </div>
+
+          {errors.items && (
+            <FieldError>
+              {errors.items?.message ? t(errors.items.message) : ""}
+            </FieldError>
+          )}
+        </div>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
+        {error && <div className="text-sm text-red-600">{error}</div>}
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
             {t("new.total")}{" "}
@@ -374,12 +283,12 @@ export default function NewInvoicePage() {
             <Button
               variant="outline"
               onClick={() => router.push("/invoices")}
-              disabled={saving}
+              disabled={isSubmitting}
             >
               {c("cancel")}
             </Button>
-            <Button onClick={save} disabled={saving}>
-              {saving ? c("saving") : t("new.create")}
+            <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+              {isSubmitting ? c("saving") : t("new.create")}
             </Button>
           </div>
         </div>

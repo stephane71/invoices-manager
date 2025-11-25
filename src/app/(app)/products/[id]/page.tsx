@@ -1,11 +1,14 @@
 "use client";
+
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { PriceInput } from "@/components/ui/price-input";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { ProductForm, productFormSchema } from "@/components/products/products";
+import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 
 export default function ProductDetailPage({
   params,
@@ -13,19 +16,32 @@ export default function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    price: 0,
-    image_url: "" as string | null,
-  });
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
-    setForm((f) => ({ ...f, image_url: url })),
+    setImageUrl(url),
   );
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const t = useTranslations("Products");
   const c = useTranslations("Common");
+
+  const form = useForm<ProductForm>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+    },
+  });
+
+  const [error, setError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError: setFieldError,
+    formState: { isSubmitting },
+  } = form;
 
   useEffect(() => {
     let active = true;
@@ -35,26 +51,50 @@ export default function ProductDetailPage({
         return;
       }
 
-      setForm({
+      reset({
         name: d.name || "",
         description: d.description || "",
         price: d.price || 0,
-        image_url: d.image_url || null,
       });
+      setImageUrl(d.image_url || null);
       setLoading(false);
     });
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, reset]);
 
-  async function save() {
-    const res = await fetch(`/api/products/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(form),
-    });
-    if (res.ok) {
-      router.push("/products");
+  async function onSubmit(data: ProductForm) {
+    setError("");
+
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          image_url: imageUrl,
+        }),
+      });
+
+      if (res.ok) {
+        router.push("/products");
+      } else {
+        const responseData = await res.json();
+
+        if (responseData.fields) {
+          Object.entries(responseData.fields).forEach(([key, message]) => {
+            setFieldError(key as keyof ProductForm, {
+              type: "server",
+              message: message as string,
+            });
+          });
+        } else {
+          setError(responseData.error || t("edit.error.saveFail"));
+        }
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("edit.error.saveFail"));
     }
   }
 
@@ -75,57 +115,28 @@ export default function ProductDetailPage({
   return (
     <div className="space-y-3">
       <h1 className="text-xl font-semibold">{t("edit.title")}</h1>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.name")}</label>
-        <input
-          className="h-10 rounded-md border px-3 bg-background"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.description")}</label>
-        <textarea
-          className="min-h-20 rounded-md border px-3 py-2 bg-background"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.price")}</label>
-        <PriceInput
-          value={form.price}
-          onChange={(cents) => setForm({ ...form, price: cents })}
-          placeholder="0,00"
-        />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm">{t("new.form.image")}</label>
-        <input
-          type="file"
-          accept="image/*"
-          className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
-          onChange={(e) => onSelectImage(e.target.files?.[0])}
-          disabled={uploading}
-        />
-        {form.image_url ? (
-          <Image
-            src={form.image_url}
-            alt={c("preview")}
-            className="h-16 w-16 object-cover rounded"
-            width={64}
-            height={64}
-          />
-        ) : null}
-      </div>
-      <div className="flex gap-2">
-        <Button onClick={save} disabled={uploading}>
-          {c("save")}
-        </Button>
-        <Button variant="destructive" onClick={remove}>
-          {c("delete")}
-        </Button>
-      </div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ProductFieldGroup
+          imageUrl={imageUrl}
+          onSelectImage={onSelectImage}
+          control={control}
+          disabled={isSubmitting || uploading}
+        >
+          <Button type="submit" disabled={isSubmitting || uploading}>
+            {c("save")}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={remove}
+            disabled={isSubmitting}
+          >
+            {c("delete")}
+          </Button>
+        </ProductFieldGroup>
+
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      </form>
     </div>
   );
 }

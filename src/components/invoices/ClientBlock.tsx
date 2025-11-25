@@ -1,7 +1,12 @@
-"use client";
-import { useCallback, useEffect, useState } from "react";
-import type { Client } from "@/types/models";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  ClientFieldGroup,
+  type FieldErrors,
+} from "@/components/clients/ClientFieldGroup";
+import { ClientForm, clientFormSchema } from "@/components/clients/clients";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,15 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  ClientForm,
-  type ClientFormData,
-  type FieldErrors,
-} from "@/components/clients/ClientForm";
-import { clientSchema } from "@/lib/validation";
-import { getZodFieldErrors } from "@/lib/utils";
+import type { Client } from "@/types/models";
 
-const FORM_DATA_DEFAULT: ClientFormData = {
+const FORM_DATA_DEFAULT: ClientForm = {
   name: "",
   email: "",
   phone: "",
@@ -38,7 +37,6 @@ export type ClientBlockProps = {
   }) => void;
   isLoading: boolean;
   clientFormErrors?: FieldErrors;
-  error?: string;
 };
 
 export default function ClientBlock({
@@ -48,42 +46,37 @@ export default function ClientBlock({
   onRequestCreateNewClientAction,
   isLoading,
   clientFormErrors = {},
-  error = "",
 }: ClientBlockProps) {
   const t = useTranslations("Invoices");
 
   // UI state for the inline "direct new client" form
   const [showNewForm, setShowNewForm] = useState(false);
-  const [formData, setFormData] = useState<ClientFormData>(FORM_DATA_DEFAULT);
-  const [localFieldErrors, setLocalFieldErrors] = useState<FieldErrors>({});
 
-  const validateForm = useCallback((data: ClientFormData) => {
-    const result = clientSchema.safeParse({
-      name: data.name.trim(),
-      email: data.email.trim() || undefined,
-      phone: data.phone.trim() || undefined,
-      address: data.address.trim() || undefined,
-    });
+  const form = useForm<ClientForm>({
+    resolver: zodResolver(clientFormSchema),
+    defaultValues: FORM_DATA_DEFAULT,
+  });
 
-    if (!result.success) {
-      setLocalFieldErrors(getZodFieldErrors<FieldErrors>(result.error));
-    } else {
-      setLocalFieldErrors({});
+  const { control, reset, handleSubmit, setError: setFieldError } = form;
+
+  // Apply external errors from parent
+  useEffect(() => {
+    if (clientFormErrors) {
+      Object.entries(clientFormErrors).forEach(([key, message]) => {
+        if (message) {
+          setFieldError(key as keyof ClientForm, {
+            type: "server",
+            message,
+          });
+        }
+      });
     }
-  }, []);
-
-  const handleFormChange = useCallback(
-    (data: ClientFormData) => {
-      setFormData(data);
-      validateForm(data);
-    },
-    [validateForm],
-  );
+  }, [clientFormErrors, setFieldError]);
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
-    setFormData(FORM_DATA_DEFAULT);
-  }, []);
+    reset(FORM_DATA_DEFAULT);
+  }, [reset]);
 
   // When user selects an existing client, collapse and reset the direct-new form
   const handleSelect = useCallback(
@@ -111,24 +104,26 @@ export default function ClientBlock({
     }
   }, [clientId, showNewForm, resetNewForm]);
 
-  // Trigger creation request to parent when at least the name is provided
-  const triggerCreateIfEligible = useCallback(() => {
-    if (!showNewForm) {
-      return;
-    }
+  const onSubmit = useCallback(
+    (data: ClientForm) => {
+      if (!showNewForm) {
+        return;
+      }
 
-    const name = formData.name.trim();
-    if (!name) {
-      return;
-    }
+      const name = data.name.trim();
+      if (!name) {
+        return;
+      }
 
-    onRequestCreateNewClientAction({
-      name,
-      email: formData.email.trim() ? formData.email.trim() : undefined,
-      phone: formData.phone.trim() ? formData.phone.trim() : undefined,
-      address: formData.address.trim() ? formData.address.trim() : undefined,
-    });
-  }, [showNewForm, formData, onRequestCreateNewClientAction]);
+      onRequestCreateNewClientAction({
+        name,
+        email: data.email.trim() || undefined,
+        phone: data.phone.trim() || undefined,
+        address: data.address.trim() || undefined,
+      });
+    },
+    [showNewForm, onRequestCreateNewClientAction],
+  );
 
   return (
     <div className="relative">
@@ -139,10 +134,6 @@ export default function ClientBlock({
           </span>
         </div>
       )}
-
-      <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t("new.client")}
-      </div>
 
       {/* Existing client selection */}
       <div className="grid gap-2">
@@ -166,7 +157,7 @@ export default function ClientBlock({
       {/* Inline new client form trigger / content */}
       {!showNewForm ? (
         <Button
-          variant="outline"
+          variant="secondary"
           size="lg"
           onClick={revealNewForm}
           className="w-full"
@@ -175,24 +166,16 @@ export default function ClientBlock({
         </Button>
       ) : (
         <div className="mt-2 grid gap-2 rounded-md border p-3">
-          <ClientForm
-            value={formData}
-            onChange={handleFormChange}
-            fieldErrors={{ ...localFieldErrors, ...clientFormErrors }}
-            error={error}
-          >
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={triggerCreateIfEligible}
-              disabled={!formData.name.trim()}
-            >
-              {t("new.createClient")}
-            </Button>
-            <Button variant="ghost" size="lg" onClick={resetNewForm}>
-              {t("new.cancel")}
-            </Button>
-          </ClientForm>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ClientFieldGroup control={control} disabled={isLoading}>
+              <Button variant="secondary" size="lg" type="submit">
+                {t("new.createClient")}
+              </Button>
+              <Button variant="ghost" size="lg" onClick={resetNewForm}>
+                {t("new.cancel")}
+              </Button>
+            </ClientFieldGroup>
+          </form>
         </div>
       )}
     </div>
