@@ -62,7 +62,6 @@ export default function NewInvoicePage() {
     handleSubmit,
     control,
     formState: { isSubmitting, errors },
-    trigger,
   } = form;
 
   const clientId = watch("clientId");
@@ -92,12 +91,15 @@ export default function NewInvoicePage() {
     [items],
   );
 
-  // Hook to create or resolve client selection from inline new client form
+  /* CLIENT */
+
+  const handleSelectClient = (id: string) => {
+    setValue("clientId", id, { shouldValidate: true });
+  };
+
   const createClientFromSelection = useCreateNewClientFromNewInvoice({});
-  // Loading controller to keep the client block overlay visible for at least 2 seconds
   const { pending: clientBlockLoading, wrap } = useMinDelay(2000);
 
-  // Called by ClientBlock when user completes the new client name
   const onRequestCreateNewClient = async (clientData: {
     name: string;
     email?: string;
@@ -110,7 +112,7 @@ export default function NewInvoicePage() {
       setError(ERROR_DEFAULT);
 
       const newId = await wrap(() => createClientFromSelection(clientData));
-      setValue("clientId", newId);
+      setValue("clientId", newId, { shouldValidate: true });
       // Optimistic update without triggering a new request
       // Ensure the new client appears in the select immediately
       setClients((prev) => {
@@ -129,7 +131,6 @@ export default function NewInvoicePage() {
           } as Client,
         ];
       });
-      void trigger();
     } catch (e: unknown) {
       if (e instanceof ClientCreationError) {
         if (e.fieldErrors) {
@@ -145,22 +146,27 @@ export default function NewInvoicePage() {
     }
   };
 
+  /* ARTICLES */
+
   function addItem() {
-    setValue("items", [...items, INVOICE_ITEM_EMPTY]);
+    setValue("items", [...items, INVOICE_ITEM_EMPTY], { shouldValidate: true });
   }
 
   function removeItem(index: number) {
     setValue(
       "items",
       items.filter((_, i) => i !== index),
+      { shouldValidate: true },
     );
   }
 
   function updateItem(index: number, updatedItem: InvoiceItem) {
     const next = [...items];
     next[index] = updatedItem;
-    setValue("items", next);
+    setValue("items", next, { shouldValidate: true });
   }
+
+  /* INVOICE SUBMIT */
 
   async function onSubmit(data: InvoiceForm) {
     setError(ERROR_DEFAULT);
@@ -195,11 +201,6 @@ export default function NewInvoicePage() {
       setError(message);
     }
   }
-
-  const handleSelectClient = (id: string) => {
-    setValue("clientId", id);
-    void trigger();
-  };
 
   if (loading) {
     return <div className="p-4">{c("loading")}</div>;
@@ -286,7 +287,7 @@ export default function NewInvoicePage() {
             >
               {c("cancel")}
             </Button>
-            <Button onClick={handleSubmit(onSubmit)}>
+            <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
               {isSubmitting ? c("saving") : t("new.create")}
             </Button>
           </div>
