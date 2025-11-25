@@ -25,8 +25,6 @@ const profileSchema = z.object({
       "Validation.phone.invalid",
     ),
   address: z.string().min(1, "Validation.address.required"),
-  paymentIban: z.string().optional().or(z.literal("")),
-  paymentBic: z.string().optional().or(z.literal("")),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -47,8 +45,6 @@ export default function ProfilPage() {
       email: "",
       phone: "",
       address: "",
-      paymentIban: "",
-      paymentBic: "",
     },
   });
 
@@ -78,8 +74,6 @@ export default function ProfilPage() {
             email: p.email || "",
             phone: p.phone || "",
             address: p.address || "",
-            paymentIban: p.payment_iban || "",
-            paymentBic: p.payment_bic || "",
           });
         }
       } catch (e) {
@@ -115,8 +109,6 @@ export default function ProfilPage() {
           email: data.email,
           phone: data.phone,
           address: data.address,
-          payment_iban: data.paymentIban?.trim() || null,
-          payment_bic: data.paymentBic?.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -266,73 +258,6 @@ export default function ProfilPage() {
               </Field>
             )}
           />
-
-          {/* Payment Information Section */}
-          <div className="pt-6 border-t">
-            <h3 className="text-sm font-semibold mb-4">
-              {profilTranslate("form.paymentSection")}
-            </h3>
-
-            {/* Payment IBAN */}
-            <Controller
-              name="paymentIban"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    {profilTranslate("form.paymentIban")}
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder={profilTranslate("form.paymentIbanPlaceholder")}
-                    icon="CreditCard"
-                    aria-invalid={fieldState.invalid}
-                    disabled={loading || isSubmitting}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError>
-                      {fieldState.error?.message
-                        ? translate(fieldState.error.message)
-                        : ""}
-                    </FieldError>
-                  )}
-                </Field>
-              )}
-            />
-
-            {/* Payment BIC */}
-            <Controller
-              name="paymentBic"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    {profilTranslate("form.paymentBic")}
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder={profilTranslate("form.paymentBicPlaceholder")}
-                    icon="Building"
-                    aria-invalid={fieldState.invalid}
-                    disabled={loading || isSubmitting}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError>
-                      {fieldState.error?.message
-                        ? translate(fieldState.error.message)
-                        : ""}
-                    </FieldError>
-                  )}
-                </Field>
-              )}
-            />
-
-            <p className="text-xs text-muted-foreground mt-2">
-              {profilTranslate("form.paymentHelp")}
-            </p>
-          </div>
 
           <div className="pt-2">
             <Button type="submit" disabled={loading || isSubmitting}>

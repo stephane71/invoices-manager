@@ -10,6 +10,7 @@ import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
 import { PaymentFieldGroup } from "@/components/invoices/PaymentFieldGroup";
+import { IbanBicFieldGroup } from "@/components/profile/IbanBicFieldGroup";
 import {
   INVOICE_ITEM_EMPTY,
   InvoiceForm,
@@ -71,6 +72,19 @@ export default function NewInvoicePage() {
 
   const clientId = watch("clientId");
   const items = watch("items");
+
+  const loadProfileData = async () => {
+    try {
+      const res = await fetch("/api/profile");
+      const profileData = await res.json();
+      if (profileData?.data) {
+        setProfileIban(profileData.data.payment_iban || null);
+        setProfileBic(profileData.data.payment_bic || null);
+      }
+    } catch (error) {
+      console.error("Failed to load profile data:", error);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -292,27 +306,14 @@ export default function NewInvoicePage() {
             {t("new.payment.title")}
           </div>
 
-          {/* Display IBAN/BIC from profile (read-only) */}
-          {(profileIban || profileBic) && (
-            <div className="mb-4 rounded-md border border-muted bg-muted/20 p-4">
-              <div className="text-sm font-medium mb-2">
-                {t("new.payment.fromProfile")}
-              </div>
-              {profileIban && (
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">IBAN:</span> {profileIban}
-                </div>
-              )}
-              {profileBic && (
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">BIC:</span> {profileBic}
-                </div>
-              )}
-              <div className="text-xs text-muted-foreground mt-2">
-                {t("new.payment.editInProfile")}
-              </div>
-            </div>
-          )}
+          {/* IBAN/BIC from profile (editable component) */}
+          <div className="mb-4">
+            <IbanBicFieldGroup
+              initialIban={profileIban}
+              initialBic={profileBic}
+              onSaveSuccess={loadProfileData}
+            />
+          </div>
 
           <PaymentFieldGroup control={control} disabled={isSubmitting} />
         </div>
