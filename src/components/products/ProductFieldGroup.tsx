@@ -1,4 +1,8 @@
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { ReactNode } from "react";
 import { Control, Controller } from "react-hook-form";
+import { ProductForm } from "@/components/products/products";
 import {
   Field,
   FieldError,
@@ -7,10 +11,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
-import Image from "next/image";
-import { ReactNode } from "react";
-import { ProductForm } from "@/components/products/products";
-import { useTranslations } from "next-intl";
 
 interface ProductFieldGroupProps {
   control: Control<ProductForm>;
@@ -45,7 +45,11 @@ export const ProductFieldGroup = ({
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
@@ -65,7 +69,11 @@ export const ProductFieldGroup = ({
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
@@ -82,7 +90,11 @@ export const ProductFieldGroup = ({
               placeholder="0,00"
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
