@@ -62,6 +62,7 @@ export default function NewInvoicePage() {
     handleSubmit,
     control,
     formState: { isSubmitting, errors },
+    trigger,
   } = form;
 
   const clientId = watch("clientId");
@@ -128,6 +129,7 @@ export default function NewInvoicePage() {
           } as Client,
         ];
       });
+      void trigger();
     } catch (e: unknown) {
       if (e instanceof ClientCreationError) {
         if (e.fieldErrors) {
@@ -194,6 +196,11 @@ export default function NewInvoicePage() {
     }
   }
 
+  const handleSelectClient = (id: string) => {
+    setValue("clientId", id);
+    void trigger();
+  };
+
   if (loading) {
     return <div className="p-4">{c("loading")}</div>;
   }
@@ -206,14 +213,14 @@ export default function NewInvoicePage() {
         <InvoiceFieldGroup control={control} />
 
         <div>
-          <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t("new.client")}
           </div>
 
           <ClientBlock
             clients={clients}
             clientId={clientId}
-            onSelectClientAction={(id) => setValue("clientId", id)}
+            onSelectClientAction={handleSelectClient}
             onRequestCreateNewClientAction={onRequestCreateNewClient}
             isLoading={clientBlockLoading}
             clientFormErrors={clientFieldErrors}
@@ -226,7 +233,7 @@ export default function NewInvoicePage() {
         </div>
 
         <div>
-          <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t("new.items")}
           </div>
 
