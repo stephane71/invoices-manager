@@ -1,4 +1,6 @@
+import { useTranslations } from "next-intl";
 import { Control, Controller } from "react-hook-form";
+import { InvoiceForm } from "@/components/invoices/invoices";
 import {
   Field,
   FieldError,
@@ -6,8 +8,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { InvoiceForm } from "@/components/invoices/invoices";
-import { useTranslations } from "next-intl";
 
 interface InvoiceFieldGroupProps {
   control: Control<InvoiceForm>;
@@ -32,7 +32,9 @@ export const InvoiceFieldGroup = ({ control }: InvoiceFieldGroupProps) => {
               required
             />
             {fieldState.invalid && (
-              <FieldError>{fieldState.error?.message}</FieldError>
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
             )}
           </Field>
         )}

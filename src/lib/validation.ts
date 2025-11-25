@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isValidPhoneNumber } from "@/lib/utils";
 
 // Base validators
 export const phoneValidator = z
   .string()
-  .refine((val) => isValidPhoneNumber(val), {
+  .refine((val) => isValidPhoneNumber(val, { isOptional: false }), {
     message:
       "Invalid phone number format. Use international format (e.g., +33612345678)",
   });
@@ -18,7 +18,7 @@ export const optionalPhone = z
   .nullable()
   .or(z.literal(""))
   .transform((val) => (val === "" ? null : val))
-  .refine((val) => !val || isValidPhoneNumber(val), {
+  .refine((val) => isValidPhoneNumber(val), {
     message:
       "Invalid phone number format. Use international format (e.g., +33612345678)",
   });

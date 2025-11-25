@@ -1,9 +1,12 @@
-"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Client } from "@/types/models";
-import { useTranslations } from "next-intl";
+import {
+  ClientFieldGroup,
+  type FieldErrors,
+} from "@/components/clients/ClientFieldGroup";
+import { ClientForm, clientFormSchema } from "@/components/clients/clients";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,11 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  ClientFieldGroup,
-  type FieldErrors,
-} from "@/components/clients/ClientFieldGroup";
-import { ClientForm, clientFormSchema } from "@/components/clients/clients";
+import type { Client } from "@/types/models";
 
 const FORM_DATA_DEFAULT: ClientForm = {
   name: "",
@@ -38,7 +37,6 @@ export type ClientBlockProps = {
   }) => void;
   isLoading: boolean;
   clientFormErrors?: FieldErrors;
-  error?: string;
 };
 
 export default function ClientBlock({
@@ -48,7 +46,6 @@ export default function ClientBlock({
   onRequestCreateNewClientAction,
   isLoading,
   clientFormErrors = {},
-  error = "",
 }: ClientBlockProps) {
   const t = useTranslations("Invoices");
 
@@ -60,13 +57,7 @@ export default function ClientBlock({
     defaultValues: FORM_DATA_DEFAULT,
   });
 
-  const {
-    control,
-    reset,
-    handleSubmit,
-    setError: setFieldError,
-    formState: { errors },
-  } = form;
+  const { control, reset, handleSubmit, setError: setFieldError } = form;
 
   // Apply external errors from parent
   useEffect(() => {
@@ -124,11 +115,6 @@ export default function ClientBlock({
         return;
       }
 
-      // Check for validation errors before submitting
-      if (Object.keys(errors).length > 0) {
-        return;
-      }
-
       onRequestCreateNewClientAction({
         name,
         email: data.email.trim() || undefined,
@@ -136,7 +122,7 @@ export default function ClientBlock({
         address: data.address.trim() || undefined,
       });
     },
-    [showNewForm, onRequestCreateNewClientAction, errors],
+    [showNewForm, onRequestCreateNewClientAction],
   );
 
   return (
@@ -148,10 +134,6 @@ export default function ClientBlock({
           </span>
         </div>
       )}
-
-      <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t("new.client")}
-      </div>
 
       {/* Existing client selection */}
       <div className="grid gap-2">
@@ -175,7 +157,7 @@ export default function ClientBlock({
       {/* Inline new client form trigger / content */}
       {!showNewForm ? (
         <Button
-          variant="outline"
+          variant="secondary"
           size="lg"
           onClick={revealNewForm}
           className="w-full"
@@ -193,7 +175,6 @@ export default function ClientBlock({
                 {t("new.cancel")}
               </Button>
             </ClientFieldGroup>
-            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           </form>
         </div>
       )}

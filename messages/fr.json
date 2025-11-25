@@ -35,7 +35,11 @@
         "price": "Prix",
         "image": "Image"
       },
-      "createButton": "Créer le produit"
+      "createButton": "Créer le produit",
+      "error": {
+        "name": "Le nom du produit est un champs requis",
+        "price": "Le prix ne peut pas être négatif"
+      }
     },
     "edit": {
       "title": "Éditer un produit"
@@ -66,7 +70,10 @@
       },
       "createButton": "Créer le client",
       "error": {
-        "createFail": "Échec de la création du client"
+        "createFail": "Échec de la création du client",
+        "name": "Le nom du client est un champs requis.",
+        "email": "Email invalide",
+        "phone": "Numéro de téléphone invalide"
       }
     },
     "edit": {

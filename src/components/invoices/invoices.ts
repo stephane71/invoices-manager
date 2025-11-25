@@ -21,18 +21,18 @@ export const INVOICE_ITEM_EMPTY: InvoiceItem = {
 };
 
 export const invoiceFormSchema = z.object({
-  number: z.string().min(1, "Invoice number is required"),
-  clientId: z.string().min(1, "Client is required"),
+  number: z.string().min(1, "new.error.numberRequired"),
+  clientId: z.string().min(1, "new.error.clientRequired"),
   issueDate: z.string().min(1),
   items: z
     .array(invoiceItemSchema)
-    .min(1, "At least one article is required")
+    .min(1, "new.error.itemsRequired")
     .refine(
       (items) =>
         items.every(
           (item) => item.product_id && item.name && item.quantity > 0,
         ),
-      { message: "All articles must be complete" },
+      { message: "new.error.itemsIncomplete" },
     ),
 });
 

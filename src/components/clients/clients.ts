@@ -1,11 +1,11 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { z } from "zod";
+import { isValidPhoneNumber } from "@/lib/utils";
 
 export const clientFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.email("Invalid email").or(z.literal("")),
-  phone: z.string().refine((val) => !val || isValidPhoneNumber(val), {
-    message: "Invalid phone number format",
+  name: z.string().min(1, "new.error.name"),
+  email: z.email("new.error.email").or(z.literal("")),
+  phone: z.string().refine((val) => isValidPhoneNumber(val), {
+    message: "new.error.phone",
   }),
   address: z.string(),
 });

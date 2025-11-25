@@ -1,29 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import type { Client, Product } from "@/types/models";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import ClientBlock from "@/components/invoices/ClientBlock";
-import {
-  ClientCreationError,
-  useCreateNewClientFromNewInvoice,
-} from "@/hooks/useCreateNewClientFromNewInvoice";
-import { useMinDelay } from "@/hooks/useMinDelay";
-import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
-import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
+import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
+import ClientBlock from "@/components/invoices/ClientBlock";
+import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
 import {
   INVOICE_ITEM_EMPTY,
   InvoiceForm,
   invoiceFormSchema,
   InvoiceItem,
 } from "@/components/invoices/invoices";
-import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
+import { Button } from "@/components/ui/button";
+import { FieldError } from "@/components/ui/field";
+import {
+  ClientCreationError,
+  useCreateNewClientFromNewInvoice,
+} from "@/hooks/useCreateNewClientFromNewInvoice";
+import { useMinDelay } from "@/hooks/useMinDelay";
+import { APP_LOCALE } from "@/lib/constants";
+import { centsToCurrencyString } from "@/lib/utils";
+import type { Client, Product } from "@/types/models";
 
 const ERROR_DEFAULT = "";
 const FIELD_ERROR_DEFAULT = undefined;
@@ -204,15 +205,25 @@ export default function NewInvoicePage() {
 
         <InvoiceFieldGroup control={control} />
 
-        <ClientBlock
-          clients={clients}
-          clientId={clientId}
-          onSelectClientAction={(id) => setValue("clientId", id)}
-          onRequestCreateNewClientAction={onRequestCreateNewClient}
-          isLoading={clientBlockLoading}
-          clientFormErrors={clientFieldErrors}
-          error={errors.clientId?.message}
-        />
+        <div>
+          <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("new.client")}
+          </div>
+
+          <ClientBlock
+            clients={clients}
+            clientId={clientId}
+            onSelectClientAction={(id) => setValue("clientId", id)}
+            onRequestCreateNewClientAction={onRequestCreateNewClient}
+            isLoading={clientBlockLoading}
+            clientFormErrors={clientFieldErrors}
+          />
+          {errors.clientId && (
+            <FieldError>
+              {errors.clientId?.message ? t(errors.clientId.message) : ""}
+            </FieldError>
+          )}
+        </div>
 
         <div>
           <div className="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -220,31 +231,34 @@ export default function NewInvoicePage() {
           </div>
 
           <div className="space-y-2">
-            {items.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("new.empty")}</p>
-            ) : (
-              <div className="space-y-2">
-                {items.map((item, idx) => (
-                  <ArticleFieldGroup
-                    key={idx}
-                    item={item}
-                    products={products}
-                    onChange={(updatedItem) => updateItem(idx, updatedItem)}
-                    onRemove={() => removeItem(idx)}
-                  />
-                ))}
-              </div>
-            )}
+            <div className="space-y-2">
+              {items.map((item, idx) => (
+                <ArticleFieldGroup
+                  key={idx}
+                  item={item}
+                  products={products}
+                  onChange={(updatedItem) => updateItem(idx, updatedItem)}
+                  onRemove={() => removeItem(idx)}
+                />
+              ))}
+            </div>
+
             <div className="flex items-center justify-end">
-              <Button size="lg" variant="secondary" onClick={addItem}>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="w-full"
+                onClick={addItem}
+              >
                 {t("new.addItem")}
               </Button>
             </div>
           </div>
+
           {errors.items && (
-            <p className="mt-2 text-sm text-red-600">
-              {errors.items.message || errors.items.root?.message}
-            </p>
+            <FieldError>
+              {errors.items?.message ? t(errors.items.message) : ""}
+            </FieldError>
           )}
         </div>
       </div>

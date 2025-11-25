@@ -1,14 +1,14 @@
+import { useTranslations } from "next-intl";
+import { ReactNode } from "react";
 import { Control, Controller } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { ClientForm } from "@/components/clients/clients";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { useTranslations } from "next-intl";
-import { ReactNode } from "react";
-import { ClientForm } from "@/components/clients/clients";
+import { Input } from "@/components/ui/input";
 
 export interface FieldErrors {
   name?: string;
@@ -46,7 +46,11 @@ export function ClientFieldGroup({
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
@@ -66,7 +70,11 @@ export function ClientFieldGroup({
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
@@ -86,7 +94,11 @@ export function ClientFieldGroup({
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
@@ -107,7 +119,11 @@ export function ClientFieldGroup({
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />

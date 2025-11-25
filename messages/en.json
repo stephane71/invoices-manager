@@ -35,7 +35,11 @@
         "price": "Price",
         "image": "Image"
       },
-      "createButton": "Create product"
+      "createButton": "Create product",
+      "error": {
+        "name": "Product name is required",
+        "price": "Price cannot be negative"
+      }
     },
     "edit": {
       "title": "Edit product"
@@ -66,7 +70,10 @@
       },
       "createButton": "Create client",
       "error": {
-        "createFail": "Failed to create client"
+        "createFail": "Failed to create client",
+        "name": "Name is required",
+        "email": "Valid email is required",
+        "phone": "Valid phone number is required"
       }
     },
     "edit": {
