@@ -11,12 +11,12 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-    {
-        rules: {
-            curly: ["error", "all"],
-        },
+  {
+    rules: {
+      curly: ["error", "all"],
+      "import/order": ["warn", { alphabetize: { order: "asc" } }],
     },
-
+  },
 ];
 
 export default eslintConfig;
