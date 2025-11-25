@@ -194,6 +194,9 @@
     },
     "description": {
       "invalid": "Description invalide"
+    },
+    "password": {
+      "invalid": "Le mot de passe doit contenir au moins 6 caractères"
     }
   }
 }
