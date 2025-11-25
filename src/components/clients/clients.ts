@@ -4,9 +4,11 @@ import { isValidPhoneNumber } from "@/lib/utils";
 export const clientFormSchema = z.object({
   name: z.string().min(1, "new.error.name"),
   email: z.email("new.error.email").or(z.literal("")),
-  phone: z.string().refine((val) => isValidPhoneNumber(val), {
-    message: "new.error.phone",
-  }),
+  phone: z
+    .string()
+    .refine((val) => isValidPhoneNumber(val, { isOptional: true }), {
+      message: "new.error.phone",
+    }),
   address: z.string(),
 });
 

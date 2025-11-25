@@ -18,7 +18,7 @@ export const optionalPhone = z
   .nullable()
   .or(z.literal(""))
   .transform((val) => (val === "" ? null : val))
-  .refine((val) => isValidPhoneNumber(val), {
+  .refine((val) => isValidPhoneNumber(val, { isOptional: true }), {
     message:
       "Invalid phone number format. Use international format (e.g., +33612345678)",
   });

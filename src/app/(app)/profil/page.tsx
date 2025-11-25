@@ -1,35 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Field,
+  FieldError,
   FieldGroup,
   FieldLabel,
-  FieldError,
 } from "@/components/ui/field";
-import { useTranslations } from "next-intl";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { Input } from "@/components/ui/input";
+import { isValidPhoneNumber } from "@/lib/utils";
 
 const profileSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().refine(
-    (val) => !val || isValidPhoneNumber(val),
-    "Invalid phone number"
-  ),
-  address: z.string().min(1, "Address is required"),
+  fullName: z.string().min(1, "Validation.name.required"),
+  email: z.email("Validation.email.invalid"),
+  phone: z
+    .string()
+    .refine(
+      (val) => isValidPhoneNumber(val, { isOptional: true }),
+      "Validation.phone.invalid",
+    ),
+  address: z.string().min(1, "Validation.address.required"),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfilPage() {
-  const t = useTranslations("Profile");
-  const c = useTranslations("Common");
+  const profilTranslate = useTranslations("Profile");
+  const commonTranslate = useTranslations("Common");
+  const translate = useTranslations();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -44,7 +48,12 @@ export default function ProfilPage() {
     },
   });
 
-  const { control, handleSubmit, reset, formState: { isSubmitting } } = form;
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = form;
 
   useEffect(() => {
     let cancelled = false;
@@ -53,7 +62,9 @@ export default function ProfilPage() {
         setError(null);
         const res = await fetch("/api/profile", { cache: "no-store" });
         if (!res.ok) {
-          throw new Error(t("error.load", { status: res.status }));
+          throw new Error(
+            profilTranslate("error.load", { status: res.status }),
+          );
         }
         const json = await res.json();
         const p = json?.data;
@@ -67,7 +78,9 @@ export default function ProfilPage() {
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : t("error.unknown"));
+          setError(
+            e instanceof Error ? e.message : profilTranslate("error.unknown"),
+          );
         }
       } finally {
         if (!cancelled) {
@@ -81,7 +94,7 @@ export default function ProfilPage() {
     return () => {
       cancelled = true;
     };
-  }, [t, reset]);
+  }, [profilTranslate, reset]);
 
   async function onSubmit(data: ProfileFormData) {
     setError(null);
@@ -100,17 +113,21 @@ export default function ProfilPage() {
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({ error: null }));
-        throw new Error(json.error || t("error.save", { status: res.status }));
+        throw new Error(
+          json.error || profilTranslate("error.save", { status: res.status }),
+        );
       }
-      setSuccess(t("status.updated"));
+      setSuccess(profilTranslate("status.updated"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("error.unknown"));
+      setError(
+        e instanceof Error ? e.message : profilTranslate("error.unknown"),
+      );
     }
   }
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-semibold">{t("title")}</h1>
+      <h1 className="text-xl font-semibold">{profilTranslate("title")}</h1>
 
       {error && (
         <div className="text-sm text-red-600" role="alert">
@@ -131,16 +148,25 @@ export default function ProfilPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("form.fullName")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.fullName")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder={t("form.fullNamePlaceholder")}
+                  placeholder={profilTranslate("form.fullNamePlaceholder")}
                   icon="User"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
+                  required
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
               </Field>
             )}
           />
@@ -151,17 +177,26 @@ export default function ProfilPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("form.email")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.email")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
                   type="email"
-                  placeholder={t("form.emailPlaceholder")}
+                  placeholder={profilTranslate("form.emailPlaceholder")}
                   icon="Mail"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
+                  required
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
               </Field>
             )}
           />
@@ -172,17 +207,25 @@ export default function ProfilPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("form.phone")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.phone")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
                   type="tel"
-                  placeholder={t("form.phonePlaceholder")}
+                  placeholder={profilTranslate("form.phonePlaceholder")}
                   icon="Phone"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
               </Field>
             )}
           />
@@ -193,23 +236,34 @@ export default function ProfilPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("form.address")}</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.address")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder={t("form.addressPlaceholder")}
+                  placeholder={profilTranslate("form.addressPlaceholder")}
                   icon="MapPin"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
+                  required
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
               </Field>
             )}
           />
 
           <div className="pt-2">
             <Button type="submit" disabled={loading || isSubmitting}>
-              {isSubmitting ? c("saving") : c("save")}
+              {isSubmitting
+                ? commonTranslate("saving")
+                : commonTranslate("save")}
             </Button>
           </div>
         </FieldGroup>

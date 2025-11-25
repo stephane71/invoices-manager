@@ -25,6 +25,7 @@ type SignInFormData = z.infer<typeof signInSchema>;
 
 export default function SignInPage() {
   const t = useTranslations("Validation");
+
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -94,6 +95,7 @@ export default function SignInPage() {
                   aria-invalid={fieldState.invalid}
                   autoComplete="email"
                   disabled={isSubmitting}
+                  required
                 />
                 {fieldState.invalid && (
                   <FieldError>
@@ -122,6 +124,7 @@ export default function SignInPage() {
                     mode === "signin" ? "current-password" : "new-password"
                   }
                   disabled={isSubmitting}
+                  required
                 />
                 {fieldState.invalid && (
                   <FieldError>

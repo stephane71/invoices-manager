@@ -22,13 +22,15 @@ export const InvoiceFieldGroup = ({ control }: InvoiceFieldGroupProps) => {
         name="number"
         control={control}
         render={({ field, fieldState }) => (
-          <Field>
-            <FieldLabel htmlFor="number">{t("new.number")}</FieldLabel>
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>{t("new.number")}</FieldLabel>
             <Input
               {...field}
+              id={field.name}
               type="text"
               icon="FileText"
               placeholder={t("new.numberPlaceholder")}
+              aria-invalid={fieldState.invalid}
               required
             />
             {fieldState.invalid && (
@@ -45,8 +47,8 @@ export const InvoiceFieldGroup = ({ control }: InvoiceFieldGroupProps) => {
         control={control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor="issueDate">{t("new.issueDate")}</FieldLabel>
-            <Input {...field} id="issueDate" type="date" icon="Calendar" />
+            <FieldLabel htmlFor={field.name}>{t("new.issueDate")}</FieldLabel>
+            <Input {...field} id={field.name} type="date" icon="Calendar" />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}

@@ -45,6 +45,7 @@ export function ClientFieldGroup({
               icon="User"
               aria-invalid={fieldState.invalid}
               disabled={disabled}
+              required
             />
             {fieldState.invalid && (
               <FieldError>
@@ -114,7 +115,7 @@ export function ClientFieldGroup({
             <textarea
               {...field}
               id={field.name}
-              className={`min-h-20 rounded-md border px-3 py-2 bg-background ${fieldState.invalid ? "border-destructive" : ""}`}
+              className="min-h-20 rounded-md border px-3 py-2 bg-background"
               placeholder={t("new.form.addressPlaceholder")}
               aria-invalid={fieldState.invalid}
               disabled={disabled}

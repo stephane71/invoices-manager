@@ -272,7 +272,7 @@ export default function NewInvoicePage() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
-        {error && <div className="text-sm text-red-600">{"Message error"}</div>}
+        {error && <div className="text-sm text-red-600">{error}</div>}
         <div className="flex items-center justify-between px-2">
           <div className="text-lg font-medium">
             {t("new.total")}{" "}

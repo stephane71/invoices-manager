@@ -85,10 +85,12 @@ export const ProductFieldGroup = ({
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor={field.name}>{t("new.form.price")}</FieldLabel>
             <PriceInput
+              id={field.name}
               value={field.value}
               onChange={field.onChange}
               placeholder="0,00"
               disabled={disabled}
+              aria-invalid={fieldState.invalid}
             />
             {fieldState.invalid && (
               <FieldError>
