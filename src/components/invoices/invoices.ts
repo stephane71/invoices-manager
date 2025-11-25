@@ -20,20 +20,38 @@ export const INVOICE_ITEM_EMPTY: InvoiceItem = {
   quantityInput: "1",
 };
 
-export const invoiceFormSchema = z.object({
-  number: z.string().min(1, "new.error.numberRequired"),
-  clientId: z.string().min(1, "new.error.clientRequired"),
-  issueDate: z.string().min(1),
-  items: z
-    .array(invoiceItemSchema)
-    .min(1, "new.error.itemsRequired")
-    .refine(
-      (items) =>
-        items.every(
-          (item) => item.product_id && item.name && item.quantity > 0,
-        ),
-      { message: "new.error.itemsIncomplete" },
-    ),
-});
+export const invoiceFormSchema = z
+  .object({
+    number: z.string().min(1, "new.error.numberRequired"),
+    clientId: z.string().min(1, "new.error.clientRequired"),
+    issueDate: z.string().min(1),
+    items: z
+      .array(invoiceItemSchema)
+      .min(1, "new.error.itemsRequired")
+      .refine(
+        (items) =>
+          items.every(
+            (item) => item.product_id && item.name && item.quantity > 0,
+          ),
+        { message: "new.error.itemsIncomplete" },
+      ),
+    // Payment information (all optional)
+    paymentIban: z.string().optional().or(z.literal("")),
+    paymentBic: z.string().optional().or(z.literal("")),
+    paymentLink: z.string().optional().or(z.literal("")),
+    paymentFreeText: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      // Both IBAN and BIC must be filled or both must be empty
+      const hasIban = data.paymentIban && data.paymentIban.trim() !== "";
+      const hasBic = data.paymentBic && data.paymentBic.trim() !== "";
+      return hasIban === hasBic;
+    },
+    {
+      message: "new.error.paymentIbanBicRequired",
+      path: ["paymentIban"],
+    },
+  );
 
 export type InvoiceForm = z.infer<typeof invoiceFormSchema>;

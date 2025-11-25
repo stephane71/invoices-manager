@@ -133,7 +133,21 @@
         "itemsRequired": "Please add at least one item",
         "itemsIncomplete": "Please complete all item fields",
         "duplicateNumber": "The invoice number already exists. Please choose a different number.",
-        "createFail": "Failed to create invoice"
+        "createFail": "Failed to create invoice",
+        "paymentIbanBicRequired": "Both IBAN and BIC must be filled or both must be empty",
+        "clientCreateFail": "Failed to create client"
+      },
+      "payment": {
+        "title": "Payment information",
+        "rib": "Bank details (RIB)",
+        "iban": "IBAN",
+        "ibanPlaceholder": "FR76 1234 5678 9012 3456 7890 123",
+        "bic": "BIC/SWIFT",
+        "bicPlaceholder": "BNPAFRPPXXX",
+        "link": "Payment link",
+        "linkPlaceholder": "https://payment.example.com/your-link",
+        "freeText": "Additional payment information",
+        "freeTextPlaceholder": "Enter any additional payment information..."
       }
     }
   },

@@ -59,6 +59,32 @@ export async function POST(
       .filter(Boolean)
       .join("\n");
 
+    // Build payment information text
+    const paymentInfoParts: string[] = [];
+
+    // @ts-expect-error - payment fields will be added to invoice type via migration
+    if (invoice.payment_iban && invoice.payment_bic) {
+      paymentInfoParts.push(
+        // @ts-expect-error - payment fields will be added to invoice type via migration
+        `IBAN: ${invoice.payment_iban}\nBIC: ${invoice.payment_bic}`
+      );
+    }
+
+    // @ts-expect-error - payment fields will be added to invoice type via migration
+    if (invoice.payment_link) {
+      // @ts-expect-error - payment fields will be added to invoice type via migration
+      paymentInfoParts.push(`Lien de paiement: ${invoice.payment_link}`);
+    }
+
+    // @ts-expect-error - payment fields will be added to invoice type via migration
+    if (invoice.payment_free_text) {
+      // @ts-expect-error - payment fields will be added to invoice type via migration
+      paymentInfoParts.push(invoice.payment_free_text);
+    }
+
+    const paymentInfo = paymentInfoParts.join("\n\n");
+    const hasPaymentInfo = paymentInfoParts.length > 0;
+
     const inputs = [
       {
         // New template fields
@@ -82,6 +108,9 @@ export async function POST(
         subtotal: centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
         tax: centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
         total: centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
+        // Payment information (title and content)
+        payment_information_title: hasPaymentInfo ? "Mode de paiement" : "",
+        payment_information: paymentInfo,
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,

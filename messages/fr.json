@@ -133,7 +133,21 @@
         "itemsRequired": "Veuillez ajouter au moins un article",
         "itemsIncomplete": "Veuillez compléter tous les champs des articles",
         "duplicateNumber": "Le numéro de facture existe déjà. Veuillez choisir un autre numéro.",
-        "createFail": "Échec de la création de la facture"
+        "createFail": "Échec de la création de la facture",
+        "paymentIbanBicRequired": "L'IBAN et le BIC doivent être tous les deux remplis ou tous les deux vides",
+        "clientCreateFail": "Échec de la création du client"
+      },
+      "payment": {
+        "title": "Mode de paiement",
+        "rib": "Coordonnées bancaires (RIB)",
+        "iban": "IBAN",
+        "ibanPlaceholder": "FR76 1234 5678 9012 3456 7890 123",
+        "bic": "BIC/SWIFT",
+        "bicPlaceholder": "BNPAFRPPXXX",
+        "link": "Lien de paiement",
+        "linkPlaceholder": "https://paiement.exemple.com/votre-lien",
+        "freeText": "Informations de paiement supplémentaires",
+        "freeTextPlaceholder": "Saisissez des informations de paiement supplémentaires..."
       }
     }
   },

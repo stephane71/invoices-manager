@@ -64,6 +64,11 @@ export const invoiceSchema = z.object({
   due_date: z.string().optional(),
   pdf_url: z.url().optional().nullable(),
   number: z.string(),
+  // Payment information (all optional)
+  payment_iban: z.string().optional().nullable(),
+  payment_bic: z.string().optional().nullable(),
+  payment_link: z.string().optional().nullable(),
+  payment_free_text: z.string().optional().nullable(),
 });
 
 export const profileSchema = z.object({

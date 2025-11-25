@@ -9,6 +9,7 @@ import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
 import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
+import { PaymentFieldGroup } from "@/components/invoices/PaymentFieldGroup";
 import {
   INVOICE_ITEM_EMPTY,
   InvoiceForm,
@@ -52,6 +53,10 @@ export default function NewInvoicePage() {
       clientId: "",
       issueDate: todayISO(),
       items: [INVOICE_ITEM_EMPTY],
+      paymentIban: "",
+      paymentBic: "",
+      paymentLink: "",
+      paymentFreeText: "",
     },
     mode: "onChange",
   });
@@ -181,6 +186,10 @@ export default function NewInvoicePage() {
           items: data.items,
           total_amount: +totalAmount.toFixed(2),
           issue_date: data.issueDate,
+          payment_iban: data.paymentIban?.trim() || null,
+          payment_bic: data.paymentBic?.trim() || null,
+          payment_link: data.paymentLink?.trim() || null,
+          payment_free_text: data.paymentFreeText?.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -268,6 +277,13 @@ export default function NewInvoicePage() {
               {errors.items?.message ? t(errors.items.message) : ""}
             </FieldError>
           )}
+        </div>
+
+        <div>
+          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("new.payment.title")}
+          </div>
+          <PaymentFieldGroup control={control} disabled={isSubmitting} />
         </div>
       </div>
 
