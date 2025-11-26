@@ -34,7 +34,8 @@ export const invoiceFormSchema = z.object({
         ),
       { message: "new.error.itemsIncomplete" },
     ),
-  // Payment information (payment_link and payment_free_text only - IBAN/BIC from profile)
+  paymentIban: z.string().optional().or(z.literal("")),
+  paymentBic: z.string().optional().or(z.literal("")),
   paymentLink: z.string().optional().or(z.literal("")),
   paymentFreeText: z.string().optional().or(z.literal("")),
 });

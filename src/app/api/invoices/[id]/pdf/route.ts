@@ -1,18 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { Template } from "@pdfme/common";
 import { generate } from "@pdfme/generator";
+import { line, multiVariableText, svg, table, text } from "@pdfme/schemas";
+import { NextRequest, NextResponse } from "next/server";
+import InvoiceTemplate from "./pdfme-invoice-template.json";
+import { APP_LOCALE } from "@/lib/constants";
 import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { uploadInvoicePdf } from "@/lib/storage";
-import InvoiceTemplate from "./pdfme-invoice-template.json";
-import { Template } from "@pdfme/common";
-import {
-  line,
-  multiVariableText,
-  svg,
-  table,
-  text,
-} from "@pdfme/schemas";
 import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
 
 export async function POST(
   req: NextRequest,
@@ -49,9 +43,21 @@ export async function POST(
     const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
-    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE));
-    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
-    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
+    console.log(
+      "subtotal",
+      subtotalCents,
+      centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
+    );
+    console.log(
+      "taxAmount",
+      taxAmountCents,
+      centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
+    );
+    console.log(
+      "total",
+      totalCents,
+      centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
+    );
 
     const shopName = profile?.full_name;
     const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
@@ -62,12 +68,12 @@ export async function POST(
     // Build payment information text
     const paymentInfoParts: string[] = [];
 
-    // Get IBAN/BIC from profile (not from invoice)
-    // @ts-expect-error - payment fields will be added to profile type via migration
-    if (profile?.payment_iban && profile?.payment_bic) {
+    // Get IBAN/BIC from invoice (not from profile)
+    // @ts-expect-error - payment fields will be added to invoice type via migration
+    if (invoice.payment_iban && invoice.payment_bic) {
       paymentInfoParts.push(
-        // @ts-expect-error - payment fields will be added to profile type via migration
-        `IBAN: ${profile.payment_iban}\nBIC: ${profile.payment_bic}`
+        // @ts-expect-error - payment fields will be added to invoice type via migration
+        `IBAN: ${invoice.payment_iban}\nBIC: ${invoice.payment_bic}`,
       );
     }
 

@@ -10,7 +10,7 @@ import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
 import { PaymentFieldGroup } from "@/components/invoices/PaymentFieldGroup";
-import { IbanBicFieldGroup } from "@/components/profile/IbanBicFieldGroup";
+import { Iban } from "@/components/invoices/iban/Iban";
 import {
   INVOICE_ITEM_EMPTY,
   InvoiceForm,
@@ -44,8 +44,6 @@ export default function NewInvoicePage() {
   const [clientFieldErrors, setClientFieldErrors] = useState<
     FieldErrors | typeof FIELD_ERROR_DEFAULT
   >();
-  const [profileIban, setProfileIban] = useState<string | null>(null);
-  const [profileBic, setProfileBic] = useState<string | null>(null);
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
 
@@ -56,6 +54,8 @@ export default function NewInvoicePage() {
       clientId: "",
       issueDate: todayISO(),
       items: [INVOICE_ITEM_EMPTY],
+      paymentIban: "",
+      paymentBic: "",
       paymentLink: "",
       paymentFreeText: "",
     },
@@ -64,6 +64,7 @@ export default function NewInvoicePage() {
 
   const {
     watch,
+    getValues,
     setValue,
     handleSubmit,
     control,
@@ -72,19 +73,8 @@ export default function NewInvoicePage() {
 
   const clientId = watch("clientId");
   const items = watch("items");
-
-  const loadProfileData = async () => {
-    try {
-      const res = await fetch("/api/profile");
-      const profileData = await res.json();
-      if (profileData?.data) {
-        setProfileIban(profileData.data.payment_iban || null);
-        setProfileBic(profileData.data.payment_bic || null);
-      }
-    } catch (error) {
-      console.error("Failed to load profile data:", error);
-    }
-  };
+  const iban = watch("paymentIban");
+  const bic = watch("paymentBic");
 
   useEffect(() => {
     let active = true;
@@ -102,10 +92,10 @@ export default function NewInvoicePage() {
         }
         setClients(clientsData || []);
         setProducts(productsData || []);
-        // Set profile IBAN/BIC if available
+        // Initialize form with profile IBAN/BIC if available
         if (profileData?.data) {
-          setProfileIban(profileData.data.payment_iban || null);
-          setProfileBic(profileData.data.payment_bic || null);
+          setValue("paymentIban", profileData.data.payment_iban || "");
+          setValue("paymentBic", profileData.data.payment_bic || "");
         }
         setLoading(false);
       })
@@ -113,7 +103,7 @@ export default function NewInvoicePage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [setValue]);
 
   const totalAmount = useMemo(
     () => items.reduce((sum, it) => sum + (Number(it.total) || 0), 0),
@@ -210,6 +200,8 @@ export default function NewInvoicePage() {
           items: data.items,
           total_amount: +totalAmount.toFixed(2),
           issue_date: data.issueDate,
+          payment_iban: data.paymentIban?.trim() || null,
+          payment_bic: data.paymentBic?.trim() || null,
           payment_link: data.paymentLink?.trim() || null,
           payment_free_text: data.paymentFreeText?.trim() || null,
         }),
@@ -306,16 +298,22 @@ export default function NewInvoicePage() {
             {t("new.payment.title")}
           </div>
 
-          {/* IBAN/BIC from profile (editable component) */}
-          <div className="mb-4">
-            <IbanBicFieldGroup
-              initialIban={profileIban}
-              initialBic={profileBic}
-              onSaveSuccess={loadProfileData}
+          <div className="flex flex-col gap-4">
+            <Iban
+              iban={iban}
+              bic={bic}
+              onChange={(data) => {
+                setValue("paymentIban", data.paymentIban);
+                setValue("paymentBic", data.paymentBic);
+              }}
+              onDelete={() => {
+                setValue("paymentIban", "");
+                setValue("paymentBic", "");
+              }}
             />
-          </div>
 
-          <PaymentFieldGroup control={control} disabled={isSubmitting} />
+            <PaymentFieldGroup control={control} disabled={isSubmitting} />
+          </div>
         </div>
       </div>
 
