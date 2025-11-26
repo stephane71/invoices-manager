@@ -64,7 +64,6 @@ export default function NewInvoicePage() {
 
   const {
     watch,
-    getValues,
     setValue,
     handleSubmit,
     control,
