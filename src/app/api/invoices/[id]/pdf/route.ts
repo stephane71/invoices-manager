@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import InvoiceTemplate from "./pdfme-invoice-template.json";
 import { APP_LOCALE } from "@/lib/constants";
 import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
+import { buildPaymentInfo } from "@/lib/invoice-utils";
 import { uploadInvoicePdf } from "@/lib/storage";
 import { centsToCurrencyString } from "@/lib/utils";
 
@@ -65,32 +66,14 @@ export async function POST(
       .filter(Boolean)
       .join("\n");
 
-    // Build payment information text
-    const paymentInfoParts: string[] = [];
+    const paymentInfo = buildPaymentInfo({
+      payment_iban: invoice.payment_iban,
+      payment_bic: invoice.payment_bic,
+      payment_link: invoice.payment_link,
+      payment_free_text: invoice.payment_free_text,
+    });
 
-    // Get IBAN/BIC from invoice
-    if (invoice.payment_iban || invoice.payment_bic) {
-      const bankTransferLines = ["Par virement bancaire"];
-      if (invoice.payment_iban) {
-        bankTransferLines.push(`IBAN:  ${invoice.payment_iban}`);
-      }
-      if (invoice.payment_bic) {
-        bankTransferLines.push(`BIC:     ${invoice.payment_bic}`);
-      }
-      paymentInfoParts.push(bankTransferLines.join("\n"));
-    }
-
-    // Get payment link and free text from invoice
-    if (invoice.payment_link) {
-      paymentInfoParts.push(`Via le lien suivant\n${invoice.payment_link}`);
-    }
-
-    if (invoice.payment_free_text) {
-      paymentInfoParts.push(invoice.payment_free_text);
-    }
-
-    const paymentInfo = paymentInfoParts.join("\n\n");
-    const hasPaymentInfo = paymentInfoParts.length > 0;
+    const hasPaymentInfo = paymentInfo.length > 0;
 
     const inputs = [
       {
