@@ -68,11 +68,16 @@ export async function POST(
     // Build payment information text
     const paymentInfoParts: string[] = [];
 
-    // Get IBAN/BIC from invoice (not from profile)
-    if (invoice.payment_iban && invoice.payment_bic) {
-      paymentInfoParts.push(
-        `Par virement bancaire\nIBAN:  ${invoice.payment_iban}\nBIC:     ${invoice.payment_bic}`,
-      );
+    // Get IBAN/BIC from invoice
+    if (invoice.payment_iban || invoice.payment_bic) {
+      const bankTransferLines = ["Par virement bancaire"];
+      if (invoice.payment_iban) {
+        bankTransferLines.push(`IBAN:  ${invoice.payment_iban}`);
+      }
+      if (invoice.payment_bic) {
+        bankTransferLines.push(`BIC:     ${invoice.payment_bic}`);
+      }
+      paymentInfoParts.push(bankTransferLines.join("\n"));
     }
 
     // Get payment link and free text from invoice
