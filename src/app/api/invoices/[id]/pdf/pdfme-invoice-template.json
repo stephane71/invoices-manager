@@ -329,31 +329,9 @@
         "type": "text",
         "position": {
           "x": 20,
-          "y": 205.58
-        },
-        "content": "Merci de votre commande",
-        "width": 170,
-        "height": 20,
-        "rotate": 0,
-        "alignment": "left",
-        "verticalAlignment": "top",
-        "fontSize": 20,
-        "lineHeight": 1,
-        "characterSpacing": 0,
-        "fontColor": "#000000",
-        "fontName": "",
-        "backgroundColor": "",
-        "opacity": 1,
-        "readOnly": true,
-        "name": "thankyou"
-      },
-      {
-        "type": "text",
-        "position": {
-          "x": 20,
           "y": 20
         },
-        "content": "Pauline Save",
+        "content": "Shop name",
         "width": 85,
         "height": 8.47,
         "rotate": 0,
@@ -553,7 +531,7 @@
       {
         "name": "footerInfo",
         "type": "text",
-        "content": "Facture N°{facture_number} • {total}",
+        "content": "Facture N°{facture_number}",
         "position": {
           "x": 20,
           "y": 282

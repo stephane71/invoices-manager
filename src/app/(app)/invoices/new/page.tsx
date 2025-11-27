@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
+import { ClientForm } from "@/components/clients/clients";
 import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
@@ -115,15 +116,10 @@ export default function NewInvoicePage() {
     setValue("clientId", id, { shouldValidate: true });
   };
 
-  const createClientFromSelection = useCreateNewClientFromNewInvoice({});
+  const createClientFromSelection = useCreateNewClientFromNewInvoice();
   const { pending: clientBlockLoading, wrap } = useMinDelay(2000);
 
-  const onRequestCreateNewClient = async (clientData: {
-    name: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  }) => {
+  const onRequestCreateNewClient = async (clientData: ClientForm) => {
     try {
       // Clear previous errors
       setClientFieldErrors(FIELD_ERROR_DEFAULT);
@@ -231,12 +227,12 @@ export default function NewInvoicePage() {
   return (
     <>
       <div className="pb-28">
-        <h1 className="text-xl font-semibold mb-4">{t("new.title")}</h1>
+        <h1 className="mb-4 text-xl font-semibold">{t("new.title")}</h1>
 
         <InvoiceFieldGroup control={control} />
 
         <div>
-          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="text-muted-foreground mt-8 mb-2 text-sm font-semibold tracking-wide uppercase">
             {t("new.client")}
           </div>
 
@@ -256,7 +252,7 @@ export default function NewInvoicePage() {
         </div>
 
         <div>
-          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="text-muted-foreground mt-8 mb-2 text-sm font-semibold tracking-wide uppercase">
             {t("new.items")}
           </div>
 
@@ -293,7 +289,7 @@ export default function NewInvoicePage() {
         </div>
 
         <div>
-          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="text-muted-foreground mt-8 mb-2 text-sm font-semibold tracking-wide uppercase">
             {t("new.payment.title")}
           </div>
 
@@ -316,9 +312,9 @@ export default function NewInvoicePage() {
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
+      <div className="bg-background fixed inset-x-0 bottom-0 z-10 border-t p-3">
         {error && <div className="text-sm text-red-600">{error}</div>}
-        <div className="flex flex-col items-end justify-between px-2 gap-2">
+        <div className="flex flex-col items-end justify-between gap-2 px-2">
           <div className="text-lg font-medium">
             {t("new.total")}{" "}
             {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)}{" "}

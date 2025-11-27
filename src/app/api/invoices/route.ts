@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { invoiceSchema } from "@/lib/validation";
+import { z } from "zod";
 import { createInvoiceWithItems, listInvoices } from "@/lib/db";
+import { invoiceItemSchema, invoiceSchema } from "@/lib/validation";
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,7 +24,14 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
-    const parsed = invoiceSchema.partial({ id: true }).parse(json);
+    const parsed = invoiceSchema
+      .extend({
+        items: z.array(
+          invoiceItemSchema.partial({ id: true, invoice_id: true }),
+        ),
+      })
+      .partial({ id: true, account_id: true })
+      .parse(json);
     const created = await createInvoiceWithItems(parsed as never);
     return NextResponse.json(created, { status: 201 });
   } catch (e: unknown) {
