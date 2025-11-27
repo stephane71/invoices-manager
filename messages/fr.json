@@ -1,7 +1,7 @@
 {
   "App": {
-    "title": "InvoEase",
-    "description": "Application de facturation mobile-first"
+    "title": "Lemonora",
+    "description": "Solution de facturation robuste et claire"
   },
   "Nav": {
     "invoices": "Factures",
@@ -161,7 +161,7 @@
     },
     "ambition": {
       "title": "Ambition du projet",
-      "body": "InvoEase est la manière la plus simple pour les petites équipes de gérer leurs factures; sans superflu.<br></br>L’objectif : rester focalisé — une interface rapide et claire avec des fonctionnalités qui t’aident vraiment à être payé. Pas de distractions, juste un outil fluide et fiable sur lequel tu peux compter au quotidien."
+      "body": "Lemonora est la manière la plus simple pour les petites équipes de gérer leurs factures; sans superflu.<br></br>L'objectif : rester focalisé — une interface rapide et claire avec des fonctionnalités qui t'aident vraiment à être payé. Pas de distractions, juste un outil fluide et fiable sur lequel tu peux compter au quotidien."
     },
     "imageAlt": "Photo de Stéphane Maire"
   },

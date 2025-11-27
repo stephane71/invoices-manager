@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { ReactNode } from "react";
+import { PageHeader } from "@/components/page-header";
+import { SidebarMenuLinks } from "@/components/sidebar-menu-links";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -8,9 +10,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { PageHeader } from "@/components/page-header";
-import { SidebarMenuLinks } from "@/components/sidebar-menu-links";
-import { Separator } from "@/components/ui/separator";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const supabase = await getSupabaseServerClient();
@@ -27,7 +27,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="p-4">
-          <span>Facture Manager</span>
+          <span className="text-lg font-semibold">Lemonora</span>
           <Separator />
         </SidebarHeader>
 

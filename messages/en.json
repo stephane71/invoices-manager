@@ -1,7 +1,7 @@
 {
   "App": {
-    "title": "InvoEase",
-    "description": "Mobile-first invoicing app"
+    "title": "Lemonora",
+    "description": "Robust and clear invoicing solution"
   },
   "Nav": {
     "invoices": "Invoices",
@@ -161,7 +161,7 @@
     },
     "ambition": {
       "title": "Project ambition",
-      "body": "InvoEase is the simplest way for small teams to manage their invoices — without the extras.<br></br>The goal: stay focused — a fast, clear interface with features that genuinely help you get paid. No distractions, just a smooth, reliable tool you can count on every day."
+      "body": "Lemonora is the simplest way for small teams to manage their invoices — without the extras.<br></br>The goal: stay focused — a fast, clear interface with features that genuinely help you get paid. No distractions, just a smooth, reliable tool you can count on every day."
     },
     "imageAlt": "Photo of Stéphane Maire"
   },

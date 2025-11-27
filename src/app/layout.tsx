@@ -1,19 +1,19 @@
-import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
+import type { Metadata } from "next";
 import "./globals.css";
-import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "InvoEase",
-  description: "Mobile-first invoicing app",
+  title: "Lemonora",
+  description: "Robust and clear invoicing solution",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body className="min-h-dvh bg-background text-foreground">
+      <body className="bg-background text-foreground min-h-dvh">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
