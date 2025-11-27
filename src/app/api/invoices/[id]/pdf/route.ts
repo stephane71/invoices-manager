@@ -1,18 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { Template } from "@pdfme/common";
 import { generate } from "@pdfme/generator";
+import { line, multiVariableText, svg, table, text } from "@pdfme/schemas";
+import { NextRequest, NextResponse } from "next/server";
+import InvoiceTemplate from "./pdfme-invoice-template.json";
+import { APP_LOCALE } from "@/lib/constants";
 import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { uploadInvoicePdf } from "@/lib/storage";
-import InvoiceTemplate from "./pdfme-invoice-template.json";
-import { Template } from "@pdfme/common";
-import {
-  line,
-  multiVariableText,
-  svg,
-  table,
-  text,
-} from "@pdfme/schemas";
 import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
 
 export async function POST(
   req: NextRequest,
@@ -49,15 +43,49 @@ export async function POST(
     const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
-    console.log("subtotal", subtotalCents, centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE));
-    console.log("taxAmount", taxAmountCents, centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE));
-    console.log("total", totalCents, centsToCurrencyString(totalCents, "EUR", APP_LOCALE));
+    console.log(
+      "subtotal",
+      subtotalCents,
+      centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
+    );
+    console.log(
+      "taxAmount",
+      taxAmountCents,
+      centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
+    );
+    console.log(
+      "total",
+      totalCents,
+      centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
+    );
 
     const shopName = profile?.full_name;
     const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
     const clientInfo = [client.email, client.phone, client.address]
       .filter(Boolean)
       .join("\n");
+
+    // Build payment information text
+    const paymentInfoParts: string[] = [];
+
+    // Get IBAN/BIC from invoice (not from profile)
+    if (invoice.payment_iban && invoice.payment_bic) {
+      paymentInfoParts.push(
+        `Par virement bancaire\nIBAN:  ${invoice.payment_iban}\nBIC:     ${invoice.payment_bic}`,
+      );
+    }
+
+    // Get payment link and free text from invoice
+    if (invoice.payment_link) {
+      paymentInfoParts.push(`Via le lien suivant\n${invoice.payment_link}`);
+    }
+
+    if (invoice.payment_free_text) {
+      paymentInfoParts.push(invoice.payment_free_text);
+    }
+
+    const paymentInfo = paymentInfoParts.join("\n\n");
+    const hasPaymentInfo = paymentInfoParts.length > 0;
 
     const inputs = [
       {
@@ -82,6 +110,9 @@ export async function POST(
         subtotal: centsToCurrencyString(subtotalCents, "EUR", APP_LOCALE),
         tax: centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
         total: centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
+        // Payment information (title and content)
+        payment_information_title: hasPaymentInfo ? "Modes de paiement" : "",
+        payment_information: paymentInfo,
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,

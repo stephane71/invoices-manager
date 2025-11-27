@@ -1,7 +1,7 @@
-import { useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Client } from "@/types/models";
+import { useCallback } from "react";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
+import { ClientForm } from "@/components/clients/clients";
 
 export class ClientCreationError extends Error {
   fieldErrors?: FieldErrors;
@@ -13,11 +13,11 @@ export class ClientCreationError extends Error {
   }
 }
 
-export const useCreateNewClientFromNewInvoice = ({}) => {
+export const useCreateNewClientFromNewInvoice = () => {
   const t = useTranslations("Invoices");
 
   return useCallback(
-    async (clientData: Omit<Client, "id" | "created_at">) => {
+    async (clientData: ClientForm) => {
       const clientRes = await fetch("/api/clients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

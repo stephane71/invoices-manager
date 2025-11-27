@@ -6,9 +6,12 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
+import { ClientForm } from "@/components/clients/clients";
 import { ArticleFieldGroup } from "@/components/invoices/ArticleFieldGroup";
 import ClientBlock from "@/components/invoices/ClientBlock";
 import { InvoiceFieldGroup } from "@/components/invoices/InvoiceFieldGroup";
+import { PaymentFieldGroup } from "@/components/invoices/PaymentFieldGroup";
+import { Iban } from "@/components/invoices/iban/Iban";
 import {
   INVOICE_ITEM_EMPTY,
   InvoiceForm,
@@ -52,6 +55,10 @@ export default function NewInvoicePage() {
       clientId: "",
       issueDate: todayISO(),
       items: [INVOICE_ITEM_EMPTY],
+      paymentIban: "",
+      paymentBic: "",
+      paymentLink: "",
+      paymentFreeText: "",
     },
     mode: "onChange",
   });
@@ -66,25 +73,37 @@ export default function NewInvoicePage() {
 
   const clientId = watch("clientId");
   const items = watch("items");
+  const iban = watch("paymentIban");
+  const bic = watch("paymentBic");
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetch("/api/clients"), fetch("/api/products")])
-      .then(async ([c, p]) => {
+    Promise.all([
+      fetch("/api/clients"),
+      fetch("/api/products"),
+      fetch("/api/profile"),
+    ])
+      .then(async ([c, p, prof]) => {
         const clientsData = await c.json();
         const productsData = await p.json();
+        const profileData = await prof.json();
         if (!active) {
           return;
         }
         setClients(clientsData || []);
         setProducts(productsData || []);
+        // Initialize form with profile IBAN/BIC if available
+        if (profileData?.data) {
+          setValue("paymentIban", profileData.data.payment_iban || "");
+          setValue("paymentBic", profileData.data.payment_bic || "");
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
     return () => {
       active = false;
     };
-  }, []);
+  }, [setValue]);
 
   const totalAmount = useMemo(
     () => items.reduce((sum, it) => sum + (Number(it.total) || 0), 0),
@@ -97,15 +116,10 @@ export default function NewInvoicePage() {
     setValue("clientId", id, { shouldValidate: true });
   };
 
-  const createClientFromSelection = useCreateNewClientFromNewInvoice({});
+  const createClientFromSelection = useCreateNewClientFromNewInvoice();
   const { pending: clientBlockLoading, wrap } = useMinDelay(2000);
 
-  const onRequestCreateNewClient = async (clientData: {
-    name: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  }) => {
+  const onRequestCreateNewClient = async (clientData: ClientForm) => {
     try {
       // Clear previous errors
       setClientFieldErrors(FIELD_ERROR_DEFAULT);
@@ -181,6 +195,10 @@ export default function NewInvoicePage() {
           items: data.items,
           total_amount: +totalAmount.toFixed(2),
           issue_date: data.issueDate,
+          payment_iban: data.paymentIban?.trim() || null,
+          payment_bic: data.paymentBic?.trim() || null,
+          payment_link: data.paymentLink?.trim() || null,
+          payment_free_text: data.paymentFreeText?.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -209,12 +227,12 @@ export default function NewInvoicePage() {
   return (
     <>
       <div className="pb-28">
-        <h1 className="text-xl font-semibold mb-4">{t("new.title")}</h1>
+        <h1 className="mb-4 text-xl font-semibold">{t("new.title")}</h1>
 
         <InvoiceFieldGroup control={control} />
 
         <div>
-          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="text-muted-foreground mt-8 mb-2 text-sm font-semibold tracking-wide uppercase">
             {t("new.client")}
           </div>
 
@@ -234,7 +252,7 @@ export default function NewInvoicePage() {
         </div>
 
         <div>
-          <div className="mt-8 mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="text-muted-foreground mt-8 mb-2 text-sm font-semibold tracking-wide uppercase">
             {t("new.items")}
           </div>
 
@@ -269,11 +287,34 @@ export default function NewInvoicePage() {
             </FieldError>
           )}
         </div>
+
+        <div>
+          <div className="text-muted-foreground mt-8 mb-2 text-sm font-semibold tracking-wide uppercase">
+            {t("new.payment.title")}
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <Iban
+              iban={iban}
+              bic={bic}
+              onChange={(data) => {
+                setValue("paymentIban", data.paymentIban);
+                setValue("paymentBic", data.paymentBic);
+              }}
+              onDelete={() => {
+                setValue("paymentIban", "");
+                setValue("paymentBic", "");
+              }}
+            />
+
+            <PaymentFieldGroup control={control} disabled={isSubmitting} />
+          </div>
+        </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background p-3">
+      <div className="bg-background fixed inset-x-0 bottom-0 z-10 border-t p-3">
         {error && <div className="text-sm text-red-600">{error}</div>}
-        <div className="flex flex-col items-end justify-between px-2 gap-2">
+        <div className="flex flex-col items-end justify-between gap-2 px-2">
           <div className="text-lg font-medium">
             {t("new.total")}{" "}
             {centsToCurrencyString(totalAmount, "EUR", APP_LOCALE)}{" "}

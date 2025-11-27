@@ -34,6 +34,10 @@ export const invoiceFormSchema = z.object({
         ),
       { message: "new.error.itemsIncomplete" },
     ),
+  paymentIban: z.string().optional().or(z.literal("")),
+  paymentBic: z.string().optional().or(z.literal("")),
+  paymentLink: z.string().optional().or(z.literal("")),
+  paymentFreeText: z.string().optional().or(z.literal("")),
 });
 
 export type InvoiceForm = z.infer<typeof invoiceFormSchema>;

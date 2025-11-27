@@ -29,12 +29,7 @@ export type ClientBlockProps = {
   clients: Client[];
   clientId: string;
   onSelectClientAction: (id: string) => void;
-  onRequestCreateNewClientAction: (data: {
-    name: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  }) => void;
+  onRequestCreateNewClientAction: (data: ClientForm) => void;
   isLoading: boolean;
   clientFormErrors?: FieldErrors;
 };
@@ -117,9 +112,9 @@ export default function ClientBlock({
 
       onRequestCreateNewClientAction({
         name,
-        email: data.email.trim() || undefined,
-        phone: data.phone.trim() || undefined,
-        address: data.address.trim() || undefined,
+        email: data.email.trim(),
+        phone: data.phone.trim(),
+        address: data.address.trim(),
       });
     },
     [showNewForm, onRequestCreateNewClientAction],
@@ -128,8 +123,8 @@ export default function ClientBlock({
   return (
     <div className="relative">
       {isLoading && (
-        <div className="absolute inset-0 z-20 bg-black/30 backdrop-blur-[1px] rounded-md flex items-center justify-center cursor-wait">
-          <span className="text-white text-sm opacity-90">
+        <div className="absolute inset-0 z-20 flex cursor-wait items-center justify-center rounded-md bg-black/30 backdrop-blur-[1px]">
+          <span className="text-sm text-white opacity-90">
             <Spinner />
           </span>
         </div>

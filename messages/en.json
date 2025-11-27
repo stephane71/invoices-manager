@@ -14,6 +14,7 @@
     "view": "View →",
     "loading": "Loading…",
     "save": "Save",
+    "edit": "Edit",
     "delete": "Delete",
     "saving": "Saving…",
     "uploading": "Uploading…",
@@ -133,7 +134,23 @@
         "itemsRequired": "Please add at least one item",
         "itemsIncomplete": "Please complete all item fields",
         "duplicateNumber": "The invoice number already exists. Please choose a different number.",
-        "createFail": "Failed to create invoice"
+        "createFail": "Failed to create invoice",
+        "clientCreateFail": "Failed to create client"
+      },
+      "payment": {
+        "title": "Payment information",
+        "link": "Payment link",
+        "linkPlaceholder": "https://payment.example.com/your-link",
+        "freeText": "Additional payment information",
+        "freeTextPlaceholder": "Enter any additional payment information...",
+        "addRib": "Add a RIB",
+        "iban": {
+          "paymentIban": "IBAN",
+          "paymentIbanPlaceholder": "FR76 1234 5678 9012 3456 7890 123",
+          "paymentBic": "BIC/SWIFT",
+          "paymentBicPlaceholder": "BNPAFRPPXXX",
+          "paymentHelp": "This information will be automatically included in your invoices"
+        }
       }
     }
   },

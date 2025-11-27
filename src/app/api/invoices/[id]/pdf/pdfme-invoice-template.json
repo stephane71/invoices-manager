@@ -329,31 +329,9 @@
         "type": "text",
         "position": {
           "x": 20,
-          "y": 205.58
-        },
-        "content": "Merci de votre commande",
-        "width": 170,
-        "height": 20,
-        "rotate": 0,
-        "alignment": "left",
-        "verticalAlignment": "top",
-        "fontSize": 20,
-        "lineHeight": 1,
-        "characterSpacing": 0,
-        "fontColor": "#000000",
-        "fontName": "",
-        "backgroundColor": "",
-        "opacity": 1,
-        "readOnly": true,
-        "name": "thankyou"
-      },
-      {
-        "type": "text",
-        "position": {
-          "x": 20,
           "y": 20
         },
-        "content": "Pauline Save",
+        "content": "Shop name",
         "width": 85,
         "height": 8.47,
         "rotate": 0,
@@ -471,6 +449,61 @@
         "underline": false,
         "required": false,
         "readOnly": false
+      },
+      {
+        "name": "payment_information_title",
+        "type": "text",
+        "content": "",
+        "position": {
+          "x": 20,
+          "y": 235
+        },
+        "width": 170,
+        "height": 8,
+        "rotate": 0,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "fontSize": 15,
+        "lineHeight": 1,
+        "characterSpacing": 0,
+        "fontColor": "#000000",
+        "fontName": "Roboto",
+        "backgroundColor": "",
+        "opacity": 1,
+        "strikethrough": false,
+        "underline": false,
+        "required": false,
+        "readOnly": false
+      },
+      {
+        "name": "payment_information",
+        "type": "text",
+        "content": "",
+        "position": {
+          "x": 20,
+          "y": 245
+        },
+        "width": 170,
+        "height": 30,
+        "rotate": 0,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "fontSize": 11,
+        "lineHeight": 1.3,
+        "characterSpacing": 0,
+        "fontColor": "#000000",
+        "fontName": "Roboto",
+        "backgroundColor": "",
+        "opacity": 1,
+        "strikethrough": false,
+        "underline": false,
+        "required": false,
+        "readOnly": false,
+        "dynamicFontSize": {
+          "min": 8,
+          "max": 11,
+          "fit": "vertical"
+        }
       }
     ]
   ],
@@ -498,7 +531,7 @@
       {
         "name": "footerInfo",
         "type": "text",
-        "content": "Facture N°{facture_number} • {total}",
+        "content": "Facture N°{facture_number}",
         "position": {
           "x": 20,
           "y": 282
