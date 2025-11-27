@@ -24,6 +24,7 @@
     "db:reset": "supabase db reset"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.2.9",
     "@hookform/resolvers": "^5.2.2",
     "@pdfme/generator": "^5.4.2",
     "@pdfme/schemas": "^5.4.5",

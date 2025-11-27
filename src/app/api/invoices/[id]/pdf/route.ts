@@ -1,4 +1,6 @@
-import { Template } from "@pdfme/common";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { Font, Template } from "@pdfme/common";
 import { generate } from "@pdfme/generator";
 import { line, multiVariableText, svg, table, text } from "@pdfme/schemas";
 import { NextRequest, NextResponse } from "next/server";
@@ -99,7 +101,9 @@ export async function POST(
         tax: centsToCurrencyString(taxAmountCents, "EUR", APP_LOCALE),
         total: centsToCurrencyString(totalCents, "EUR", APP_LOCALE),
         // Payment information (title and content)
-        payment_information_title: hasPaymentInfo ? "Modes de paiement" : "",
+        payment_information_title: hasPaymentInfo
+          ? `Mode${paymentInfo.length > 1 ? "s" : ""} de paiement`
+          : "",
         payment_information: paymentInfo,
         // Footer expects info.InvoiceNo
         info: JSON.stringify({
@@ -108,10 +112,31 @@ export async function POST(
       },
     ];
 
+    const font: Font = {
+      Roboto: {
+        data: readFileSync(
+          join(
+            process.cwd(),
+            "node_modules/@fontsource/roboto/files/roboto-latin-400-normal.woff",
+          ),
+        ),
+        fallback: true,
+      },
+      "Roboto-Bold": {
+        data: readFileSync(
+          join(
+            process.cwd(),
+            "node_modules/@fontsource/roboto/files/roboto-latin-700-normal.woff",
+          ),
+        ),
+      },
+    };
+
     const pdf = await generate({
       template: InvoiceTemplate as unknown as Template,
       inputs,
       plugins,
+      options: { font },
     });
 
     const pdfBytes = pdf as Uint8Array;
