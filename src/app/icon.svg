@@ -1,0 +1,82 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Glow effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="20" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Gradient for lime-green segments -->
+    <radialGradient id="limeGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#E8F48C;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#B8D84E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9FCD2E;stop-opacity:1" />
+    </radialGradient>
+
+    <!-- Gradient for yellow segments -->
+    <radialGradient id="yellowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFEF0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFEB3B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F4D03F;stop-opacity:1" />
+    </radialGradient>
+
+    <!-- Center white glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Cyan glow background -->
+    <radialGradient id="cyanGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#B8F3F3;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#B8F3F3;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Cyan glow background -->
+  <circle cx="200" cy="200" r="150" fill="url(#cyanGlow)" filter="url(#glow)"/>
+
+  <!-- Outer black ring -->
+  <circle cx="200" cy="200" r="110" fill="#2C2C2C" stroke="none"/>
+
+  <!-- White ring -->
+  <circle cx="200" cy="200" r="100" fill="#FFFFFF" stroke="none"/>
+
+  <!-- Inner dark circle (base for segments) -->
+  <circle cx="200" cy="200" r="90" fill="#3A3A3A" stroke="none"/>
+
+  <!-- Lemon segments (8 wedges) -->
+  <!-- Segment 1 (top) - Yellow -->
+  <path d="M 200 200 L 200 110 A 90 90 0 0 1 263.64 136.36 Z" fill="url(#yellowGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 2 (top-right) - Lime -->
+  <path d="M 200 200 L 263.64 136.36 A 90 90 0 0 1 290 200 Z" fill="url(#limeGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 3 (right) - Yellow -->
+  <path d="M 200 200 L 290 200 A 90 90 0 0 1 263.64 263.64 Z" fill="url(#yellowGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 4 (bottom-right) - Lime -->
+  <path d="M 200 200 L 263.64 263.64 A 90 90 0 0 1 200 290 Z" fill="url(#limeGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 5 (bottom) - Yellow -->
+  <path d="M 200 200 L 200 290 A 90 90 0 0 1 136.36 263.64 Z" fill="url(#yellowGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 6 (bottom-left) - Lime -->
+  <path d="M 200 200 L 136.36 263.64 A 90 90 0 0 1 110 200 Z" fill="url(#limeGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 7 (left) - Yellow -->
+  <path d="M 200 200 L 110 200 A 90 90 0 0 1 136.36 136.36 Z" fill="url(#yellowGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Segment 8 (top-left) - Lime -->
+  <path d="M 200 200 L 136.36 136.36 A 90 90 0 0 1 200 110 Z" fill="url(#limeGradient)" stroke="#2C2C2C" stroke-width="3"/>
+
+  <!-- Center white glow/highlight -->
+  <circle cx="200" cy="200" r="35" fill="url(#centerGlow)"/>
+
+  <!-- Center bright spot -->
+  <circle cx="200" cy="200" r="15" fill="#FFFFFF" opacity="0.9"/>
+</svg>
