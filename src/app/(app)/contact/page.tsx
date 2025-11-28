@@ -1,7 +1,7 @@
-import { getTranslations } from "next-intl/server";
 import { Mail, PhoneIncoming } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function ContactPage() {
   const c = await getTranslations("Contact");
@@ -13,7 +13,7 @@ export default async function ContactPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="flex space-x-2">
-        <div className="h-16 w-16 rounded-full flex items-center justify-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full">
           <Image
             src="https://github.com/stephane71.png"
             alt={c("imageAlt")}
@@ -23,8 +23,8 @@ export default async function ContactPage() {
           />
         </div>
         <div className="space-y-2">
-          <p className="text-md font-medium mb-0">{fullName}</p>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground mb-0">
+          <p className="text-md mb-0 font-medium">{fullName}</p>
+          <p className="text-muted-foreground mb-0 flex items-center gap-2 text-sm">
             <Mail className="h-4 w-4" aria-hidden="true" />
             <Link
               href={`mailto:${email}`}
@@ -33,7 +33,7 @@ export default async function ContactPage() {
               {email}
             </Link>
           </p>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground mb-0">
+          <p className="text-muted-foreground mb-0 flex items-center gap-2 text-sm">
             <PhoneIncoming className="h-4 w-4" aria-hidden="true" />
             <Link
               href={`tel:${phone}`}
@@ -47,7 +47,7 @@ export default async function ContactPage() {
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold">{c("about.title")}</h2>
-        <p className="text-sm leading-6 text-muted-foreground">
+        <p className="text-muted-foreground text-sm leading-6">
           {c.rich("about.body", {
             br: () => <br />,
           })}
@@ -56,7 +56,7 @@ export default async function ContactPage() {
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold">{c("ambition.title")}</h2>
-        <p className="text-sm leading-6 text-muted-foreground">
+        <p className="text-muted-foreground text-sm leading-6">
           {c.rich("ambition.body", {
             br: () => <br />,
           })}

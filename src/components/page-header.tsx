@@ -2,11 +2,17 @@
 
 import { User } from "@supabase/auth-js";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getPageHeaderTitle } from "@/utils/getPageHeaderTitle";
 
 export function PageHeader() {
+  const pathname = usePathname();
+  const t = useTranslations();
+
   const [initial, setInitial] = useState<string>("?");
 
   useEffect(() => {
@@ -35,12 +41,15 @@ export function PageHeader() {
     loadInitial();
   }, []);
 
+  const headerTitle = getPageHeaderTitle(pathname, t);
+
   return (
-    <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+    <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between gap-4 border-b px-4">
       <SidebarTrigger className="-ml-1" />
+      {headerTitle && <h1 className="text-xl font-semibold">{headerTitle}</h1>}
       <Link
         href="/profil"
-        className="bg-primary text-primary-foreground ml-auto inline-flex size-9 items-center justify-center rounded-full font-semibold"
+        className="bg-primary text-primary-foreground inline-flex size-9 items-center justify-center rounded-full font-semibold"
         aria-label="Ouvrir mon profil"
         title="Mon profil"
       >

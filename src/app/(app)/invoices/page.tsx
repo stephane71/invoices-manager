@@ -1,88 +1,86 @@
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { listInvoices } from "@/lib/db";
-import { Button } from "@/components/ui/button";
-import { Invoice } from "@/types/models";
 import { getTranslations } from "next-intl/server";
-import { FileText, Plus } from "lucide-react";
-import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
 
-async function InvoicesList() {
+import { Button } from "@/components/ui/button";
+import { APP_LOCALE } from "@/lib/constants";
+import { listInvoices } from "@/lib/db";
+import { centsToCurrencyString } from "@/lib/utils";
+import type { Invoice } from "@/types/models";
+
+export default async function InvoicesPage() {
   const invoices = await listInvoices();
+
   const t = await getTranslations("Invoices");
   const c = await getTranslations("Common");
+
   return (
-    <div className="space-y-3">
-      {invoices.map(
-        (
-          inv: Invoice & {
-            clients?: { name: string };
-            client_name?: string;
-            clientId?: string;
-            client_id?: string;
-            number?: string;
-          },
-        ) => {
-          const invoiceNumber = inv.number || inv.id;
-          const clientName =
-            inv?.clients?.name ||
-            inv.client_name ||
-            inv.clientId ||
-            inv.client_id;
-          const total = centsToCurrencyString(inv.total_amount, "EUR", APP_LOCALE);
+    <>
+      <div className="space-y-3">
+        {invoices.map(
+          (
+            inv: Invoice & {
+              clients?: { name: string };
+              client_name?: string;
+              clientId?: string;
+              client_id?: string;
+              number?: string;
+            },
+          ) => {
+            const invoiceNumber = inv.number || inv.id;
+            const clientName =
+              inv?.clients?.name ||
+              inv.client_name ||
+              inv.clientId ||
+              inv.client_id;
+            const total = centsToCurrencyString(
+              inv.total_amount,
+              "EUR",
+              APP_LOCALE,
+            );
 
-          return (
-            <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        {invoiceNumber}
-                      </h3>
-                    </div>
-                    <p className="text-gray-700 font-medium mb-1">
-                      {clientName}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                      {t("list.issued")} {inv.issue_date}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="font-semibold text-lg text-gray-900">
-                        {total} {c("vatExcluded")}
+            return (
+              <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">
+                <div className="rounded-lg border border-gray-200 bg-white p-4 hover:shadow-md">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="mb-2 flex items-center gap-3">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {invoiceNumber}
+                        </h3>
+                      </div>
+                      <p className="mb-1 font-medium text-gray-700">
+                        {clientName}
                       </p>
+                      <p className="text-sm text-gray-500">
+                        {t("list.issued")} {inv.issue_date}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-lg font-semibold text-gray-900">
+                          {total} {c("vatExcluded")}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          );
-        },
-      )}
-    </div>
-  );
-}
-
-export default async function InvoicesPage() {
-  const t = await getTranslations("Invoices");
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <FileText className="h-5 w-5" aria-hidden="true" />
-          <span>{t("title")}</span>
-        </h1>
-        <Link href="/invoices/new">
-          <Button>
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            <span>{t("list.newButton")}</span>
-          </Button>
-        </Link>
+              </Link>
+            );
+          },
+        )}
       </div>
-      <InvoicesList />
-    </div>
+
+      <Button
+        asChild
+        size="lg"
+        className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
+      >
+        <Link href="/invoices/new" aria-label={t("list.newButton")}>
+          <Plus className="size-6" />
+        </Link>
+      </Button>
+    </>
   );
 }
