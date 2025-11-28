@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/page-header";
@@ -27,7 +28,17 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="p-4">
-          <span className="text-lg font-semibold">Lemonora</span>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/Lemonora.svg"
+              alt="Lemonora"
+              width={40}
+              height={40}
+              className="shrink-0"
+              priority
+            />
+            <span className="text-primary text-xl font-bold">Lemonora</span>
+          </div>
           <Separator />
         </SidebarHeader>
 
