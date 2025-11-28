@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { User } from "@supabase/auth-js";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { User } from "@supabase/auth-js";
 
 export function PageHeader() {
   const [initial, setInitial] = useState<string>("?");
@@ -36,11 +36,11 @@ export function PageHeader() {
   }, []);
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+    <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1" />
       <Link
         href="/profil"
-        className="ml-auto inline-flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold"
+        className="bg-primary text-primary-foreground ml-auto inline-flex size-9 items-center justify-center rounded-full font-semibold"
         aria-label="Ouvrir mon profil"
         title="Mon profil"
       >
