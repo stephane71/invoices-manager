@@ -1,24 +1,24 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-
 import { ClientDetailView } from "@/components/clients/ClientDetailView";
 import { ClientListItem } from "@/components/clients/ClientListItem";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
-  SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { Client } from "@/types/models";
 
 export default function ClientsPage() {
   const t = useTranslations("Clients");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -34,7 +34,7 @@ export default function ClientsPage() {
       setClients(data);
       setLoading(false);
     };
-    loadClients();
+    void loadClients();
   }, []);
 
   const handleCloseSheet = () => {
@@ -73,13 +73,27 @@ export default function ClientsPage() {
       <Sheet open={!!selectedId} onOpenChange={handleCloseSheet}>
         <SheetContent
           side="right"
-          className="w-full overflow-y-auto sm:max-w-2xl"
+          className="w-full overflow-y-auto p-0 sm:max-w-2xl"
+          hideDefaultClose
         >
-          <SheetHeader>
-            <SheetTitle>{t("edit.title")}</SheetTitle>
-          </SheetHeader>
+          <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center justify-center border-b">
+            <SheetClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-4"
+                aria-label={tCommon("close")}
+              >
+                <ArrowLeft className="size-5" />
+              </Button>
+            </SheetClose>
+            <SheetTitle className="text-xl font-semibold">
+              {t("edit.title")}
+            </SheetTitle>
+          </header>
+
           {selectedId && (
-            <div className="mt-4">
+            <div className="p-4">
               <ClientDetailView id={selectedId} onClose={handleCloseSheet} />
             </div>
           )}

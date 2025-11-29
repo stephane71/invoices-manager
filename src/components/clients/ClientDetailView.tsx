@@ -124,7 +124,6 @@ export const ClientDetailView = ({
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-semibold">{t("edit.title")}</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <ClientFieldGroup control={control} disabled={isSubmitting}>
           <Button type="submit" disabled={isSubmitting}>
