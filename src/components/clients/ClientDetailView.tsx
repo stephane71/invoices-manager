@@ -1,14 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientForm, clientFormSchema } from "@/components/clients/clients";
+import { Button } from "@/components/ui/button";
 
 export const ClientDetailView = ({
   id,
@@ -17,11 +14,13 @@ export const ClientDetailView = ({
   id: string;
   onClose?: () => void;
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const router = useRouter();
+
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),

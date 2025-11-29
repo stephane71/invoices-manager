@@ -1,11 +1,13 @@
 "use client";
 
-import { ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { ClientDetailView } from "@/components/clients/ClientDetailView";
+import { ClientListItem } from "@/components/clients/ClientListItem";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -13,16 +15,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ClientDetailView } from "@/components/clients/ClientDetailView";
 import type { Client } from "@/types/models";
 
 export default function ClientsPage() {
+  const t = useTranslations("Clients");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const selectedId = searchParams.get("id");
+
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const selectedId = searchParams.get("id");
-  const t = useTranslations("Clients");
 
   useEffect(() => {
     const loadClients = async () => {
@@ -34,10 +37,6 @@ export default function ClientsPage() {
     loadClients();
   }, []);
 
-  const handleItemClick = (id: string) => {
-    router.push(`/clients?id=${id}`);
-  };
-
   const handleCloseSheet = () => {
     router.push("/clients");
     // Reload clients after closing sheet to reflect any changes
@@ -46,7 +45,7 @@ export default function ClientsPage() {
       const data = await res.json();
       setClients(data);
     };
-    loadClients();
+    void loadClients();
   };
 
   if (loading) {
@@ -55,24 +54,11 @@ export default function ClientsPage() {
 
   return (
     <>
-      <ul className="divide-y">
+      <div className="flex flex-col gap-2">
         {clients.map((cItem) => (
-          <li key={cItem.id}>
-            <button
-              onClick={() => handleItemClick(cItem.id)}
-              className="-mx-2 flex items-center justify-between rounded-lg px-2 py-3 transition-colors duration-150 hover:bg-gray-50 active:bg-gray-100 w-full text-left"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 mb-1">{cItem.name}</p>
-                <p className="text-sm text-gray-600 truncate">
-                  {cItem.email || ""}
-                </p>
-              </div>
-              <ChevronRight className="size-5 text-gray-400 flex-shrink-0 ml-2" />
-            </button>
-          </li>
+          <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
         ))}
-      </ul>
+      </div>
 
       <Button
         asChild
@@ -85,7 +71,10 @@ export default function ClientsPage() {
       </Button>
 
       <Sheet open={!!selectedId} onOpenChange={handleCloseSheet}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetContent
+          side="right"
+          className="w-full overflow-y-auto sm:max-w-2xl"
+        >
           <SheetHeader>
             <SheetTitle>{t("edit.title")}</SheetTitle>
           </SheetHeader>

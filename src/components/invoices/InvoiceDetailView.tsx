@@ -1,22 +1,20 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Client, Invoice, InvoiceItem } from "@/types/models";
-import { centsToCurrencyString } from "@/lib/utils";
 import { APP_LOCALE } from "@/lib/constants";
+import { centsToCurrencyString } from "@/lib/utils";
+import { Client, Invoice, InvoiceItem } from "@/types/models";
 
 export const InvoiceDetailView = ({ id }: { id: string }) => {
+  const c = useTranslations("Common");
+  const t = useTranslations("Invoices");
+
   const [invoice, setInvoice] = useState<
     (Invoice & { clients: Pick<Client, "name"> }) | null
   >(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const t = useTranslations("Invoices");
-  const c = useTranslations("Common");
 
   useEffect(() => {
     let active = true;
@@ -99,9 +97,9 @@ export const InvoiceDetailView = ({ id }: { id: string }) => {
       <h1 className="text-xl font-semibold">
         {t("detail.title", { number: invoice.number })}
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-lg border bg-white p-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-2">
+          <h2 className="mb-2 text-sm font-semibold text-gray-700">
             {t("detail.info")}
           </h2>
           <div className="space-y-1 text-sm text-gray-700">
@@ -116,18 +114,17 @@ export const InvoiceDetailView = ({ id }: { id: string }) => {
           </div>
         </div>
         <div className="rounded-lg border bg-white p-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-2">
+          <h2 className="mb-2 text-sm font-semibold text-gray-700">
             {t("detail.total")}
           </h2>
           <p className="text-2xl font-semibold">
-            {centsToCurrencyString(total, "EUR", APP_LOCALE)}{" "}
-            {c("vatExcluded")}
+            {centsToCurrencyString(total, "EUR", APP_LOCALE)} {c("vatExcluded")}
           </p>
         </div>
       </div>
 
       <div className="rounded-lg border bg-white p-4">
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">
+        <h2 className="mb-3 text-sm font-semibold text-gray-700">
           {t("detail.lines")}
         </h2>
         {invoice.items && invoice.items.length > 0 ? (
@@ -135,7 +132,7 @@ export const InvoiceDetailView = ({ id }: { id: string }) => {
             {invoice.items.map((it: InvoiceItem, idx: number) => (
               <div
                 key={idx}
-                className="py-2 flex items-center justify-between text-sm"
+                className="flex items-center justify-between py-2 text-sm"
               >
                 <div>
                   <div className="font-medium text-gray-900">{it.name}</div>

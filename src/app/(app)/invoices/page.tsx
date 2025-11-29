@@ -1,11 +1,13 @@
 "use client";
 
-import { ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { InvoiceDetailView } from "@/components/invoices/InvoiceDetailView";
+import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -13,19 +15,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { InvoiceDetailView } from "@/components/invoices/InvoiceDetailView";
-import { APP_LOCALE } from "@/lib/constants";
-import { centsToCurrencyString } from "@/lib/utils";
 import type { Invoice } from "@/types/models";
 
 export default function InvoicesPage() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const selectedId = searchParams.get("id");
   const t = useTranslations("Invoices");
-  const c = useTranslations("Common");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const selectedId = searchParams.get("id");
+
+  const [invoices, setInvoices] = useState<
+    (Invoice & { clients: { name: string } })[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadInvoices = async () => {
@@ -34,12 +36,8 @@ export default function InvoicesPage() {
       setInvoices(data);
       setLoading(false);
     };
-    loadInvoices();
+    void loadInvoices();
   }, []);
-
-  const handleItemClick = (id: string) => {
-    router.push(`/invoices?id=${id}`);
-  };
 
   const handleCloseSheet = () => {
     router.push("/invoices");
@@ -49,7 +47,7 @@ export default function InvoicesPage() {
       const data = await res.json();
       setInvoices(data);
     };
-    loadInvoices();
+    void loadInvoices();
   };
 
   if (loading) {
@@ -58,59 +56,19 @@ export default function InvoicesPage() {
 
   return (
     <>
-      <ul className="divide-y">
-        {invoices.map(
-          (
-            inv: Invoice & {
-              clients?: { name: string };
-              client_name?: string;
-              clientId?: string;
-              client_id?: string;
-              number?: string;
-            },
-          ) => {
-            const invoiceNumber = inv.number || inv.id;
-            const clientName =
-              inv?.clients?.name ||
-              inv.client_name ||
-              inv.clientId ||
-              inv.client_id;
-            const total = centsToCurrencyString(
-              inv.total_amount,
-              "EUR",
-              APP_LOCALE,
-            );
-
-            return (
-              <li key={inv.id}>
-                <button
-                  onClick={() => handleItemClick(inv.id)}
-                  className="-mx-2 flex items-center justify-between rounded-lg px-2 py-3 transition-colors duration-150 hover:bg-gray-50 active:bg-gray-100 w-full text-left"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-gray-900">
-                        {invoiceNumber}
-                      </p>
-                      <span className="text-gray-400">·</span>
-                      <p className="font-medium text-gray-700 truncate">
-                        {clientName}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                      <p>{inv.issue_date}</p>
-                      <p className="font-semibold">
-                        {total} {c("vatExcluded")}
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight className="size-5 text-gray-400 flex-shrink-0 ml-2" />
-                </button>
-              </li>
-            );
-          },
-        )}
-      </ul>
+      <div className="flex flex-col gap-2">
+        {invoices.map((inv) => {
+          return (
+            <InvoiceListItem
+              key={inv.id}
+              id={inv.id}
+              name={inv.clients.name}
+              price={inv.total_amount}
+              number={inv.number}
+            />
+          );
+        })}
+      </div>
 
       <Button
         asChild
@@ -123,7 +81,10 @@ export default function InvoicesPage() {
       </Button>
 
       <Sheet open={!!selectedId} onOpenChange={handleCloseSheet}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetContent
+          side="right"
+          className="w-full overflow-y-auto sm:max-w-2xl"
+        >
           <SheetHeader>
             <SheetTitle>
               {t("detail.title", { number: selectedId || "" })}

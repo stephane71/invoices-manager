@@ -1,15 +1,12 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
+import { ProductForm, productFormSchema } from "@/components/products/products";
 import { Button } from "@/components/ui/button";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
-import { ProductForm, productFormSchema } from "@/components/products/products";
-import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 
 export const ProductDetailView = ({
   id,
@@ -18,14 +15,16 @@ export const ProductDetailView = ({
   id: string;
   onClose?: () => void;
 }) => {
+  const c = useTranslations("Common");
+  const t = useTranslations("Products");
+  const router = useRouter();
+
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
     setImageUrl(url),
   );
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const t = useTranslations("Products");
-  const c = useTranslations("Common");
 
   const form = useForm<ProductForm>({
     resolver: zodResolver(productFormSchema),
