@@ -5,19 +5,16 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { ProductDetailView } from "@/components/products/ProductDetailView";
+import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 import { ProductListItem } from "@/components/products/ProductListItem";
+import { useProductForm } from "@/components/products/useProductForm";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Product } from "@/types/models";
 
 export default function ProductsPage() {
   const t = useTranslations("Products");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,6 +23,11 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { form, onSubmit, onRemove, error, imageUrl, onSelectImage } =
+    useProductForm({
+      id: selectedId ?? "",
+    });
+
   useEffect(() => {
     const loadProducts = async () => {
       const res = await fetch("/api/products");
@@ -33,7 +35,7 @@ export default function ProductsPage() {
       setProducts(data);
       setLoading(false);
     };
-    loadProducts();
+    void loadProducts();
   }, []);
 
   const handleCloseSheet = () => {
@@ -44,7 +46,7 @@ export default function ProductsPage() {
       const data = await res.json();
       setProducts(data);
     };
-    loadProducts();
+    void loadProducts();
   };
 
   if (loading) {
@@ -75,21 +77,48 @@ export default function ProductsPage() {
         </Link>
       </Button>
 
-      <Sheet open={!!selectedId} onOpenChange={handleCloseSheet}>
-        <SheetContent
-          side="right"
-          className="w-full overflow-y-auto sm:max-w-2xl"
-        >
-          <SheetHeader>
-            <SheetTitle>{t("edit.title")}</SheetTitle>
-          </SheetHeader>
-          {selectedId && (
-            <div className="mt-4">
-              <ProductDetailView id={selectedId} onClose={handleCloseSheet} />
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <SheetItem
+        title={t("edit.title")}
+        open={!!selectedId}
+        onOpenChange={handleCloseSheet}
+        content={
+          selectedId && (
+            <form
+              id={`product-form-${selectedId}`}
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <ProductFieldGroup
+                imageUrl={imageUrl}
+                onSelectImage={onSelectImage}
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+              />
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            </form>
+          )
+        }
+        footer={
+          <div className="flex w-full gap-2">
+            <Button
+              type="submit"
+              form={`product-form-${selectedId}`}
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting
+                ? tCommon("saving")
+                : tCommon("save")}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onRemove}
+              disabled={form.formState.isSubmitting}
+            >
+              {tCommon("delete")}
+            </Button>
+          </div>
+        }
+      />
     </>
   );
 }

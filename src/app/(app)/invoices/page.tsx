@@ -5,20 +5,15 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-
-import { InvoiceDetailView } from "@/components/invoices/InvoiceDetailView";
 import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
+import { InvoiceView } from "@/components/invoices/InvoiceView";
+import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Invoice } from "@/types/models";
 
 export default function InvoicesPage() {
-  const t = useTranslations("Invoices");
+  const tInvoices = useTranslations("Invoices");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -28,6 +23,9 @@ export default function InvoicesPage() {
     (Invoice & { clients: { name: string } })[]
   >([]);
   const [loading, setLoading] = useState(true);
+
+  const { invoice, onDownloadInvoice, downloadingInvoice, total } =
+    useInvoiceForm({ id: selectedId ?? "" });
 
   useEffect(() => {
     const loadInvoices = async () => {
@@ -75,28 +73,24 @@ export default function InvoicesPage() {
         size="lg"
         className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
       >
-        <Link href="/invoices/new" aria-label={t("list.newButton")}>
+        <Link href="/invoices/new" aria-label={tInvoices("list.newButton")}>
           <Plus className="size-6" />
         </Link>
       </Button>
 
-      <Sheet open={!!selectedId} onOpenChange={handleCloseSheet}>
-        <SheetContent
-          side="right"
-          className="w-full overflow-y-auto sm:max-w-2xl"
-        >
-          <SheetHeader>
-            <SheetTitle>
-              {t("detail.title", { number: selectedId || "" })}
-            </SheetTitle>
-          </SheetHeader>
-          {selectedId && (
-            <div className="mt-4">
-              <InvoiceDetailView id={selectedId} />
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <SheetItem
+        title={tInvoices("detail.title", { number: invoice?.number ?? "" })}
+        open={!!selectedId}
+        onOpenChange={handleCloseSheet}
+        content={invoice && <InvoiceView invoice={invoice} total={total} />}
+        footer={
+          <Button onClick={onDownloadInvoice} disabled={downloadingInvoice}>
+            {downloadingInvoice
+              ? tInvoices("detail.downloading")
+              : tInvoices("detail.download")}
+          </Button>
+        }
+      />
     </>
   );
 }

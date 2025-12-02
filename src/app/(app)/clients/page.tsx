@@ -1,19 +1,15 @@
 "use client";
 
-import { ArrowLeft, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { ClientDetailView } from "@/components/clients/ClientDetailView";
+import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientListItem } from "@/components/clients/ClientListItem";
+import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Client } from "@/types/models";
 
 export default function ClientsPage() {
@@ -26,6 +22,10 @@ export default function ClientsPage() {
 
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const { form, onSubmit, onRemove, error } = useClientForm({
+    id: selectedId ?? "",
+  });
 
   useEffect(() => {
     const loadClients = async () => {
@@ -70,35 +70,46 @@ export default function ClientsPage() {
         </Link>
       </Button>
 
-      <Sheet open={!!selectedId} onOpenChange={handleCloseSheet}>
-        <SheetContent
-          side="right"
-          className="w-full overflow-y-auto p-0 sm:max-w-2xl"
-          hideDefaultClose
-        >
-          <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center justify-center border-b">
-            <SheetClose asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-4"
-                aria-label={tCommon("close")}
-              >
-                <ArrowLeft className="size-5" />
-              </Button>
-            </SheetClose>
-            <SheetTitle className="text-xl font-semibold">
-              {t("edit.title")}
-            </SheetTitle>
-          </header>
-
-          {selectedId && (
-            <div className="p-4">
-              <ClientDetailView id={selectedId} onClose={handleCloseSheet} />
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <SheetItem
+        title={t("edit.title")}
+        open={!!selectedId}
+        onOpenChange={handleCloseSheet}
+        content={
+          selectedId && (
+            <form
+              id={`client-form-${selectedId}`}
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <ClientFieldGroup
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+              />
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            </form>
+          )
+        }
+        footer={
+          <div className="flex w-full gap-2">
+            <Button
+              type="submit"
+              form={`client-form-${selectedId}`}
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting
+                ? tCommon("saving")
+                : tCommon("save")}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onRemove}
+              disabled={form.formState.isSubmitting}
+            >
+              {tCommon("delete")}
+            </Button>
+          </div>
+        }
+      />
     </>
   );
 }

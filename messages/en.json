@@ -92,7 +92,7 @@
       "issued": "Issued:"
     },
     "detail": {
-      "title": "Invoice {number}",
+      "title": "{number}",
       "info": "Information",
       "clientLabel": "Client:",
       "issued": "Issued:",

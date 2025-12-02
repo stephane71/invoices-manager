@@ -3,24 +3,18 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 import { ProductForm, productFormSchema } from "@/components/products/products";
-import { Button } from "@/components/ui/button";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 
-export const ProductDetailView = ({
-  id,
-  onClose,
-}: {
+export type UseProductFormProps = {
   id: string;
-  onClose?: () => void;
-}) => {
-  const c = useTranslations("Common");
+};
+
+export const useProductForm = ({ id }: UseProductFormProps) => {
   const t = useTranslations("Products");
   const router = useRouter();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
     setImageUrl(url),
@@ -36,16 +30,11 @@ export const ProductDetailView = ({
   });
 
   const [error, setError] = useState("");
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setError: setFieldError,
-    formState: { isSubmitting },
-  } = form;
+  const { reset, setError: setFieldError } = form;
 
   useEffect(() => {
     let active = true;
+
     fetch(`/api/products/${id}`).then(async (r) => {
       const d = await r.json();
       if (!active) {
@@ -58,8 +47,8 @@ export const ProductDetailView = ({
         price: d.price || 0,
       });
       setImageUrl(d.image_url || null);
-      setLoading(false);
     });
+
     return () => {
       active = false;
     };
@@ -79,12 +68,7 @@ export const ProductDetailView = ({
       });
 
       if (res.ok) {
-        if (onClose) {
-          onClose();
-        } else {
-          router.push("/products");
-        }
-        router.refresh();
+        router.push("/products");
       } else {
         const responseData = await res.json();
 
@@ -104,50 +88,24 @@ export const ProductDetailView = ({
     }
   };
 
-  const remove = async () => {
+  const onRemove = async () => {
     if (!confirm(t("confirm.delete"))) {
       return;
     }
+
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     if (res.ok) {
-      if (onClose) {
-        onClose();
-      } else {
-        router.push("/products");
-      }
-      router.refresh();
+      router.push("/products");
     }
   };
 
-  if (loading) {
-    return <div className="p-4">{c("loading")}</div>;
-  }
-
-  return (
-    <div className="space-y-3">
-      <h1 className="text-xl font-semibold">{t("edit.title")}</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <ProductFieldGroup
-          imageUrl={imageUrl}
-          onSelectImage={onSelectImage}
-          control={control}
-          disabled={isSubmitting || uploading}
-        >
-          <Button type="submit" disabled={isSubmitting || uploading}>
-            {c("save")}
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={remove}
-            disabled={isSubmitting}
-          >
-            {c("delete")}
-          </Button>
-        </ProductFieldGroup>
-
-        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-      </form>
-    </div>
-  );
+  return {
+    form,
+    onSubmit,
+    onRemove,
+    error,
+    uploading,
+    imageUrl,
+    onSelectImage,
+  };
 };

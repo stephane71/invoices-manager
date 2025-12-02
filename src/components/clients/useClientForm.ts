@@ -3,23 +3,16 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientForm, clientFormSchema } from "@/components/clients/clients";
-import { Button } from "@/components/ui/button";
 
-export const ClientDetailView = ({
-  id,
-  onClose,
-}: {
+export type UseClientFormProps = {
   id: string;
-  onClose?: () => void;
-}) => {
+};
+
+export const useClientForm = ({ id }: UseClientFormProps) => {
+  const tClients = useTranslations("Clients");
   const router = useRouter();
 
-  const t = useTranslations("Clients");
-  const c = useTranslations("Common");
-
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const form = useForm<ClientForm>({
@@ -32,16 +25,11 @@ export const ClientDetailView = ({
     },
   });
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setError: setFieldError,
-    formState: { isSubmitting },
-  } = form;
+  const { reset, setError: setFieldError } = form;
 
   useEffect(() => {
     let active = true;
+
     fetch(`/api/clients/${id}`).then(async (r) => {
       const d = await r.json();
       if (!active) {
@@ -53,12 +41,23 @@ export const ClientDetailView = ({
         address: d.address || "",
         phone: d.phone || "",
       });
-      setLoading(false);
     });
+
     return () => {
       active = false;
     };
   }, [id, reset]);
+
+  const onRemove = async () => {
+    if (!confirm(tClients("confirm.delete"))) {
+      return;
+    }
+
+    const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/clients");
+    }
+  };
 
   const onSubmit = async (data: ClientForm) => {
     setError("");
@@ -78,12 +77,7 @@ export const ClientDetailView = ({
       });
 
       if (res.ok) {
-        if (onClose) {
-          onClose();
-        } else {
-          router.push("/clients");
-        }
-        router.refresh();
+        router.push("/clients");
       } else {
         const responseData = await res.json();
 
@@ -95,51 +89,15 @@ export const ClientDetailView = ({
             });
           });
         } else {
-          setError(responseData.error || t("new.error.createFail"));
+          setError(responseData.error || tClients("new.error.createFail"));
         }
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("new.error.createFail"));
+      setError(
+        e instanceof Error ? e.message : tClients("new.error.createFail"),
+      );
     }
   };
 
-  const remove = async () => {
-    if (!confirm(t("confirm.delete"))) {
-      return;
-    }
-    const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      if (onClose) {
-        onClose();
-      } else {
-        router.push("/clients");
-      }
-      router.refresh();
-    }
-  };
-
-  if (loading) {
-    return <div className="p-4">{c("loading")}</div>;
-  }
-
-  return (
-    <div className="space-y-3">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <ClientFieldGroup control={control} disabled={isSubmitting}>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? c("saving") : c("save")}
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={remove}
-            disabled={isSubmitting}
-          >
-            {c("delete")}
-          </Button>
-        </ClientFieldGroup>
-        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-      </form>
-    </div>
-  );
+  return { form, onSubmit, onRemove, error };
 };

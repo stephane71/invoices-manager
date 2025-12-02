@@ -92,7 +92,7 @@
       "issued": "Émise:"
     },
     "detail": {
-      "title": "Facture {number}",
+      "title": "{number}",
       "info": "Informations",
       "clientLabel": "Client:",
       "issued": "Émise:",
