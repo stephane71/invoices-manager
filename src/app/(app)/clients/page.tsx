@@ -89,7 +89,15 @@ export default function ClientsPage() {
           )
         }
         footer={
-          <div className="flex w-full gap-2">
+          <div className="flex w-full justify-between gap-2">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onRemove}
+              disabled={form.formState.isSubmitting}
+            >
+              {tCommon("delete")}
+            </Button>
             <Button
               type="submit"
               form={`client-form-${selectedId}`}
@@ -98,14 +106,6 @@ export default function ClientsPage() {
               {form.formState.isSubmitting
                 ? tCommon("saving")
                 : tCommon("save")}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={onRemove}
-              disabled={form.formState.isSubmitting}
-            >
-              {tCommon("delete")}
             </Button>
           </div>
         }
