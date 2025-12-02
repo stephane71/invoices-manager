@@ -126,9 +126,7 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-semibold">{profilTranslate("title")}</h1>
-
+    <div className="max-w-2xl space-y-6 p-4">
       {error && (
         <div className="text-sm text-red-600" role="alert">
           {error}

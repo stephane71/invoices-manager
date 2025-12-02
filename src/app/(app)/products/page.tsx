@@ -1,74 +1,124 @@
+"use client";
+
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { listProducts } from "@/lib/db";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
+import { ProductListItem } from "@/components/products/ProductListItem";
+import { useProductForm } from "@/components/products/useProductForm";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { getTranslations } from "next-intl/server";
-import { Package, Plus } from "lucide-react";
-import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
+import { SheetItem } from "@/components/ui/item/SheetItem";
+import type { Product } from "@/types/models";
 
-async function ProductsList() {
-  const products = await listProducts();
-  const c = await getTranslations("Common");
+export default function ProductsPage() {
+  const t = useTranslations("Products");
+  const tCommon = useTranslations("Common");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  return (
-    <ul className="divide-y">
-      {products.map((p) => (
-        <li key={p.id}>
-          <Link
-            href={`/products/${p.id}`}
-            className="py-3 flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 rounded-lg px-2 -mx-2"
-          >
-            <div className="flex items-center gap-3">
-              {p.image_url ? (
-                <Image
-                  src={p.image_url}
-                  alt={p.name}
-                  className="h-10 w-10 rounded object-cover"
-                  width={40}
-                  height={40}
-                />
-              ) : (
-                <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                  img
-                </div>
-              )}
-              <div>
-                <p className="font-medium">{p.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {p.price != null ? `${centsToCurrencyString(p.price, "EUR", APP_LOCALE)} ${c("vatExcluded")}` : "N/A"}
-                </p>
-              </div>
-            </div>
-            <span className="text-sm text-blue-600 hover:text-blue-800">
-              {c("view")}
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
+  const selectedId = searchParams.get("id");
 
-export default async function ProductsPage() {
-  const t = await getTranslations("Products");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const { form, onSubmit, onRemove, error, imageUrl, onSelectImage } =
+    useProductForm({
+      id: selectedId ?? "",
+    });
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data);
+      setLoading(false);
+    };
+    void loadProducts();
+  }, []);
+
+  const handleCloseSheet = () => {
+    router.push("/products");
+    // Reload products after closing sheet to reflect any changes
+    const loadProducts = async () => {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data);
+    };
+    void loadProducts();
+  };
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <Package className="h-5 w-5" aria-hidden="true" />
-          <span>{t("title")}</span>
-        </h1>
-        <Link href="/products/new">
-          <Button>
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            <span>{t("list.newButton")}</span>
-          </Button>
-        </Link>
+    <>
+      <div className="flex flex-col gap-2">
+        {products.map((p) => (
+          <ProductListItem
+            key={p.id}
+            name={p.name}
+            price={p.price}
+            id={p.id}
+            imageUrl={p.image_url || ""}
+          />
+        ))}
       </div>
 
-      <ProductsList />
-    </div>
+      <Button
+        asChild
+        size="lg"
+        className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
+      >
+        <Link href="/products/new" aria-label={t("list.newButton")}>
+          <Plus className="size-6" />
+        </Link>
+      </Button>
+
+      <SheetItem
+        title={t("edit.title")}
+        open={!!selectedId}
+        onOpenChange={handleCloseSheet}
+        content={
+          selectedId && (
+            <form
+              id={`product-form-${selectedId}`}
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <ProductFieldGroup
+                imageUrl={imageUrl}
+                onSelectImage={onSelectImage}
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+              />
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            </form>
+          )
+        }
+        footer={
+          <div className="flex w-full gap-2">
+            <Button
+              type="submit"
+              form={`product-form-${selectedId}`}
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting
+                ? tCommon("saving")
+                : tCommon("save")}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onRemove}
+              disabled={form.formState.isSubmitting}
+            >
+              {tCommon("delete")}
+            </Button>
+          </div>
+        }
+      />
+    </>
   );
 }

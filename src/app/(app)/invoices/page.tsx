@@ -1,88 +1,96 @@
+"use client";
+
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { listInvoices } from "@/lib/db";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
+import { InvoiceView } from "@/components/invoices/InvoiceView";
+import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { Button } from "@/components/ui/button";
-import { Invoice } from "@/types/models";
-import { getTranslations } from "next-intl/server";
-import { FileText, Plus } from "lucide-react";
-import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
+import { SheetItem } from "@/components/ui/item/SheetItem";
+import type { Invoice } from "@/types/models";
 
-async function InvoicesList() {
-  const invoices = await listInvoices();
-  const t = await getTranslations("Invoices");
-  const c = await getTranslations("Common");
+export default function InvoicesPage() {
+  const tInvoices = useTranslations("Invoices");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const selectedId = searchParams.get("id");
+
+  const [invoices, setInvoices] = useState<
+    (Invoice & { clients: { name: string } })[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+
+  const { invoice, onDownloadInvoice, downloadingInvoice, total } =
+    useInvoiceForm({ id: selectedId ?? "" });
+
+  useEffect(() => {
+    const loadInvoices = async () => {
+      const res = await fetch("/api/invoices");
+      const data = await res.json();
+      setInvoices(data);
+      setLoading(false);
+    };
+    void loadInvoices();
+  }, []);
+
+  const handleCloseSheet = () => {
+    router.push("/invoices");
+    // Reload invoices after closing sheet to reflect any changes
+    const loadInvoices = async () => {
+      const res = await fetch("/api/invoices");
+      const data = await res.json();
+      setInvoices(data);
+    };
+    void loadInvoices();
+  };
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+
   return (
-    <div className="space-y-3">
-      {invoices.map(
-        (
-          inv: Invoice & {
-            clients?: { name: string };
-            client_name?: string;
-            clientId?: string;
-            client_id?: string;
-            number?: string;
-          },
-        ) => {
-          const invoiceNumber = inv.number || inv.id;
-          const clientName =
-            inv?.clients?.name ||
-            inv.client_name ||
-            inv.clientId ||
-            inv.client_id;
-          const total = centsToCurrencyString(inv.total_amount, "EUR", APP_LOCALE);
-
+    <>
+      <div className="flex flex-col gap-2">
+        {invoices.map((inv) => {
           return (
-            <Link href={`/invoices/${inv.id}`} key={inv.id} className="block">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        {invoiceNumber}
-                      </h3>
-                    </div>
-                    <p className="text-gray-700 font-medium mb-1">
-                      {clientName}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                      {t("list.issued")} {inv.issue_date}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="font-semibold text-lg text-gray-900">
-                        {total} {c("vatExcluded")}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
+            <InvoiceListItem
+              key={inv.id}
+              id={inv.id}
+              name={inv.clients.name}
+              price={inv.total_amount}
+              number={inv.number}
+            />
           );
-        },
-      )}
-    </div>
-  );
-}
-
-export default async function InvoicesPage() {
-  const t = await getTranslations("Invoices");
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <FileText className="h-5 w-5" aria-hidden="true" />
-          <span>{t("title")}</span>
-        </h1>
-        <Link href="/invoices/new">
-          <Button>
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            <span>{t("list.newButton")}</span>
-          </Button>
-        </Link>
+        })}
       </div>
-      <InvoicesList />
-    </div>
+
+      <Button
+        asChild
+        size="lg"
+        className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
+      >
+        <Link href="/invoices/new" aria-label={tInvoices("list.newButton")}>
+          <Plus className="size-6" />
+        </Link>
+      </Button>
+
+      <SheetItem
+        title={tInvoices("detail.title", { number: invoice?.number ?? "" })}
+        open={!!selectedId}
+        onOpenChange={handleCloseSheet}
+        content={invoice && <InvoiceView invoice={invoice} total={total} />}
+        footer={
+          <Button onClick={onDownloadInvoice} disabled={downloadingInvoice}>
+            {downloadingInvoice
+              ? tInvoices("detail.downloading")
+              : tInvoices("detail.download")}
+          </Button>
+        }
+      />
+    </>
   );
 }

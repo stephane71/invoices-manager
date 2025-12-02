@@ -1,54 +1,115 @@
+"use client";
+
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { listClients } from "@/lib/db";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
+import { ClientListItem } from "@/components/clients/ClientListItem";
+import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
-import { getTranslations } from "next-intl/server";
-import { Plus, Users } from "lucide-react";
+import { SheetItem } from "@/components/ui/item/SheetItem";
+import type { Client } from "@/types/models";
 
-async function ClientsList() {
-  const clients = await listClients();
-  const c = await getTranslations("Common");
-  return (
-    <ul className="divide-y">
-      {clients.map((cItem) => (
-        <li key={cItem.id}>
-          <Link
-            href={`/clients/${cItem.id}`}
-            className="py-3 flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 rounded-lg px-2 -mx-2"
-          >
-            <div>
-              <p className="font-medium">{cItem.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {cItem.email || ""}
-              </p>
-            </div>
-            <span className="text-sm text-blue-600 hover:text-blue-800">
-              {c("view")}
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
+export default function ClientsPage() {
+  const t = useTranslations("Clients");
+  const tCommon = useTranslations("Common");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-export default async function ClientsPage() {
-  const t = await getTranslations("Clients");
+  const selectedId = searchParams.get("id");
+
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const { form, onSubmit, onRemove, error } = useClientForm({
+    id: selectedId ?? "",
+  });
+
+  useEffect(() => {
+    const loadClients = async () => {
+      const res = await fetch("/api/clients");
+      const data = await res.json();
+      setClients(data);
+      setLoading(false);
+    };
+    void loadClients();
+  }, []);
+
+  const handleCloseSheet = () => {
+    router.push("/clients");
+    // Reload clients after closing sheet to reflect any changes
+    const loadClients = async () => {
+      const res = await fetch("/api/clients");
+      const data = await res.json();
+      setClients(data);
+    };
+    void loadClients();
+  };
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <Users className="h-5 w-5" aria-hidden="true" />
-          <span>{t("title")}</span>
-        </h1>
-        <Link href="/clients/new">
-          <Button>
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            <span>{t("list.newButton")}</span>
-          </Button>
-        </Link>
+    <>
+      <div className="flex flex-col gap-2">
+        {clients.map((cItem) => (
+          <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
+        ))}
       </div>
 
-      <ClientsList />
-    </div>
+      <Button
+        asChild
+        size="lg"
+        className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
+      >
+        <Link href="/clients/new" aria-label={t("list.newButton")}>
+          <Plus className="size-6" />
+        </Link>
+      </Button>
+
+      <SheetItem
+        title={t("edit.title")}
+        open={!!selectedId}
+        onOpenChange={handleCloseSheet}
+        content={
+          selectedId && (
+            <form
+              id={`client-form-${selectedId}`}
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <ClientFieldGroup
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+              />
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            </form>
+          )
+        }
+        footer={
+          <div className="flex w-full gap-2">
+            <Button
+              type="submit"
+              form={`client-form-${selectedId}`}
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting
+                ? tCommon("saving")
+                : tCommon("save")}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onRemove}
+              disabled={form.formState.isSubmitting}
+            >
+              {tCommon("delete")}
+            </Button>
+          </div>
+        }
+      />
+    </>
   );
 }
