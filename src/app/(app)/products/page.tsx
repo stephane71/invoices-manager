@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 import { ProductListItem } from "@/components/products/ProductListItem";
+import { ProductListItemSkeleton } from "@/components/products/ProductListItemSkeleton";
 import { useProductForm } from "@/components/products/useProductForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
@@ -49,22 +50,22 @@ export default function ProductsPage() {
     void loadProducts();
   };
 
-  if (loading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
   return (
     <>
       <div className="flex flex-col gap-2">
-        {products.map((p) => (
-          <ProductListItem
-            key={p.id}
-            name={p.name}
-            price={p.price}
-            id={p.id}
-            imageUrl={p.image_url || ""}
-          />
-        ))}
+        {loading
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <ProductListItemSkeleton key={index} />
+            ))
+          : products.map((p) => (
+              <ProductListItem
+                key={p.id}
+                name={p.name}
+                price={p.price}
+                id={p.id}
+                imageUrl={p.image_url || ""}
+              />
+            ))}
       </div>
 
       <Button

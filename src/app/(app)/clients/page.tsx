@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientListItem } from "@/components/clients/ClientListItem";
+import { ClientListItemSkeleton } from "@/components/clients/ClientListItemSkeleton";
 import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
@@ -48,16 +49,16 @@ export default function ClientsPage() {
     void loadClients();
   };
 
-  if (loading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
   return (
     <>
       <div className="flex flex-col gap-2">
-        {clients.map((cItem) => (
-          <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
-        ))}
+        {loading
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <ClientListItemSkeleton key={index} />
+            ))
+          : clients.map((cItem) => (
+              <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
+            ))}
       </div>
 
       <Button
