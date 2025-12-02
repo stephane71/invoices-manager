@@ -32,7 +32,9 @@ export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
       }
     };
 
-    void load();
+    if (id) {
+      void load();
+    }
 
     return () => {
       active = false;

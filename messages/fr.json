@@ -94,10 +94,9 @@
     "detail": {
       "title": "{number}",
       "info": "Informations",
-      "clientLabel": "Client:",
-      "issued": "Émise:",
+      "clientLabel": "Client",
+      "issued": "Émise",
       "total": "Total",
-      "lines": "Lignes",
       "none": "Aucune ligne",
       "download": "Télécharger la facture",
       "downloading": "Téléchargement…",

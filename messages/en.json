@@ -94,10 +94,9 @@
     "detail": {
       "title": "{number}",
       "info": "Information",
-      "clientLabel": "Client:",
-      "issued": "Issued:",
+      "clientLabel": "Client",
+      "issued": "Issued",
       "total": "Total",
-      "lines": "Items",
       "none": "No items",
       "download": "Download the invoice",
       "downloading": "Downloading…",
