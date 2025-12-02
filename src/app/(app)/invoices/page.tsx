@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
+import { InvoiceListItemSkeleton } from "@/components/invoices/InvoiceListItemSkeleton";
 import { InvoiceView } from "@/components/invoices/InvoiceView";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { Button } from "@/components/ui/button";
@@ -48,24 +49,24 @@ export default function InvoicesPage() {
     void loadInvoices();
   };
 
-  if (loading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
   return (
     <>
       <div className="flex flex-col gap-2">
-        {invoices.map((inv) => {
-          return (
-            <InvoiceListItem
-              key={inv.id}
-              id={inv.id}
-              name={inv.clients.name}
-              price={inv.total_amount}
-              number={inv.number}
-            />
-          );
-        })}
+        {loading
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <InvoiceListItemSkeleton key={index} />
+            ))
+          : invoices.map((inv) => {
+              return (
+                <InvoiceListItem
+                  key={inv.id}
+                  id={inv.id}
+                  name={inv.clients.name}
+                  price={inv.total_amount}
+                  number={inv.number}
+                />
+              );
+            })}
       </div>
 
       <Button
