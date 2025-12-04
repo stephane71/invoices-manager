@@ -1,20 +1,17 @@
-import type { Product } from "@/types/models";
+"use client";
+
+import { ChevronRight, Trash } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { PriceInput } from "@/components/ui/price-input";
-import { centsToCurrencyString } from "@/lib/utils";
-import { APP_LOCALE } from "@/lib/constants";
+import { useState } from "react";
+import { SelectionSheet } from "@/components/invoices/SelectionSheet";
 import { InvoiceItem } from "@/components/invoices/invoices";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { PriceInput } from "@/components/ui/price-input";
+import { APP_LOCALE } from "@/lib/constants";
+import { centsToCurrencyString } from "@/lib/utils";
+import type { Product } from "@/types/models";
 
 export type ArticleFieldGroupProps = {
   item: InvoiceItem;
@@ -23,25 +20,25 @@ export type ArticleFieldGroupProps = {
   onRemove: () => void;
 };
 
-export function ArticleFieldGroup({
+export const ArticleFieldGroup = ({
   item,
   products,
   onChange,
   onRemove,
-}: ArticleFieldGroupProps) {
+}: ArticleFieldGroupProps) => {
   const t = useTranslations("Invoices");
   const c = useTranslations("Common");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  const handleProductChange = (productId: string) => {
-    const prod = products.find((p) => p.id === productId);
-    const priceCents = prod?.price || 0;
-    const name = prod?.name || "";
+  const handleProductSelect = (product: Product) => {
+    const priceCents = product.price || 0;
+    const name = product.name || "";
     const qty = item.quantity ?? 0;
     const totalCents = Math.round(priceCents * qty);
 
     onChange({
       ...item,
-      product_id: productId,
+      product_id: product.id,
       name,
       price: priceCents,
       total: totalCents,
@@ -111,26 +108,55 @@ export function ArticleFieldGroup({
     });
   };
 
+  // Get selected product display text
+  const selectedProduct = products.find((p) => p.id === item.product_id);
+  const displayText = selectedProduct
+    ? selectedProduct.name
+    : t("new.selectProductPlaceholder");
+
   return (
-    <FieldGroup className="p-2 border rounded-lg">
-      {/* Product Select */}
+    <FieldGroup className="border rounded-lg p-2">
+      {/* Product Selection CTA - styled as input */}
       <Field>
-        <Select
-          value={item.product_id || ""}
-          onValueChange={handleProductChange}
+        <button
+          type="button"
+          onClick={() => setSheetOpen(true)}
+          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <SelectTrigger className="h-10 w-full px-2">
-            <SelectValue placeholder={t("new.selectProduct")} />
-          </SelectTrigger>
-          <SelectContent>
-            {products.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <span className={selectedProduct ? "" : "text-muted-foreground"}>
+            {displayText}
+          </span>
+          <ChevronRight className="h-4 w-4 opacity-50" />
+        </button>
       </Field>
+
+      {/* Product Selection Sheet */}
+      <SelectionSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title={t("new.items")}
+        searchPlaceholder={t("new.searchProductsPlaceholder")}
+        noResultsMessage={t("new.noProductsFound")}
+        items={products}
+        getItemKey={(product) => product.id}
+        filterItem={(product, query) =>
+          product.name.toLowerCase().includes(query)
+        }
+        onSelect={handleProductSelect}
+        renderItem={(product, onSelect) => (
+          <button
+            type="button"
+            onClick={onSelect}
+            className="flex w-full flex-col items-start gap-1 px-4 py-3 text-left hover:bg-accent"
+          >
+            <div className="font-medium">{product.name}</div>
+            <div className="text-sm text-muted-foreground">
+              {centsToCurrencyString(product.price, "EUR", APP_LOCALE)}{" "}
+              {c("vatExcluded")}
+            </div>
+          </button>
+        )}
+      />
 
       {/* Quantity Input */}
       <Field>
@@ -179,4 +205,4 @@ export function ArticleFieldGroup({
       </div>
     </FieldGroup>
   );
-}
+};
