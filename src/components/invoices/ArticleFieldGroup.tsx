@@ -1,5 +1,3 @@
-"use client";
-
 import { ChevronRight, Trash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -115,13 +113,13 @@ export const ArticleFieldGroup = ({
     : t("new.selectProductPlaceholder");
 
   return (
-    <FieldGroup className="border rounded-lg p-2">
+    <FieldGroup className="rounded-lg border p-2">
       {/* Product Selection CTA - styled as input */}
       <Field>
         <button
           type="button"
           onClick={() => setSheetOpen(true)}
-          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="border-input bg-background ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span className={selectedProduct ? "" : "text-muted-foreground"}>
             {displayText}
@@ -147,10 +145,10 @@ export const ArticleFieldGroup = ({
           <button
             type="button"
             onClick={onSelect}
-            className="flex w-full flex-col items-start gap-1 px-4 py-3 text-left hover:bg-accent"
+            className="hover:bg-accent flex w-full flex-col items-start gap-1 px-4 py-3 text-left"
           >
             <div className="font-medium">{product.name}</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               {centsToCurrencyString(product.price, "EUR", APP_LOCALE)}{" "}
               {c("vatExcluded")}
             </div>
@@ -167,7 +165,7 @@ export const ArticleFieldGroup = ({
           id={`quantity-${item.product_id}`}
           type="number"
           min={1}
-          className="h-10 rounded-md border px-2 bg-background"
+          className="bg-background h-10 rounded-md border px-2"
           value={item.quantityInput ?? String(item.quantity)}
           onChange={(e) => handleQuantityChange(e.target.value)}
           onBlur={handleQuantityBlur}

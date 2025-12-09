@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -41,7 +39,7 @@ export const SelectionSheet = <T,>({
   const tCommon = useTranslations("Common");
 
   const filteredItems = items.filter((item) =>
-    filterItem(item, searchQuery.toLowerCase())
+    filterItem(item, searchQuery.toLowerCase()),
   );
 
   const handleSelect = (item: T) => {
@@ -80,7 +78,7 @@ export const SelectionSheet = <T,>({
         </header>
 
         {/* SEARCH INPUT */}
-        <div className="shrink-0 border-b p-4">
+        <div className="shrink-0 p-4">
           <Input
             type="text"
             placeholder={searchPlaceholder}
@@ -94,7 +92,7 @@ export const SelectionSheet = <T,>({
         {/* ITEMS LIST - Scrollable */}
         <div className="flex-1 overflow-y-auto">
           {filteredItems.length === 0 ? (
-            <div className="flex items-center justify-center p-8 text-center text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex items-center justify-center p-8 text-center text-sm">
               {noResultsMessage}
             </div>
           ) : (
