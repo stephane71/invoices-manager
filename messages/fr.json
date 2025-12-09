@@ -181,8 +181,12 @@
       "emailPlaceholder": "vous@exemple.com",
       "phone": "Téléphone",
       "phonePlaceholder": "+33 6 12 34 56 78",
-      "address": "Adresse",
-      "addressPlaceholder": "12 rue de Paris, 75000 Paris"
+      "addressStreet": "Adresse (rue)",
+      "addressStreetPlaceholder": "12 rue de la Paix",
+      "addressPostalCode": "Code postal",
+      "addressPostalCodePlaceholder": "75002",
+      "addressCity": "Ville",
+      "addressCityPlaceholder": "Paris"
     },
     "status": {
       "updated": "Profil mis à jour"
@@ -211,6 +215,15 @@
     "address": {
       "required": "L'adresse est requise",
       "invalid": "Adresse invalide"
+    },
+    "addressStreet": {
+      "required": "L'adresse (rue) est requise"
+    },
+    "addressPostalCode": {
+      "required": "Le code postal est requis"
+    },
+    "addressCity": {
+      "required": "La ville est requise"
     },
     "price": {
       "required": "Le prix est requis",

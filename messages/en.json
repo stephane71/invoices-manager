@@ -181,8 +181,12 @@
       "emailPlaceholder": "you@example.com",
       "phone": "Phone",
       "phonePlaceholder": "+1 555 123 4567",
-      "address": "Address",
-      "addressPlaceholder": "123 Main St, 10001 New York"
+      "addressStreet": "Street address",
+      "addressStreetPlaceholder": "123 Main Street",
+      "addressPostalCode": "Postal code",
+      "addressPostalCodePlaceholder": "10001",
+      "addressCity": "City",
+      "addressCityPlaceholder": "New York"
     },
     "status": {
       "updated": "Profile updated"
@@ -211,6 +215,15 @@
     "address": {
       "required": "Address is required",
       "invalid": "Invalid address"
+    },
+    "addressStreet": {
+      "required": "Street address is required"
+    },
+    "addressPostalCode": {
+      "required": "Postal code is required"
+    },
+    "addressCity": {
+      "required": "City is required"
     },
     "price": {
       "required": "Price is required",

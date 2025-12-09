@@ -69,6 +69,11 @@ export const profileSchema = z.object({
   full_name: z.string().optional().nullable(),
   email: optionalEmail,
   phone: optionalPhone,
+  // Structured address fields
+  address_street: z.string().optional().nullable(),
+  address_postal_code: z.string().optional().nullable(),
+  address_city: z.string().optional().nullable(),
+  // Deprecated: kept for backward compatibility during transition
   address: z.string().optional().nullable(),
   payment_iban: z.string().optional().nullable(),
   payment_bic: z.string().optional().nullable(),
