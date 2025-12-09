@@ -1306,6 +1306,8 @@ console.log("Current user:", user);
 
 ## Additional Resources
 
+### External Documentation
+
 - **Next.js 16 Docs:** https://nextjs.org/docs
 - **React 19 Docs:** https://react.dev
 - **Supabase Docs:** https://supabase.com/docs
@@ -1313,8 +1315,16 @@ console.log("Current user:", user);
 - **React Hook Form:** https://react-hook-form.com
 - **Zod:** https://zod.dev
 
+### Internal Documentation
+
+- **PDF Generation Requirements:** `docs/PDF_GENERATION_REQUIREMENTS.md` - Legal requirements and validation rules for French invoices
+- **User Profile Requirements:** `docs/USER_PROFILE_REQUIREMENTS.md` - User-facing guide for profile completion
+- **Quick Reference:** `docs/QUICK_REFERENCE.md` - Quick reference for common tasks
+- **Environment Switching:** `docs/ENVIRONMENT_SWITCHING.md` - Environment switching guide
+- **Supabase Connection:** `.claude/SUPABASE_CONNECTION.md` - Supabase setup guide
+
 ---
 
-**Last Updated:** 2025-11-25
+**Last Updated:** 2025-12-09
 **Maintained By:** Development Team
 **Questions?** Check documentation in `.claude/` and `docs/` directories.

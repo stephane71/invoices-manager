@@ -168,8 +168,13 @@ npm run db:migration:list  # Check status
 
 ## Documentation
 
+### Development Guides
 - **Environment Switching**: [docs/ENVIRONMENT_SWITCHING.md](./ENVIRONMENT_SWITCHING.md)
 - **Local Development**: [supabase/LOCAL_DEVELOPMENT.md](../supabase/LOCAL_DEVELOPMENT.md)
 - **Database Migrations**: [supabase/MIGRATIONS.md](../supabase/MIGRATIONS.md)
 - **Migration Quick Start**: [supabase/QUICKSTART.md](../supabase/QUICKSTART.md)
 - **Main README**: [README.md](../README.md)
+
+### Feature Documentation
+- **PDF Generation Requirements**: [docs/PDF_GENERATION_REQUIREMENTS.md](./PDF_GENERATION_REQUIREMENTS.md)
+- **User Profile Requirements**: [docs/USER_PROFILE_REQUIREMENTS.md](./USER_PROFILE_REQUIREMENTS.md)
