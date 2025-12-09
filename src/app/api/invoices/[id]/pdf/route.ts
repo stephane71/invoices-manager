@@ -63,7 +63,11 @@ export async function POST(
     );
 
     const shopName = profile?.full_name;
-    const [addressStreet, addressCity] = (profile?.address || "").split(",", 2);
+    // Use structured address fields (new format)
+    const addressStreet = profile?.address_street || "";
+    const addressCity = profile?.address_city
+      ? `${profile.address_postal_code || ""} ${profile.address_city}`.trim()
+      : "";
     const clientInfo = [client.email, client.phone, client.address]
       .filter(Boolean)
       .join("\n");

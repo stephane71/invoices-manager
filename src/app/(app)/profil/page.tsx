@@ -24,7 +24,9 @@ const profileSchema = z.object({
       (val) => isValidPhoneNumber(val, { isOptional: true }),
       "Validation.phone.invalid",
     ),
-  address: z.string().min(1, "Validation.address.required"),
+  addressStreet: z.string().min(1, "Validation.addressStreet.required"),
+  addressPostalCode: z.string().min(1, "Validation.addressPostalCode.required"),
+  addressCity: z.string().min(1, "Validation.addressCity.required"),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -44,7 +46,9 @@ export default function ProfilPage() {
       fullName: "",
       email: "",
       phone: "",
-      address: "",
+      addressStreet: "",
+      addressPostalCode: "",
+      addressCity: "",
     },
   });
 
@@ -73,7 +77,9 @@ export default function ProfilPage() {
             fullName: p.full_name || "",
             email: p.email || "",
             phone: p.phone || "",
-            address: p.address || "",
+            addressStreet: p.address_street || "",
+            addressPostalCode: p.address_postal_code || "",
+            addressCity: p.address_city || "",
           });
         }
       } catch (e) {
@@ -108,7 +114,9 @@ export default function ProfilPage() {
           full_name: data.fullName,
           email: data.email,
           phone: data.phone,
-          address: data.address,
+          address_street: data.addressStreet,
+          address_postal_code: data.addressPostalCode,
+          address_city: data.addressCity,
         }),
       });
       if (!res.ok) {
@@ -228,20 +236,80 @@ export default function ProfilPage() {
             )}
           />
 
-          {/* Address */}
+          {/* Address Street */}
           <Controller
-            name="address"
+            name="addressStreet"
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  {profilTranslate("form.address")}
+                  {profilTranslate("form.addressStreet")}
                 </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder={profilTranslate("form.addressPlaceholder")}
+                  placeholder={profilTranslate("form.addressStreetPlaceholder")}
                   icon="MapPin"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
+          />
+
+          {/* Address Postal Code */}
+          <Controller
+            name="addressPostalCode"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.addressPostalCode")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={profilTranslate(
+                    "form.addressPostalCodePlaceholder",
+                  )}
+                  icon="Hash"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
+          />
+
+          {/* Address City */}
+          <Controller
+            name="addressCity"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.addressCity")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={profilTranslate("form.addressCityPlaceholder")}
+                  icon="Building"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
                   required
