@@ -9,6 +9,7 @@ import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
 import { InvoiceListItemSkeleton } from "@/components/invoices/InvoiceListItemSkeleton";
 import { InvoiceView } from "@/components/invoices/InvoiceView";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
+import { ProfileCompletenessAlert } from "@/components/profile/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Invoice } from "@/types/models";
@@ -25,8 +26,13 @@ export default function InvoicesPage() {
   >([]);
   const [loading, setLoading] = useState(true);
 
-  const { invoice, onDownloadInvoice, downloadingInvoice, total } =
-    useInvoiceForm({ id: selectedId ?? "" });
+  const {
+    invoice,
+    onDownloadInvoice,
+    downloadingInvoice,
+    total,
+    profileValidation,
+  } = useInvoiceForm({ id: selectedId ?? "" });
 
   useEffect(() => {
     const loadInvoices = async () => {
@@ -83,9 +89,25 @@ export default function InvoicesPage() {
         title={tInvoices("detail.title", { number: invoice?.number ?? "" })}
         open={!!selectedId}
         onOpenChange={handleCloseSheet}
-        content={invoice && <InvoiceView invoice={invoice} total={total} />}
+        content={
+          <>
+            {profileValidation && !profileValidation.isComplete && (
+              <ProfileCompletenessAlert
+                validation={profileValidation}
+                className="mb-4"
+              />
+            )}
+            {invoice && <InvoiceView invoice={invoice} total={total} />}
+          </>
+        }
         footer={
-          <Button onClick={onDownloadInvoice} disabled={downloadingInvoice}>
+          <Button
+            onClick={onDownloadInvoice}
+            disabled={
+              downloadingInvoice ||
+              (profileValidation !== null && !profileValidation.isComplete)
+            }
+          >
             {downloadingInvoice
               ? tInvoices("detail.downloading")
               : tInvoices("detail.download")}

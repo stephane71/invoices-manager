@@ -10,6 +10,7 @@ import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { buildPaymentInfo } from "@/lib/invoice-utils";
 import { uploadInvoicePdf } from "@/lib/storage";
 import { centsToCurrencyString } from "@/lib/utils";
+import { validateProfileForPdfGeneration } from "@/lib/validation";
 
 export async function POST(
   req: NextRequest,
@@ -20,6 +21,33 @@ export async function POST(
     const invoice = await getInvoice(id);
     const client = await getClient(invoice.client_id);
     const profile = await getProfile();
+
+    // Check if profile exists
+    if (!profile) {
+      return NextResponse.json(
+        {
+          error: "Profile not found",
+          message:
+            "Please create your profile before generating invoices.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Validate profile completeness before PDF generation
+    const validation = validateProfileForPdfGeneration(profile);
+    if (!validation.isComplete) {
+      return NextResponse.json(
+        {
+          error: "Profile incomplete",
+          message:
+            "Your profile is missing required information for PDF generation. Please complete your profile before generating invoices.",
+          missingFields: validation.missingFields,
+          warnings: validation.warnings,
+        },
+        { status: 400 },
+      );
+    }
 
     const plugins = {
       text,

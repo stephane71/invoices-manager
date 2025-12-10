@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { ProfileValidationResult } from "@/lib/validation";
 import { Client, Invoice } from "@/types/models";
 
 export type UseInvoiceFormProps = {
@@ -11,6 +12,8 @@ export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
   >(null);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [profileValidation, setProfileValidation] =
+    useState<ProfileValidationResult | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -34,6 +37,38 @@ export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
 
     if (id) {
       void load();
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  // Fetch profile validation when invoice is selected
+  useEffect(() => {
+    let active = true;
+
+    const loadProfileValidation = async () => {
+      try {
+        const res = await fetch("/api/profile/validate");
+        const data = await res.json();
+        if (!active) {
+          return;
+        }
+        if (!res.ok) {
+          throw new Error(
+            data?.error || "Failed to load profile validation"
+          );
+        }
+        setProfileValidation(data);
+      } catch (e: unknown) {
+        console.error("Profile validation fetch error:", e);
+        // Don't set error state - profile validation is non-critical for viewing
+      }
+    };
+
+    if (id) {
+      void loadProfileValidation();
     }
 
     return () => {
@@ -89,5 +124,6 @@ export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
     onDownloadInvoice,
     downloadingInvoice,
     total,
+    profileValidation,
   };
 };
