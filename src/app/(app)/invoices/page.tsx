@@ -1,24 +1,17 @@
 "use client";
 
-import { FileText, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
 import { InvoiceListItemSkeleton } from "@/components/invoices/InvoiceListItemSkeleton";
+import { InvoicesEmptyState } from "@/components/invoices/InvoicesEmptyState";
 import { InvoiceView } from "@/components/invoices/InvoiceView";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { ProfileCompletenessAlert } from "@/components/profile/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { SheetItem } from "@/components/ui/item/SheetItem";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Invoice } from "@/types/models";
@@ -73,25 +66,7 @@ export default function InvoicesPage() {
             <InvoiceListItemSkeleton key={index} />
           ))
         ) : invoices.length === 0 ? (
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <FileText className="size-6" />
-              </EmptyMedia>
-              <EmptyTitle>{tInvoices("empty.title")}</EmptyTitle>
-              <EmptyDescription>
-                {tInvoices("empty.description")}
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button asChild>
-                <Link href="/invoices/new">
-                  <Plus className="mr-2 size-4" />
-                  {tInvoices("empty.action")}
-                </Link>
-              </Button>
-            </EmptyContent>
-          </Empty>
+          <InvoicesEmptyState />
         ) : (
           invoices.map((inv) => {
             return (

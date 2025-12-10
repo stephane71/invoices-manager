@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -8,16 +8,9 @@ import { useEffect, useState } from "react";
 import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 import { ProductListItem } from "@/components/products/ProductListItem";
 import { ProductListItemSkeleton } from "@/components/products/ProductListItemSkeleton";
+import { ProductsEmptyState } from "@/components/products/ProductsEmptyState";
 import { useProductForm } from "@/components/products/useProductForm";
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Product } from "@/types/models";
 
@@ -66,23 +59,7 @@ export default function ProductsPage() {
             <ProductListItemSkeleton key={index} />
           ))
         ) : products.length === 0 ? (
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Package className="size-6" />
-              </EmptyMedia>
-              <EmptyTitle>{t("empty.title")}</EmptyTitle>
-              <EmptyDescription>{t("empty.description")}</EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button asChild>
-                <Link href="/products/new">
-                  <Plus className="mr-2 size-4" />
-                  {t("empty.action")}
-                </Link>
-              </Button>
-            </EmptyContent>
-          </Empty>
+          <ProductsEmptyState />
         ) : (
           products.map((p) => (
             <ProductListItem

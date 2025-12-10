@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Users } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -8,16 +8,9 @@ import { useEffect, useState } from "react";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientListItem } from "@/components/clients/ClientListItem";
 import { ClientListItemSkeleton } from "@/components/clients/ClientListItemSkeleton";
+import { ClientsEmptyState } from "@/components/clients/ClientsEmptyState";
 import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Client } from "@/types/models";
 
@@ -65,23 +58,7 @@ export default function ClientsPage() {
             <ClientListItemSkeleton key={index} />
           ))
         ) : clients.length === 0 ? (
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Users className="size-6" />
-              </EmptyMedia>
-              <EmptyTitle>{t("empty.title")}</EmptyTitle>
-              <EmptyDescription>{t("empty.description")}</EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button asChild>
-                <Link href="/clients/new">
-                  <Plus className="mr-2 size-4" />
-                  {t("empty.action")}
-                </Link>
-              </Button>
-            </EmptyContent>
-          </Empty>
+          <ClientsEmptyState />
         ) : (
           clients.map((cItem) => (
             <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
