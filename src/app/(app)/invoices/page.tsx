@@ -12,10 +12,12 @@ import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { ProfileCompletenessAlert } from "@/components/profile/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Invoice } from "@/types/models";
 
 export default function InvoicesPage() {
   const tInvoices = useTranslations("Invoices");
+  const tProfile = useTranslations("Profile");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -101,17 +103,38 @@ export default function InvoicesPage() {
           </>
         }
         footer={
-          <Button
-            onClick={onDownloadInvoice}
-            disabled={
-              downloadingInvoice ||
-              (profileValidation !== null && !profileValidation.isComplete)
-            }
-          >
-            {downloadingInvoice
-              ? tInvoices("detail.downloading")
-              : tInvoices("detail.download")}
-          </Button>
+          profileValidation !== null && !profileValidation.isComplete ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Button
+                    onClick={onDownloadInvoice}
+                    disabled={true}
+                    className="w-full"
+                  >
+                    {tInvoices("detail.download")}
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  {tProfile("completeness.missingFields")}:{" "}
+                  {profileValidation.missingFields
+                    .map((field) => tProfile(`fields.${field}`))
+                    .join(", ")}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Button
+              onClick={onDownloadInvoice}
+              disabled={downloadingInvoice}
+            >
+              {downloadingInvoice
+                ? tInvoices("detail.downloading")
+                : tInvoices("detail.download")}
+            </Button>
+          )
         }
       />
     </>
