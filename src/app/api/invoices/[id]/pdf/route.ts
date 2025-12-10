@@ -57,13 +57,23 @@ export async function POST(
       multiVariableText,
     };
 
+    // Validate invoice has items
+    if (!invoice.items || invoice.items.length === 0) {
+      return NextResponse.json(
+        {
+          error: "Cannot generate PDF: Invoice must have at least one item",
+        },
+        { status: 400 }
+      );
+    }
+
     // Préparer les données pour le template
     // Note: invoice items have prices in cents
     const itemsData = invoice.items.map((item) => [
-      item.name,
-      item.quantity.toString(),
-      centsToCurrencyString(item.price, "EUR", APP_LOCALE),
-      centsToCurrencyString(item.total, "EUR", APP_LOCALE),
+      item.name || "Unnamed item",
+      (item.quantity || 0).toString(),
+      centsToCurrencyString(item.price || 0, "EUR", APP_LOCALE),
+      centsToCurrencyString(item.total || 0, "EUR", APP_LOCALE),
     ]);
 
     const subtotalCents = invoice.items.reduce(
@@ -144,25 +154,38 @@ export async function POST(
       },
     ];
 
-    const font: Font = {
-      Roboto: {
-        data: readFileSync(
-          join(
-            process.cwd(),
-            "node_modules/@fontsource/roboto/files/roboto-latin-400-normal.woff",
+    // Load fonts with error handling
+    let font: Font;
+    try {
+      font = {
+        Roboto: {
+          data: readFileSync(
+            join(
+              process.cwd(),
+              "node_modules/@fontsource/roboto/files/roboto-latin-400-normal.woff",
+            ),
           ),
-        ),
-        fallback: true,
-      },
-      "Roboto-Bold": {
-        data: readFileSync(
-          join(
-            process.cwd(),
-            "node_modules/@fontsource/roboto/files/roboto-latin-700-normal.woff",
+          fallback: true,
+        },
+        "Roboto-Bold": {
+          data: readFileSync(
+            join(
+              process.cwd(),
+              "node_modules/@fontsource/roboto/files/roboto-latin-700-normal.woff",
+            ),
           ),
-        ),
-      },
-    };
+        },
+      };
+    } catch (fontError) {
+      console.error("Font loading error:", fontError);
+      return NextResponse.json(
+        {
+          error: "PDF generation failed: Required font files are missing. Please contact support.",
+          details: fontError instanceof Error ? fontError.message : "Font loading failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const pdf = await generate({
       template: InvoiceTemplate as unknown as Template,
@@ -183,8 +206,49 @@ export async function POST(
 
     return NextResponse.json(updated);
   } catch (e: unknown) {
-    console.log(e);
-    const message = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 400 });
+    // Log detailed error for debugging
+    console.error("PDF generation error:", e);
+
+    // Determine error type and provide helpful user message
+    let userMessage = "Failed to generate PDF. Please try again.";
+    let statusCode = 500;
+
+    if (e instanceof Error) {
+      const errorMessage = e.message.toLowerCase();
+
+      // Font loading errors
+      if (errorMessage.includes("font") || errorMessage.includes("woff")) {
+        userMessage = "PDF generation failed: Font files could not be loaded. Please contact support.";
+        statusCode = 500;
+      }
+      // Template/generation errors
+      else if (errorMessage.includes("template") || errorMessage.includes("generate")) {
+        userMessage = "PDF generation failed: Invalid template configuration. Please contact support.";
+        statusCode = 500;
+      }
+      // Storage/upload errors
+      else if (errorMessage.includes("upload") || errorMessage.includes("storage")) {
+        userMessage = "PDF was generated but could not be saved. Please try again.";
+        statusCode = 500;
+      }
+      // Data validation errors
+      else if (errorMessage.includes("invalid") || errorMessage.includes("required")) {
+        userMessage = `PDF generation failed: ${e.message}`;
+        statusCode = 400;
+      }
+      // Generic error with message
+      else {
+        userMessage = `Failed to generate PDF: ${e.message}`;
+        statusCode = 500;
+      }
+    }
+
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: e instanceof Error ? e.message : "Unknown error",
+      },
+      { status: statusCode }
+    );
   }
 }
