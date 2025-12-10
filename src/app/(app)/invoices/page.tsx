@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -11,6 +11,14 @@ import { InvoiceView } from "@/components/invoices/InvoiceView";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { ProfileCompletenessAlert } from "@/components/profile/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { SheetItem } from "@/components/ui/item/SheetItem";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Invoice } from "@/types/models";
@@ -60,21 +68,43 @@ export default function InvoicesPage() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {loading
-          ? Array.from({ length: 5 }).map((_, index) => (
-              <InvoiceListItemSkeleton key={index} />
-            ))
-          : invoices.map((inv) => {
-              return (
-                <InvoiceListItem
-                  key={inv.id}
-                  id={inv.id}
-                  name={inv.clients.name}
-                  price={inv.total_amount}
-                  number={inv.number}
-                />
-              );
-            })}
+        {loading ? (
+          Array.from({ length: 5 }).map((_, index) => (
+            <InvoiceListItemSkeleton key={index} />
+          ))
+        ) : invoices.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <FileText className="size-6" />
+              </EmptyMedia>
+              <EmptyTitle>{tInvoices("empty.title")}</EmptyTitle>
+              <EmptyDescription>
+                {tInvoices("empty.description")}
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button asChild>
+                <Link href="/invoices/new">
+                  <Plus className="mr-2 size-4" />
+                  {tInvoices("empty.action")}
+                </Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        ) : (
+          invoices.map((inv) => {
+            return (
+              <InvoiceListItem
+                key={inv.id}
+                id={inv.id}
+                name={inv.clients.name}
+                price={inv.total_amount}
+                number={inv.number}
+              />
+            );
+          })
+        )}
       </div>
 
       <Button

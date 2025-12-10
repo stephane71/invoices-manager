@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -10,6 +10,14 @@ import { ProductListItem } from "@/components/products/ProductListItem";
 import { ProductListItemSkeleton } from "@/components/products/ProductListItemSkeleton";
 import { useProductForm } from "@/components/products/useProductForm";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { SheetItem } from "@/components/ui/item/SheetItem";
 import type { Product } from "@/types/models";
 
@@ -53,19 +61,39 @@ export default function ProductsPage() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {loading
-          ? Array.from({ length: 5 }).map((_, index) => (
-              <ProductListItemSkeleton key={index} />
-            ))
-          : products.map((p) => (
-              <ProductListItem
-                key={p.id}
-                name={p.name}
-                price={p.price}
-                id={p.id}
-                imageUrl={p.image_url || ""}
-              />
-            ))}
+        {loading ? (
+          Array.from({ length: 5 }).map((_, index) => (
+            <ProductListItemSkeleton key={index} />
+          ))
+        ) : products.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Package className="size-6" />
+              </EmptyMedia>
+              <EmptyTitle>{t("empty.title")}</EmptyTitle>
+              <EmptyDescription>{t("empty.description")}</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button asChild>
+                <Link href="/products/new">
+                  <Plus className="mr-2 size-4" />
+                  {t("empty.action")}
+                </Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        ) : (
+          products.map((p) => (
+            <ProductListItem
+              key={p.id}
+              name={p.name}
+              price={p.price}
+              id={p.id}
+              imageUrl={p.image_url || ""}
+            />
+          ))
+        )}
       </div>
 
       <Button
