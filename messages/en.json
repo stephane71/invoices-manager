@@ -188,6 +188,19 @@
       "addressCity": "City",
       "addressCityPlaceholder": "New York"
     },
+    "fields": {
+      "full_name": "Full name",
+      "address": "Address",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "completeness": {
+      "incompleteTitle": "Profile Incomplete",
+      "incompleteDescription": "Your profile is missing required information for PDF invoice generation. Please complete your profile to generate invoices.",
+      "missingFields": "Required fields",
+      "recommendedFields": "Recommended fields",
+      "completeProfile": "Complete profile"
+    },
     "status": {
       "updated": "Profile updated"
     },

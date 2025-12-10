@@ -78,3 +78,65 @@ export const profileSchema = z.object({
   payment_iban: z.string().optional().nullable(),
   payment_bic: z.string().optional().nullable(),
 });
+
+// Profile completeness validation for PDF generation
+export type ProfileValidationResult = {
+  isComplete: boolean;
+  missingFields: string[];
+  warnings: string[];
+};
+
+/**
+ * Validates if a profile has all required fields for PDF generation.
+ * Based on French legal requirements for invoices.
+ *
+ * Critical fields (PDF generation blocked without these):
+ * - full_name: Business/seller name (minimum 2 characters)
+ * - address: Complete business address (in format "Street, Postal Code City")
+ *   OR structured address fields (address_street, address_postal_code, address_city)
+ *
+ * Recommended fields (warnings if missing):
+ * - email: Business contact email
+ * - phone: Business contact phone
+ *
+ * @param profile - The profile to validate
+ * @returns ProfileValidationResult with completion status and missing/warning fields
+ */
+export const validateProfileForPdfGeneration = (
+  profile: z.infer<typeof profileSchema>
+): ProfileValidationResult => {
+  const missingFields: string[] = [];
+  const warnings: string[] = [];
+
+  // Critical field: full_name
+  if (!profile.full_name || profile.full_name.trim().length < 2) {
+    missingFields.push("full_name");
+  }
+
+  // Critical field: address (support both legacy and structured formats)
+  const hasLegacyAddress = profile.address && profile.address.includes(",");
+  const hasStructuredAddress =
+    profile.address_street &&
+    profile.address_postal_code &&
+    profile.address_city;
+
+  if (!hasLegacyAddress && !hasStructuredAddress) {
+    missingFields.push("address");
+  }
+
+  // Recommended field: email
+  if (!profile.email) {
+    warnings.push("email");
+  }
+
+  // Recommended field: phone
+  if (!profile.phone) {
+    warnings.push("phone");
+  }
+
+  return {
+    isComplete: missingFields.length === 0,
+    missingFields,
+    warnings,
+  };
+};

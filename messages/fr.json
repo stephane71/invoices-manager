@@ -188,6 +188,19 @@
       "addressCity": "Ville",
       "addressCityPlaceholder": "Paris"
     },
+    "fields": {
+      "full_name": "Nom complet",
+      "address": "Adresse",
+      "email": "Email",
+      "phone": "Téléphone"
+    },
+    "completeness": {
+      "incompleteTitle": "Profil incomplet",
+      "incompleteDescription": "Votre profil ne contient pas toutes les informations requises pour la génération de factures PDF. Veuillez compléter votre profil pour générer des factures.",
+      "missingFields": "Champs obligatoires",
+      "recommendedFields": "Champs recommandés",
+      "completeProfile": "Compléter le profil"
+    },
     "status": {
       "updated": "Profil mis à jour"
     },
