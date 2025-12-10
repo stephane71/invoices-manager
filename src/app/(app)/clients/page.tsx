@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientListItem } from "@/components/clients/ClientListItem";
 import { ClientListItemSkeleton } from "@/components/clients/ClientListItemSkeleton";
+import { ClientsEmptyState } from "@/components/clients/ClientsEmptyState";
 import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
@@ -52,13 +53,17 @@ export default function ClientsPage() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {loading
-          ? Array.from({ length: 5 }).map((_, index) => (
-              <ClientListItemSkeleton key={index} />
-            ))
-          : clients.map((cItem) => (
-              <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
-            ))}
+        {loading ? (
+          Array.from({ length: 5 }).map((_, index) => (
+            <ClientListItemSkeleton key={index} />
+          ))
+        ) : clients.length === 0 ? (
+          <ClientsEmptyState />
+        ) : (
+          clients.map((cItem) => (
+            <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
+          ))
+        )}
       </div>
 
       <Button

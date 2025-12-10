@@ -29,6 +29,11 @@
     "list": {
       "newButton": "Nouveau produit"
     },
+    "empty": {
+      "title": "Aucun produit pour le moment",
+      "description": "Créez votre premier produit pour commencer la facturation",
+      "action": "Créer un produit"
+    },
     "new": {
       "title": "Nouveau Produit",
       "form": {
@@ -57,6 +62,11 @@
     "title": "Clients",
     "list": {
       "newButton": "Nouveau client"
+    },
+    "empty": {
+      "title": "Aucun client pour le moment",
+      "description": "Ajoutez votre premier client pour commencer à créer des factures",
+      "action": "Ajouter un client"
     },
     "new": {
       "title": "Nouveau client",
@@ -90,6 +100,11 @@
     "list": {
       "newButton": "Nouvelle Facture",
       "issued": "Émise:"
+    },
+    "empty": {
+      "title": "Aucune facture pour le moment",
+      "description": "Créez votre première facture pour commencer à facturer vos clients",
+      "action": "Créer une facture"
     },
     "detail": {
       "title": "{number}",

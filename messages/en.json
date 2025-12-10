@@ -29,6 +29,11 @@
     "list": {
       "newButton": "New product"
     },
+    "empty": {
+      "title": "No products yet",
+      "description": "Create your first product to get started with invoicing",
+      "action": "Create product"
+    },
     "new": {
       "title": "New product",
       "form": {
@@ -57,6 +62,11 @@
     "title": "Clients",
     "list": {
       "newButton": "New client"
+    },
+    "empty": {
+      "title": "No clients yet",
+      "description": "Add your first client to start creating invoices",
+      "action": "Add client"
     },
     "new": {
       "title": "New client",
@@ -90,6 +100,11 @@
     "list": {
       "newButton": "New invoice",
       "issued": "Issued:"
+    },
+    "empty": {
+      "title": "No invoices yet",
+      "description": "Create your first invoice to start billing your clients",
+      "action": "Create invoice"
     },
     "detail": {
       "title": "{number}",
