@@ -1,6 +1,7 @@
 import Image from "next/image";
+import { Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { Control, Controller } from "react-hook-form";
 import { ProductForm } from "@/components/products/products";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
+import { Button } from "@/components/ui/button";
 
 interface ProductFieldGroupProps {
   control: Control<ProductForm>;
@@ -29,6 +31,7 @@ export const ProductFieldGroup = ({
 }: ProductFieldGroupProps) => {
   const t = useTranslations("Products");
   const c = useTranslations("Common");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <FieldGroup>
@@ -104,6 +107,7 @@ export const ProductFieldGroup = ({
       <Field>
         <FieldLabel>{t("new.form.image")}</FieldLabel>
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
@@ -111,13 +115,40 @@ export const ProductFieldGroup = ({
           disabled={disabled}
         />
         {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={c("preview")}
-            className="h-16 w-16 object-cover rounded"
-            width={64}
-            height={64}
-          />
+          <div className="relative w-32 h-32 group mt-2">
+            <Image
+              src={imageUrl}
+              alt={c("preview")}
+              className="h-32 w-32 object-cover rounded"
+              width={128}
+              height={128}
+            />
+            {/* Hover overlay with action buttons */}
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label={t("new.form.updateImage")}
+                disabled={disabled}
+                className="hover:bg-white/20"
+              >
+                <Pencil className="h-5 w-5 text-white" />
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => onSelectImage(null)}
+                aria-label={t("new.form.deleteImage")}
+                disabled={disabled}
+                className="hover:bg-white/20"
+              >
+                <Trash2 className="h-5 w-5 text-white" />
+              </Button>
+            </div>
+          </div>
         )}
       </Field>
 

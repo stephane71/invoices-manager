@@ -40,7 +40,9 @@
         "name": "Name",
         "description": "Description",
         "price": "Price",
-        "image": "Image"
+        "image": "Image",
+        "updateImage": "Update image",
+        "deleteImage": "Delete image"
       },
       "createButton": "Create product",
       "error": {

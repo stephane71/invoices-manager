@@ -40,7 +40,9 @@
         "name": "Nom",
         "description": "Description",
         "price": "Prix",
-        "image": "Image"
+        "image": "Image",
+        "updateImage": "Mettre à jour l'image",
+        "deleteImage": "Supprimer l'image"
       },
       "createButton": "Créer le produit",
       "error": {
