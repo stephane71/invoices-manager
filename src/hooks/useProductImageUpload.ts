@@ -5,12 +5,15 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_SUPABASE_PRODUCTS_BUCKET || "";
 
-export function useProductImageUpload(onUploaded: (url: string) => void) {
+export function useProductImageUpload(
+  onUploaded: (url: string | null) => void,
+) {
   const [uploading, setUploading] = useState(false);
 
   const onSelectImage = useCallback(
     async (file?: File | null) => {
       if (!file) {
+        onUploaded(null);
         return;
       }
 

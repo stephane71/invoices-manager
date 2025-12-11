@@ -1,9 +1,10 @@
-import Image from "next/image";
 import { Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ReactNode, useRef } from "react";
 import { Control, Controller } from "react-hook-form";
 import { ProductForm } from "@/components/products/products";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
-import { Button } from "@/components/ui/button";
 
 interface ProductFieldGroupProps {
   control: Control<ProductForm>;
@@ -68,7 +68,7 @@ export const ProductFieldGroup = ({
             <textarea
               {...field}
               id={field.name}
-              className="min-h-20 rounded-md border px-3 py-2 bg-background"
+              className="bg-background min-h-20 rounded-md border px-3 py-2"
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
@@ -110,16 +110,16 @@ export const ProductFieldGroup = ({
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
+          className="bg-background h-10 rounded-md border file:mr-3 file:px-3 file:py-2"
           onChange={(e) => onSelectImage(e.target.files?.[0])}
           disabled={disabled}
         />
         {imageUrl && (
-          <div className="flex items-center gap-3 mt-2">
+          <div className="mt-2 flex items-center gap-3">
             <Image
               src={imageUrl}
               alt={c("preview")}
-              className="h-32 w-32 object-cover rounded"
+              className="h-32 w-32 rounded object-cover"
               width={128}
               height={128}
             />
