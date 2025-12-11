@@ -25,30 +25,31 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const loadClients = async () => {
+    const res = await fetch("/api/clients");
+    const data = await res.json();
+    setClients(data);
+    setLoading(false);
+  };
+
   const { form, onSubmit, onRemove, error } = useClientForm({
     id: selectedId ?? "",
+    onDeleteSuccess: () => {
+      router.push("/clients");
+    },
   });
-
-  useEffect(() => {
-    const loadClients = async () => {
-      const res = await fetch("/api/clients");
-      const data = await res.json();
-      setClients(data);
-      setLoading(false);
-    };
-    void loadClients();
-  }, []);
 
   const handleCloseSheet = () => {
     router.push("/clients");
-    // Reload clients after closing sheet to reflect any changes
-    const loadClients = async () => {
-      const res = await fetch("/api/clients");
-      const data = await res.json();
-      setClients(data);
-    };
-    void loadClients();
   };
+
+  useEffect(() => {
+    if (selectedId) {
+      return;
+    }
+
+    void loadClients();
+  }, [selectedId]);
 
   return (
     <>

@@ -7,9 +7,10 @@ import { ClientForm, clientFormSchema } from "@/components/clients/clients";
 
 export type UseClientFormProps = {
   id: string;
+  onDeleteSuccess: () => void;
 };
 
-export const useClientForm = ({ id }: UseClientFormProps) => {
+export const useClientForm = ({ id, onDeleteSuccess }: UseClientFormProps) => {
   const tClients = useTranslations("Clients");
   const router = useRouter();
 
@@ -55,7 +56,7 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
 
     const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
     if (res.ok) {
-      router.push("/clients");
+      onDeleteSuccess();
     }
   };
 
