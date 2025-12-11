@@ -1,8 +1,10 @@
+import { Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { Control, Controller } from "react-hook-form";
 import { ProductForm } from "@/components/products/products";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
@@ -29,9 +31,62 @@ export const ProductFieldGroup = ({
 }: ProductFieldGroupProps) => {
   const t = useTranslations("Products");
   const c = useTranslations("Common");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <FieldGroup>
+      <Field>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => onSelectImage(e.target.files?.[0])}
+          disabled={disabled}
+        />
+        <div className="flex items-start gap-4">
+          <div className="relative">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={c("preview")}
+                className="h-32 w-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm"
+                width={128}
+                height={128}
+              />
+            ) : (
+              <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-sm font-medium text-gray-400">
+                {t("new.form.noImage")}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2 pt-1">
+            <Button
+              type="button"
+              size="default"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={disabled}
+              className="gap-2"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              {imageUrl ? t("new.form.changeImage") : t("new.form.uploadImage")}
+            </Button>
+            <Button
+              type="button"
+              size="default"
+              variant="outline"
+              onClick={() => onSelectImage(null)}
+              disabled={disabled || !imageUrl}
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-2 disabled:opacity-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {t("new.form.removeImage")}
+            </Button>
+          </div>
+        </div>
+      </Field>
+
       <Controller
         name="name"
         control={control}
@@ -65,7 +120,7 @@ export const ProductFieldGroup = ({
             <textarea
               {...field}
               id={field.name}
-              className="min-h-20 rounded-md border px-3 py-2 bg-background"
+              className="bg-background min-h-20 rounded-md border px-3 py-2"
               aria-invalid={fieldState.invalid}
               disabled={disabled}
             />
@@ -100,26 +155,6 @@ export const ProductFieldGroup = ({
           </Field>
         )}
       />
-
-      <Field>
-        <FieldLabel>{t("new.form.image")}</FieldLabel>
-        <input
-          type="file"
-          accept="image/*"
-          className="h-10 rounded-md border bg-background file:mr-3 file:py-2 file:px-3"
-          onChange={(e) => onSelectImage(e.target.files?.[0])}
-          disabled={disabled}
-        />
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={c("preview")}
-            className="h-16 w-16 object-cover rounded"
-            width={64}
-            height={64}
-          />
-        )}
-      </Field>
 
       {children && <div className="flex gap-2">{children}</div>}
     </FieldGroup>
