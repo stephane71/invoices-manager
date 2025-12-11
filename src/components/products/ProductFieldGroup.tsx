@@ -110,12 +110,12 @@ export const ProductFieldGroup = ({
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          className="bg-background h-10 rounded-md border file:mr-3 file:px-3 file:py-2"
+          className="hidden"
           onChange={(e) => onSelectImage(e.target.files?.[0])}
           disabled={disabled}
         />
-        {imageUrl && (
-          <div className="mt-2 flex items-center gap-3">
+        <div className="flex items-center gap-3">
+          {imageUrl ? (
             <Image
               src={imageUrl}
               alt={c("preview")}
@@ -123,17 +123,23 @@ export const ProductFieldGroup = ({
               width={128}
               height={128}
             />
-            <div className="flex flex-col gap-2">
-              <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label={t("new.form.updateImage")}
-                disabled={disabled}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
+          ) : (
+            <div className="flex h-32 w-32 items-center justify-center rounded bg-gray-200 text-sm text-gray-500">
+              img
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label={t("new.form.updateImage")}
+              disabled={disabled}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            {imageUrl && (
               <Button
                 type="button"
                 size="icon"
@@ -144,9 +150,9 @@ export const ProductFieldGroup = ({
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </Field>
 
       {children && <div className="flex gap-2">{children}</div>}
