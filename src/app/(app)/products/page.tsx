@@ -36,19 +36,21 @@ export default function ProductsPage() {
     useProductForm({
       id: selectedId ?? "",
       onDeleteSuccess: () => {
-        void loadProducts();
+        router.push("/products");
       },
     });
 
-  useEffect(() => {
-    void loadProducts();
-  }, []);
-
   const handleCloseSheet = () => {
     router.push("/products");
-    // Reload products after closing sheet to reflect any changes
-    void loadProducts();
   };
+
+  useEffect(() => {
+    if (selectedId) {
+      return;
+    }
+
+    void loadProducts();
+  }, [selectedId]);
 
   return (
     <>

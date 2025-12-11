@@ -35,19 +35,21 @@ export default function ClientsPage() {
   const { form, onSubmit, onRemove, error } = useClientForm({
     id: selectedId ?? "",
     onDeleteSuccess: () => {
-      void loadClients();
+      router.push("/clients");
     },
   });
 
-  useEffect(() => {
-    void loadClients();
-  }, []);
-
   const handleCloseSheet = () => {
     router.push("/clients");
-    // Reload clients after closing sheet to reflect any changes
-    void loadClients();
   };
+
+  useEffect(() => {
+    if (selectedId) {
+      return;
+    }
+
+    void loadClients();
+  }, [selectedId]);
 
   return (
     <>

@@ -8,10 +8,13 @@ import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 
 export type UseProductFormProps = {
   id: string;
-  onDeleteSuccess?: () => void;
+  onDeleteSuccess: () => void;
 };
 
-export const useProductForm = ({ id, onDeleteSuccess }: UseProductFormProps) => {
+export const useProductForm = ({
+  id,
+  onDeleteSuccess,
+}: UseProductFormProps) => {
   const t = useTranslations("Products");
   const router = useRouter();
 
@@ -96,8 +99,7 @@ export const useProductForm = ({ id, onDeleteSuccess }: UseProductFormProps) => 
 
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     if (res.ok) {
-      onDeleteSuccess?.();
-      router.push("/products");
+      onDeleteSuccess();
     }
   };
 
