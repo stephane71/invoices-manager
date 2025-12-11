@@ -36,7 +36,6 @@ export const ProductFieldGroup = ({
   return (
     <FieldGroup>
       <Field>
-        {/*<FieldLabel>{t("new.form.image")}</FieldLabel>*/}
         <input
           ref={fileInputRef}
           type="file"
