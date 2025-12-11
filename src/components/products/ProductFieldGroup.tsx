@@ -115,7 +115,7 @@ export const ProductFieldGroup = ({
           disabled={disabled}
         />
         {imageUrl && (
-          <div className="relative w-32 h-32 group mt-2">
+          <div className="flex items-center gap-3 mt-2">
             <Image
               src={imageUrl}
               alt={c("preview")}
@@ -123,29 +123,26 @@ export const ProductFieldGroup = ({
               width={128}
               height={128}
             />
-            {/* Hover overlay with action buttons */}
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <div className="flex flex-col gap-2">
               <Button
                 type="button"
                 size="icon"
-                variant="ghost"
+                variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 aria-label={t("new.form.updateImage")}
                 disabled={disabled}
-                className="hover:bg-white/20"
               >
-                <Pencil className="h-5 w-5 text-white" />
+                <Pencil className="h-4 w-4" />
               </Button>
               <Button
                 type="button"
                 size="icon"
-                variant="ghost"
+                variant="outline"
                 onClick={() => onSelectImage(null)}
                 aria-label={t("new.form.deleteImage")}
                 disabled={disabled}
-                className="hover:bg-white/20"
               >
-                <Trash2 className="h-5 w-5 text-white" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
