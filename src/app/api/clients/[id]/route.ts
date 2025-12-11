@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { clientSchema } from "@/lib/validation";
-import { deleteClient, getClient, upsertClient } from "@/lib/db";
+import { getClient, upsertClient } from "@/lib/db";
 import { handleApiError } from "@/lib/errors";
 
 export async function GET(
@@ -30,19 +30,5 @@ export async function PATCH(
   } catch (e: unknown) {
     const errorResponse = handleApiError(e);
     return NextResponse.json(errorResponse, { status: 400 });
-  }
-}
-
-export async function DELETE(
-  _: NextRequest,
-  { params }: RouteContext<"/api/clients/[id]">,
-) {
-  try {
-    const { id } = await params;
-    await deleteClient(id);
-    return new NextResponse(null, { status: 204 });
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

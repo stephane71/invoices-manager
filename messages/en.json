@@ -53,9 +53,6 @@
     },
     "alt": {
       "preview": "Preview"
-    },
-    "confirm": {
-      "delete": "Delete this product?"
     }
   },
   "Clients": {
@@ -90,9 +87,6 @@
     },
     "edit": {
       "title": "Edit client"
-    },
-    "confirm": {
-      "delete": "Delete this client?"
     }
   },
   "Invoices": {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productSchema } from "@/lib/validation";
-import { deleteProduct, getProduct, upsertProduct } from "@/lib/db";
+import { getProduct, upsertProduct } from "@/lib/db";
 
 export async function GET(
   _: NextRequest,
@@ -26,20 +26,6 @@ export async function PATCH(
     const parsed = productSchema.partial().parse(body);
     const updated = await upsertProduct({ ...parsed, id });
     return NextResponse.json(updated);
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 400 });
-  }
-}
-
-export async function DELETE(
-  _: NextRequest,
-  { params }: RouteContext<"/api/products/[id]">,
-) {
-  try {
-    const { id } = await params;
-    await deleteProduct(id);
-    return new NextResponse(null, { status: 204 });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 400 });
