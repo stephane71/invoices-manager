@@ -41,8 +41,10 @@
         "description": "Description",
         "price": "Price",
         "image": "Image",
-        "updateImage": "Update image",
-        "deleteImage": "Delete image"
+        "noImage": "No image",
+        "uploadImage": "Upload image",
+        "changeImage": "Change image",
+        "removeImage": "Remove image"
       },
       "createButton": "Create product",
       "error": {

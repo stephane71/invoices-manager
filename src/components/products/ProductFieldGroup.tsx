@@ -114,43 +114,45 @@ export const ProductFieldGroup = ({
           onChange={(e) => onSelectImage(e.target.files?.[0])}
           disabled={disabled}
         />
-        <div className="flex items-center gap-3">
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={c("preview")}
-              className="h-32 w-32 rounded object-cover"
-              width={128}
-              height={128}
-            />
-          ) : (
-            <div className="flex h-32 w-32 items-center justify-center rounded bg-gray-200 text-sm text-gray-500">
-              img
-            </div>
-          )}
-          <div className="flex flex-col gap-2">
+        <div className="flex items-start gap-4">
+          <div className="relative">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={c("preview")}
+                className="h-32 w-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm"
+                width={128}
+                height={128}
+              />
+            ) : (
+              <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-sm font-medium text-gray-400">
+                {t("new.form.noImage")}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2 pt-1">
             <Button
               type="button"
-              size="icon"
+              size="sm"
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              aria-label={t("new.form.updateImage")}
               disabled={disabled}
+              className="gap-2"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="h-3.5 w-3.5" />
+              {imageUrl ? t("new.form.changeImage") : t("new.form.uploadImage")}
             </Button>
-            {imageUrl && (
-              <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                onClick={() => onSelectImage(null)}
-                aria-label={t("new.form.deleteImage")}
-                disabled={disabled}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => onSelectImage(null)}
+              disabled={disabled || !imageUrl}
+              className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {t("new.form.removeImage")}
+            </Button>
           </div>
         </div>
       </Field>
