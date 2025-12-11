@@ -32,11 +32,8 @@ export default function ClientsPage() {
     setLoading(false);
   };
 
-  const { form, onSubmit, onRemove, error } = useClientForm({
+  const { form, onSubmit, error } = useClientForm({
     id: selectedId ?? "",
-    onDeleteSuccess: () => {
-      router.push("/clients");
-    },
   });
 
   const handleCloseSheet = () => {
@@ -96,25 +93,14 @@ export default function ClientsPage() {
           )
         }
         footer={
-          <div className="flex w-full justify-between gap-2">
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={onRemove}
-              disabled={form.formState.isSubmitting}
-            >
-              {tCommon("delete")}
-            </Button>
-            <Button
-              type="submit"
-              form={`client-form-${selectedId}`}
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting
-                ? tCommon("saving")
-                : tCommon("save")}
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            form={`client-form-${selectedId}`}
+            disabled={form.formState.isSubmitting}
+            className="w-full"
+          >
+            {form.formState.isSubmitting ? tCommon("saving") : tCommon("save")}
+          </Button>
         }
       />
     </>

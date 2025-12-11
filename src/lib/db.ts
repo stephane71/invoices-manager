@@ -64,19 +64,6 @@ export async function upsertClient(payload: Partial<Client>) {
   return data as Client;
 }
 
-export async function deleteClient(id: string) {
-  const supabase = await db();
-  const accountId = await getCurrentAccountId();
-  const { error } = await supabase
-    .from("clients")
-    .delete()
-    .eq("id", id)
-    .eq("account_id", accountId);
-  if (error) {
-    throw error;
-  }
-}
-
 export async function listProducts() {
   const supabase = await db();
   const accountId = await getCurrentAccountId();
@@ -119,19 +106,6 @@ export async function upsertProduct(payload: Partial<Product>) {
     throw error;
   }
   return data as Product;
-}
-
-export async function deleteProduct(id: string) {
-  const supabase = await db();
-  const accountId = await getCurrentAccountId();
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", id)
-    .eq("account_id", accountId);
-  if (error) {
-    throw error;
-  }
 }
 
 export async function listInvoices(params?: {
