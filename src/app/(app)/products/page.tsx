@@ -25,29 +25,28 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const loadProducts = async () => {
+    const res = await fetch("/api/products");
+    const data = await res.json();
+    setProducts(data);
+    setLoading(false);
+  };
+
   const { form, onSubmit, onRemove, error, imageUrl, onSelectImage } =
     useProductForm({
       id: selectedId ?? "",
+      onDeleteSuccess: () => {
+        void loadProducts();
+      },
     });
 
   useEffect(() => {
-    const loadProducts = async () => {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-      setProducts(data);
-      setLoading(false);
-    };
     void loadProducts();
   }, []);
 
   const handleCloseSheet = () => {
     router.push("/products");
     // Reload products after closing sheet to reflect any changes
-    const loadProducts = async () => {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-      setProducts(data);
-    };
     void loadProducts();
   };
 
