@@ -35,6 +35,59 @@ export const ProductFieldGroup = ({
 
   return (
     <FieldGroup>
+      <Field>
+        {/*<FieldLabel>{t("new.form.image")}</FieldLabel>*/}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => onSelectImage(e.target.files?.[0])}
+          disabled={disabled}
+        />
+        <div className="flex items-start gap-4">
+          <div className="relative">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={c("preview")}
+                className="h-32 w-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm"
+                width={128}
+                height={128}
+              />
+            ) : (
+              <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-sm font-medium text-gray-400">
+                {t("new.form.noImage")}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2 pt-1">
+            <Button
+              type="button"
+              size="default"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={disabled}
+              className="gap-2"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              {imageUrl ? t("new.form.changeImage") : t("new.form.uploadImage")}
+            </Button>
+            <Button
+              type="button"
+              size="default"
+              variant="outline"
+              onClick={() => onSelectImage(null)}
+              disabled={disabled || !imageUrl}
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-2 disabled:opacity-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {t("new.form.removeImage")}
+            </Button>
+          </div>
+        </div>
+      </Field>
+
       <Controller
         name="name"
         control={control}
@@ -103,59 +156,6 @@ export const ProductFieldGroup = ({
           </Field>
         )}
       />
-
-      <Field>
-        <FieldLabel>{t("new.form.image")}</FieldLabel>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => onSelectImage(e.target.files?.[0])}
-          disabled={disabled}
-        />
-        <div className="flex items-start gap-4">
-          <div className="relative">
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={c("preview")}
-                className="h-32 w-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm"
-                width={128}
-                height={128}
-              />
-            ) : (
-              <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-sm font-medium text-gray-400">
-                {t("new.form.noImage")}
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col gap-2 pt-1">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={disabled}
-              className="gap-2"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              {imageUrl ? t("new.form.changeImage") : t("new.form.uploadImage")}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => onSelectImage(null)}
-              disabled={disabled || !imageUrl}
-              className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              {t("new.form.removeImage")}
-            </Button>
-          </div>
-        </div>
-      </Field>
 
       {children && <div className="flex gap-2">{children}</div>}
     </FieldGroup>
