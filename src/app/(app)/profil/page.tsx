@@ -13,6 +13,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { formatSiret } from "@/lib/utils";
 
 export default function ProfilPage() {
   const profilTranslate = useTranslations("Profile");
@@ -243,23 +244,7 @@ export default function ProfilPage() {
                   onChange={(e) => {
                     const cleaned = e.target.value.replace(/\s/g, "");
                     if (cleaned.length <= 14 && /^\d*$/.test(cleaned)) {
-                      const formatted = cleaned.replace(
-                        /(\d{3})(\d{3})(\d{3})(\d{0,5})/,
-                        (_, p1, p2, p3, p4) => {
-                          let result = p1;
-                          if (p2) {
-                            result += ` ${p2}`;
-                          }
-                          if (p3) {
-                            result += ` ${p3}`;
-                          }
-                          if (p4) {
-                            result += ` ${p4}`;
-                          }
-                          return result;
-                        },
-                      );
-                      field.onChange(formatted.trim());
+                      field.onChange(formatSiret(cleaned));
                     }
                   }}
                   required

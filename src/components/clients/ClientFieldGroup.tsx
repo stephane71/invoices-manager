@@ -9,6 +9,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { formatSiren } from "@/lib/utils";
 
 export interface FieldErrors {
   name?: string;
@@ -149,20 +150,7 @@ export function ClientFieldGroup({
               onChange={(e) => {
                 const cleaned = e.target.value.replace(/\s/g, "");
                 if (cleaned.length <= 9 && /^\d*$/.test(cleaned)) {
-                  const formatted = cleaned.replace(
-                    /(\d{3})(\d{3})(\d{0,3})/,
-                    (_, p1, p2, p3) => {
-                      let result = p1;
-                      if (p2) {
-                        result += ` ${p2}`;
-                      }
-                      if (p3) {
-                        result += ` ${p3}`;
-                      }
-                      return result;
-                    },
-                  );
-                  field.onChange(formatted.trim());
+                  field.onChange(formatSiren(cleaned));
                 }
               }}
             />
