@@ -66,7 +66,7 @@ export default function SignInPage() {
           throw error;
         }
       }
-      router.replace("/invoices");
+      router.replace("/app/invoices");
       router.refresh();
     } catch (err: unknown) {
       // @ts-expect-error error type is not correct

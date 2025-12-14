@@ -38,10 +38,10 @@ export function SidebarMenuLinks() {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={isActive("/invoices")}
+            isActive={isActive("/app/invoices")}
             onClick={handleItemClick}
           >
-            <Link href="/invoices">
+            <Link href="/app/invoices">
               <FileText />
               <span>{t("invoices")}</span>
             </Link>
@@ -50,10 +50,10 @@ export function SidebarMenuLinks() {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={isActive("/clients")}
+            isActive={isActive("/app/clients")}
             onClick={handleItemClick}
           >
-            <Link href="/clients">
+            <Link href="/app/clients">
               <Users />
               <span>{t("clients")}</span>
             </Link>
@@ -62,10 +62,10 @@ export function SidebarMenuLinks() {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={isActive("/products")}
+            isActive={isActive("/app/products")}
             onClick={handleItemClick}
           >
-            <Link href="/products">
+            <Link href="/app/products">
               <Package />
               <span>{t("products")}</span>
             </Link>
@@ -78,10 +78,10 @@ export function SidebarMenuLinks() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/contact")}
+              isActive={isActive("/app/contact")}
               onClick={handleItemClick}
             >
-              <Link href="/contact">
+              <Link href="/app/contact">
                 <Mail />
                 <span>{t("contact")}</span>
               </Link>
