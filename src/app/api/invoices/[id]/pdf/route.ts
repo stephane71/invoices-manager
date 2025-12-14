@@ -9,7 +9,7 @@ import { APP_LOCALE } from "@/lib/constants";
 import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { buildPaymentInfo } from "@/lib/invoice-utils";
 import { uploadInvoicePdf } from "@/lib/storage";
-import { centsToCurrencyString } from "@/lib/utils";
+import { centsToCurrencyString, formatSiren, formatSiret } from "@/lib/utils";
 import { validateProfileForPdfGeneration } from "@/lib/validation";
 
 export async function POST(
@@ -76,12 +76,17 @@ export async function POST(
       centsToCurrencyString(item.total || 0, "EUR", APP_LOCALE),
     ]);
 
+    // Check if VAT-exempt based on vat_exemption_mention
+    const isVatExempt = invoice.vat_exemption_mention !== null && invoice.vat_exemption_mention !== "";
+    const taxRate = isVatExempt ? 0 : 20; // 0% if exempt, 20% otherwise
+
     const subtotalCents = invoice.items.reduce(
       (sum, item) => sum + item.total,
       0,
     ); // already in cents
-    const taxRate = 20;
-    const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
+    const taxAmountCents = isVatExempt
+      ? 0
+      : Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
     console.log(
@@ -101,6 +106,8 @@ export async function POST(
     );
 
     const shopName = profile?.full_name;
+    const shopSiret = profile?.siret || null;
+
     // Use structured address fields (new format)
     const addressStreet = profile?.address_street || "";
     const addressCity = profile?.address_city
@@ -109,6 +116,9 @@ export async function POST(
     const clientInfo = [client.email, client.phone, client.address]
       .filter(Boolean)
       .join("\n");
+
+    // Add SIREN if B2B invoice
+    const clientSiren = client.siren || null;
 
     const paymentInfo = buildPaymentInfo({
       payment_iban: invoice.payment_iban,
@@ -126,10 +136,17 @@ export async function POST(
         client_information: clientInfo,
         facture_number: invoice.number || invoice.id,
         shopName,
+        shopSiret: shopSiret ? formatSiret(shopSiret) : "",
         shopAddress: JSON.stringify({
           address_street: (addressStreet || "").trim(),
           address_city: (addressCity || "").trim(),
         }),
+        // Client SIREN for B2B invoices
+        clientSiren: clientSiren ? formatSiren(clientSiren) : "",
+        // Operation type (services, goods, mixed)
+        operationType: invoice.operation_type || "services",
+        // VAT exemption mention (for micro-enterprises)
+        vatExemptionMention: invoice.vat_exemption_mention || "",
         // Optional description left empty unless available in data model
         // invoice_description: "",
         // Note: field name contains a trailing space in the template
