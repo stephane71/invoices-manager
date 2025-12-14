@@ -458,7 +458,7 @@
         "rotate": 0,
         "alignment": "left",
         "verticalAlignment": "middle",
-        "fontSize": 14,
+        "fontSize": 12,
         "lineHeight": 1,
         "characterSpacing": 0,
         "fontColor": "#000000",
@@ -488,6 +488,56 @@
         "characterSpacing": 0,
         "fontColor": "#000000",
         "fontName": "Roboto",
+        "backgroundColor": "",
+        "opacity": 1,
+        "strikethrough": false,
+        "underline": false,
+        "required": false,
+        "readOnly": false
+      },
+      {
+        "name": "terms_and_conditions",
+        "type": "text",
+        "content": "",
+        "position": {
+          "x": 20,
+          "y": 188.1
+        },
+        "width": 170,
+        "height": 25.4,
+        "rotate": 0,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "fontSize": 12,
+        "lineHeight": 1,
+        "characterSpacing": 0,
+        "fontColor": "#000000",
+        "fontName": "Roboto",
+        "backgroundColor": "",
+        "opacity": 1,
+        "strikethrough": false,
+        "underline": false,
+        "required": false,
+        "readOnly": false
+      },
+      {
+        "name": "terms_and_conditions_title",
+        "type": "text",
+        "content": "",
+        "position": {
+          "x": 20,
+          "y": 179.55
+        },
+        "width": 170,
+        "height": 8,
+        "rotate": 0,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "fontSize": 12,
+        "lineHeight": 1,
+        "characterSpacing": 0,
+        "fontColor": "#000000",
+        "fontName": "Roboto-Bold",
         "backgroundColor": "",
         "opacity": 1,
         "strikethrough": false,
@@ -568,5 +618,5 @@
       }
     ]
   },
-  "pdfmeVersion": "5.5.2"
+  "pdfmeVersion": "5.5.6"
 }

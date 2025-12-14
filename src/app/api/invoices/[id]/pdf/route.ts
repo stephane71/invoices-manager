@@ -9,7 +9,7 @@ import { APP_LOCALE } from "@/lib/constants";
 import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { buildPaymentInfo } from "@/lib/invoice-utils";
 import { uploadInvoicePdf } from "@/lib/storage";
-import { centsToCurrencyString } from "@/lib/utils";
+import { centsToCurrencyString, formatSiret } from "@/lib/utils";
 import { validateProfileForPdfGeneration } from "@/lib/validation";
 
 export async function POST(
@@ -27,8 +27,7 @@ export async function POST(
       return NextResponse.json(
         {
           error: "Profile not found",
-          message:
-            "Please create your profile before generating invoices.",
+          message: "Please create your profile before generating invoices.",
         },
         { status: 400 },
       );
@@ -63,7 +62,7 @@ export async function POST(
         {
           error: "Cannot generate PDF: Invoice must have at least one item",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -76,12 +75,19 @@ export async function POST(
       centsToCurrencyString(item.total || 0, "EUR", APP_LOCALE),
     ]);
 
+    // Check if VAT-exempt based on vat_exemption_mention
+    const isVatExempt =
+      invoice.vat_exemption_mention !== null &&
+      invoice.vat_exemption_mention !== "";
+    const taxRate = isVatExempt ? 0 : 20; // 0% if exempt, 20% otherwise
+
     const subtotalCents = invoice.items.reduce(
       (sum, item) => sum + item.total,
       0,
     ); // already in cents
-    const taxRate = 20;
-    const taxAmountCents = Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
+    const taxAmountCents = isVatExempt
+      ? 0
+      : Math.round(subtotalCents * (taxRate / 100)); // calculate tax in cents
     const totalCents = subtotalCents + taxAmountCents; // total in cents
 
     console.log(
@@ -101,12 +107,17 @@ export async function POST(
     );
 
     const shopName = profile?.full_name;
+    const shopSiret = profile?.siret || null;
+
+    // CLIENT
+
+    const clientSiren = client.siren ? `SIREN: ${client.siren}` : "";
     // Use structured address fields (new format)
     const addressStreet = profile?.address_street || "";
     const addressCity = profile?.address_city
       ? `${profile.address_postal_code || ""} ${profile.address_city}`.trim()
       : "";
-    const clientInfo = [client.email, client.phone, client.address]
+    const clientInfo = [client.email, client.phone, client.address, clientSiren]
       .filter(Boolean)
       .join("\n");
 
@@ -126,10 +137,15 @@ export async function POST(
         client_information: clientInfo,
         facture_number: invoice.number || invoice.id,
         shopName,
+        shopSiret: shopSiret ? formatSiret(shopSiret) : "",
         shopAddress: JSON.stringify({
           address_street: (addressStreet || "").trim(),
           address_city: (addressCity || "").trim(),
         }),
+        // Operation type (services, goods, mixed)
+        operationType: invoice.operation_type || "services",
+        // VAT exemption mention (for micro-enterprises)
+        vatExemptionMention: invoice.vat_exemption_mention || "",
         // Optional description left empty unless available in data model
         // invoice_description: "",
         // Note: field name contains a trailing space in the template
@@ -151,6 +167,11 @@ export async function POST(
         info: JSON.stringify({
           InvoiceNo: invoice.number || invoice.id,
         }),
+        terms_and_conditions_title:
+          (invoice.vat_exemption_mention || "").length > 0
+            ? "Termes et conditions"
+            : "",
+        terms_and_conditions: invoice.vat_exemption_mention,
       },
     ];
 
@@ -180,10 +201,14 @@ export async function POST(
       console.error("Font loading error:", fontError);
       return NextResponse.json(
         {
-          error: "PDF generation failed: Required font files are missing. Please contact support.",
-          details: fontError instanceof Error ? fontError.message : "Font loading failed",
+          error:
+            "PDF generation failed: Required font files are missing. Please contact support.",
+          details:
+            fontError instanceof Error
+              ? fontError.message
+              : "Font loading failed",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -218,21 +243,33 @@ export async function POST(
 
       // Font loading errors
       if (errorMessage.includes("font") || errorMessage.includes("woff")) {
-        userMessage = "PDF generation failed: Font files could not be loaded. Please contact support.";
+        userMessage =
+          "PDF generation failed: Font files could not be loaded. Please contact support.";
         statusCode = 500;
       }
       // Template/generation errors
-      else if (errorMessage.includes("template") || errorMessage.includes("generate")) {
-        userMessage = "PDF generation failed: Invalid template configuration. Please contact support.";
+      else if (
+        errorMessage.includes("template") ||
+        errorMessage.includes("generate")
+      ) {
+        userMessage =
+          "PDF generation failed: Invalid template configuration. Please contact support.";
         statusCode = 500;
       }
       // Storage/upload errors
-      else if (errorMessage.includes("upload") || errorMessage.includes("storage")) {
-        userMessage = "PDF was generated but could not be saved. Please try again.";
+      else if (
+        errorMessage.includes("upload") ||
+        errorMessage.includes("storage")
+      ) {
+        userMessage =
+          "PDF was generated but could not be saved. Please try again.";
         statusCode = 500;
       }
       // Data validation errors
-      else if (errorMessage.includes("invalid") || errorMessage.includes("required")) {
+      else if (
+        errorMessage.includes("invalid") ||
+        errorMessage.includes("required")
+      ) {
         userMessage = `PDF generation failed: ${e.message}`;
         statusCode = 400;
       }
@@ -248,7 +285,7 @@ export async function POST(
         error: userMessage,
         details: e instanceof Error ? e.message : "Unknown error",
       },
-      { status: statusCode }
+      { status: statusCode },
     );
   }
 }
