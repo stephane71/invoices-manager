@@ -114,3 +114,71 @@ export const isValidPhoneNumber = (
 
   return isValidPhoneNumberFormLib(phoneNumber || "");
 };
+
+/**
+ * Validates a SIRET number using the Luhn algorithm
+ * @param siret - SIRET number (14 digits, with or without spaces)
+ * @returns true if valid, false otherwise
+ */
+export const isValidSiret = (siret: string | null | undefined): boolean => {
+  if (!siret) return false;
+
+  const cleaned = siret.replace(/\s/g, "");
+  if (!/^\d{14}$/.test(cleaned)) return false;
+
+  // Luhn algorithm validation
+  let sum = 0;
+  for (let i = 0; i < 14; i++) {
+    let digit = parseInt(cleaned[i], 10);
+    if (i % 2 === 0) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+  }
+  return sum % 10 === 0;
+};
+
+/**
+ * Validates a SIREN number using the Luhn algorithm
+ * @param siren - SIREN number (9 digits, with or without spaces)
+ * @returns true if valid, false otherwise
+ */
+export const isValidSiren = (siren: string | null | undefined): boolean => {
+  if (!siren) return false;
+
+  const cleaned = siren.replace(/\s/g, "");
+  if (!/^\d{9}$/.test(cleaned)) return false;
+
+  // Luhn algorithm validation
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    let digit = parseInt(cleaned[i], 10);
+    if (i % 2 === 1) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+  }
+  return sum % 10 === 0;
+};
+
+/**
+ * Formats SIRET for display with spaces
+ * @param siret - Raw SIRET (14 digits)
+ * @returns Formatted SIRET (XXX XXX XXX XXXXX)
+ */
+export const formatSiret = (siret: string): string => {
+  const cleaned = siret.replace(/\s/g, "");
+  return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{5})/, "$1 $2 $3 $4");
+};
+
+/**
+ * Formats SIREN for display with spaces
+ * @param siren - Raw SIREN (9 digits)
+ * @returns Formatted SIREN (XXX XXX XXX)
+ */
+export const formatSiren = (siren: string): string => {
+  const cleaned = siren.replace(/\s/g, "");
+  return cleaned.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+};

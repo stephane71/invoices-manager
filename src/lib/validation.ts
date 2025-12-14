@@ -34,6 +34,15 @@ export const clientSchema = z.object({
   address: z.string().optional().nullable(),
   phone: optionalPhone,
   email: optionalEmail,
+  // SIREN validation (9 digits, spaces optional)
+  siren: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => !val || /^\d{9}$/.test(val.replace(/\s/g, "")),
+      { message: "SIREN must be 9 digits" }
+    ),
 });
 
 export const invoiceItemSchema = z.object({
@@ -62,6 +71,9 @@ export const invoiceSchema = z.object({
   payment_bic: z.string().optional().nullable(),
   payment_link: z.string().optional().nullable(),
   payment_free_text: z.string().optional().nullable(),
+  // Operation type and VAT exemption
+  operation_type: z.enum(["services", "goods", "mixed"]),
+  vat_exemption_mention: z.string().optional().nullable(),
 });
 
 export const profileSchema = z.object({
@@ -77,6 +89,15 @@ export const profileSchema = z.object({
   address: z.string().optional().nullable(),
   payment_iban: z.string().optional().nullable(),
   payment_bic: z.string().optional().nullable(),
+  // SIRET validation (14 digits, spaces optional)
+  siret: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => !val || /^\d{14}$/.test(val.replace(/\s/g, "")),
+      { message: "SIRET must be 14 digits" }
+    ),
 });
 
 // Profile completeness validation for PDF generation
@@ -92,6 +113,7 @@ export type ProfileValidationResult = {
  *
  * Critical fields (PDF generation blocked without these):
  * - full_name: Business/seller name (minimum 2 characters)
+ * - siret: French business identifier (14 digits)
  * - address: Complete business address (in format "Street, Postal Code City")
  *   OR structured address fields (address_street, address_postal_code, address_city)
  *
@@ -111,6 +133,11 @@ export const validateProfileForPdfGeneration = (
   // Critical field: full_name
   if (!profile.full_name || profile.full_name.trim().length < 2) {
     missingFields.push("full_name");
+  }
+
+  // Critical field: SIRET
+  if (!profile.siret || profile.siret.replace(/\s/g, "").length !== 14) {
+    missingFields.push("siret");
   }
 
   // Critical field: address (support both legacy and structured formats)
