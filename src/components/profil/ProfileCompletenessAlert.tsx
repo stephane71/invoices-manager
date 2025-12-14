@@ -51,7 +51,9 @@ export const ProfileCompletenessAlert = ({
         <div className="space-y-1 text-sm">
           <p className="font-semibold text-red-800">
             {t("completeness.missingFields")}:{" "}
-            <span className="font-normal text-red-700">{missingFieldsText}</span>
+            <span className="font-normal text-red-700">
+              {missingFieldsText}
+            </span>
           </p>
           {warningsText && (
             <p className="text-red-600">

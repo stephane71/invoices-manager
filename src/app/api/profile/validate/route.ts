@@ -14,7 +14,7 @@ export const GET = async () => {
     if (!profile) {
       return NextResponse.json({
         isComplete: false,
-        missingFields: ["full_name", "address"],
+        missingFields: ["full_name", "address", "siret"],
         warnings: ["email", "phone"],
       });
     }

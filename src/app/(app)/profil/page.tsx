@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import { ProfileFormData, profileSchema } from "@/components/profil/profil";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -13,23 +13,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { isValidPhoneNumber } from "@/lib/utils";
-
-const profileSchema = z.object({
-  fullName: z.string().min(1, "Validation.name.required"),
-  email: z.email("Validation.email.invalid"),
-  phone: z
-    .string()
-    .refine(
-      (val) => isValidPhoneNumber(val, { isOptional: true }),
-      "Validation.phone.invalid",
-    ),
-  addressStreet: z.string().min(1, "Validation.addressStreet.required"),
-  addressPostalCode: z.string().min(1, "Validation.addressPostalCode.required"),
-  addressCity: z.string().min(1, "Validation.addressCity.required"),
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
+import { formatSiret } from "@/lib/utils";
 
 export default function ProfilPage() {
   const profilTranslate = useTranslations("Profile");
@@ -46,6 +30,7 @@ export default function ProfilPage() {
       fullName: "",
       email: "",
       phone: "",
+      siret: "",
       addressStreet: "",
       addressPostalCode: "",
       addressCity: "",
@@ -77,6 +62,7 @@ export default function ProfilPage() {
             fullName: p.full_name || "",
             email: p.email || "",
             phone: p.phone || "",
+            siret: p.siret || "",
             addressStreet: p.address_street || "",
             addressPostalCode: p.address_postal_code || "",
             addressCity: p.address_city || "",
@@ -114,6 +100,7 @@ export default function ProfilPage() {
           full_name: data.fullName,
           email: data.email,
           phone: data.phone,
+          siret: data.siret,
           address_street: data.addressStreet,
           address_postal_code: data.addressPostalCode,
           address_city: data.addressCity,
@@ -224,6 +211,43 @@ export default function ProfilPage() {
                   icon="Phone"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
+          />
+
+          {/* SIRET */}
+          <Controller
+            name="siret"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.siret")}{" "}
+                  <span className="text-red-500">*</span>
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="123 456 789 00012"
+                  maxLength={17}
+                  icon="Building"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/\s/g, "");
+                    if (cleaned.length <= 14 && /^\d*$/.test(cleaned)) {
+                      field.onChange(formatSiret(cleaned));
+                    }
+                  }}
+                  required
                 />
                 {fieldState.invalid && (
                   <FieldError>

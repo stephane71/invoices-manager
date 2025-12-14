@@ -9,6 +9,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { formatSiren } from "@/lib/utils";
 
 export interface FieldErrors {
   name?: string;
@@ -115,10 +116,43 @@ export function ClientFieldGroup({
             <textarea
               {...field}
               id={field.name}
-              className="min-h-20 rounded-md border px-3 py-2 bg-background"
+              className="bg-background min-h-20 rounded-md border px-3 py-2"
               placeholder={t("new.form.addressPlaceholder")}
               aria-invalid={fieldState.invalid}
               disabled={disabled}
+            />
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="siren"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>
+              {t("new.form.siren")}{" "}
+              <span className="text-sm text-gray-500">({t("optional")})</span>
+            </FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              placeholder="123 456 789"
+              maxLength={11}
+              icon="Building"
+              aria-invalid={fieldState.invalid}
+              disabled={disabled}
+              onChange={(e) => {
+                const cleaned = e.target.value.replace(/\s/g, "");
+                if (cleaned.length <= 9 && /^\d*$/.test(cleaned)) {
+                  field.onChange(formatSiren(cleaned));
+                }
+              }}
             />
             {fieldState.invalid && (
               <FieldError>
