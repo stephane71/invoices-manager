@@ -141,6 +141,7 @@
       "operationTypeDescription": "Nature of the transaction (services, goods, or mixed)",
       "vatExemptionMention": "VAT Exemption Mention",
       "vatExemptionDescription": "Legal mention for VAT-exempt businesses (e.g., micro-enterprises)",
+      "useStandardVatExemption": "I am VAT-exempt (Article 293 B)",
       "items": "Items",
       "addItem": "Add item",
       "empty": "No items. Click \"Add item\" to start.",

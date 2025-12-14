@@ -141,6 +141,7 @@
       "operationTypeDescription": "Nature de la transaction (services, marchandises ou mixte)",
       "vatExemptionMention": "Mention d'exonération de TVA",
       "vatExemptionDescription": "Mention légale pour les entreprises exonérées de TVA (ex: micro-entreprises)",
+      "useStandardVatExemption": "Je suis exonéré de TVA (Article 293 B)",
       "items": "Articles",
       "addItem": "Ajouter un article",
       "empty": "Pas d'article. Cliquez \"Ajouter un article\" pour commencer.",

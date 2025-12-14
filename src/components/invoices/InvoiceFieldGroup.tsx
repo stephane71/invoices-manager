@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Control, Controller } from "react-hook-form";
 import { InvoiceForm } from "@/components/invoices/invoices";
 import {
@@ -16,13 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 interface InvoiceFieldGroupProps {
   control: Control<InvoiceForm>;
 }
 
+const STANDARD_VAT_EXEMPTION = "TVA non applicable, art. 293 B du CGI";
+
 export const InvoiceFieldGroup = ({ control }: InvoiceFieldGroupProps) => {
   const t = useTranslations("Invoices");
+  const [useStandardVatExemption, setUseStandardVatExemption] = useState(false);
 
   return (
     <FieldGroup>
@@ -106,11 +111,34 @@ export const InvoiceFieldGroup = ({ control }: InvoiceFieldGroupProps) => {
             <FieldLabel htmlFor={field.name}>
               {t("new.vatExemptionMention")}
             </FieldLabel>
+
+            <div className="flex items-center gap-3 mb-3">
+              <Switch
+                id="vat-exemption-switch"
+                checked={useStandardVatExemption}
+                onCheckedChange={(checked) => {
+                  setUseStandardVatExemption(checked);
+                  if (checked) {
+                    field.onChange(STANDARD_VAT_EXEMPTION);
+                  } else {
+                    field.onChange("");
+                  }
+                }}
+              />
+              <label
+                htmlFor="vat-exemption-switch"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                {t("new.useStandardVatExemption")}
+              </label>
+            </div>
+
             <Input
               {...field}
               id={field.name}
               placeholder="TVA non applicable, art. 293 B du CGI"
               aria-invalid={fieldState.invalid}
+              disabled={useStandardVatExemption}
             />
             <FieldDescription>
               {t("new.vatExemptionDescription")}
