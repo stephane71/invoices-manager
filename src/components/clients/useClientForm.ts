@@ -22,6 +22,7 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
       email: "",
       address: "",
       phone: "",
+      siren: "",
     },
   });
 
@@ -40,6 +41,7 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
         email: d.email || "",
         address: d.address || "",
         phone: d.phone || "",
+        siren: d.siren || "",
       });
     });
 
@@ -57,6 +59,7 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
         email: data.email.trim() || undefined,
         phone: data.phone.trim() || undefined,
         address: data.address.trim() || undefined,
+        siren: data.siren?.trim() || undefined,
       };
 
       const res = await fetch(`/api/clients/${id}`, {

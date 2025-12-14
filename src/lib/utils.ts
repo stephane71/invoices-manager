@@ -121,10 +121,14 @@ export const isValidPhoneNumber = (
  * @returns true if valid, false otherwise
  */
 export const isValidSiret = (siret: string | null | undefined): boolean => {
-  if (!siret) return false;
+  if (!siret) {
+    return false;
+  }
 
   const cleaned = siret.replace(/\s/g, "");
-  if (!/^\d{14}$/.test(cleaned)) return false;
+  if (!/^\d{14}$/.test(cleaned)) {
+    return false;
+  }
 
   // Luhn algorithm validation
   let sum = 0;
@@ -132,7 +136,9 @@ export const isValidSiret = (siret: string | null | undefined): boolean => {
     let digit = parseInt(cleaned[i], 10);
     if (i % 2 === 0) {
       digit *= 2;
-      if (digit > 9) digit -= 9;
+      if (digit > 9) {
+        digit -= 9;
+      }
     }
     sum += digit;
   }
@@ -145,10 +151,14 @@ export const isValidSiret = (siret: string | null | undefined): boolean => {
  * @returns true if valid, false otherwise
  */
 export const isValidSiren = (siren: string | null | undefined): boolean => {
-  if (!siren) return false;
+  if (!siren) {
+    return false;
+  }
 
   const cleaned = siren.replace(/\s/g, "");
-  if (!/^\d{9}$/.test(cleaned)) return false;
+  if (!/^\d{9}$/.test(cleaned)) {
+    return false;
+  }
 
   // Luhn algorithm validation
   let sum = 0;
@@ -156,7 +166,9 @@ export const isValidSiren = (siren: string | null | undefined): boolean => {
     let digit = parseInt(cleaned[i], 10);
     if (i % 2 === 1) {
       digit *= 2;
-      if (digit > 9) digit -= 9;
+      if (digit > 9) {
+        digit -= 9;
+      }
     }
     sum += digit;
   }

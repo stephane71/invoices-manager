@@ -32,9 +32,7 @@ export default function ClientsPage() {
     setLoading(false);
   };
 
-  const { form, onSubmit, error } = useClientForm({
-    id: selectedId ?? "",
-  });
+  const { form, onSubmit, error } = useClientForm({ id: selectedId ?? "" });
 
   const handleCloseSheet = () => {
     router.push("/clients");
