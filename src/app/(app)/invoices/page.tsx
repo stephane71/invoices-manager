@@ -7,13 +7,17 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
 import { InvoiceListItemSkeleton } from "@/components/invoices/InvoiceListItemSkeleton";
-import { InvoicesEmptyState } from "@/components/invoices/InvoicesEmptyState";
 import { InvoiceView } from "@/components/invoices/InvoiceView";
+import { InvoicesEmptyState } from "@/components/invoices/InvoicesEmptyState";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
-import { ProfileCompletenessAlert } from "@/components/profile/ProfileCompletenessAlert";
+import { ProfileCompletenessAlert } from "@/components/profil/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Invoice } from "@/types/models";
 
 export default function InvoicesPage() {
@@ -131,10 +135,7 @@ export default function InvoicesPage() {
               </TooltipContent>
             </Tooltip>
           ) : (
-            <Button
-              onClick={onDownloadInvoice}
-              disabled={downloadingInvoice}
-            >
+            <Button onClick={onDownloadInvoice} disabled={downloadingInvoice}>
               {downloadingInvoice
                 ? tInvoices("detail.downloading")
                 : tInvoices("detail.download")}

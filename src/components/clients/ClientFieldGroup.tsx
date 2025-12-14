@@ -115,7 +115,7 @@ export function ClientFieldGroup({
             <textarea
               {...field}
               id={field.name}
-              className="min-h-20 rounded-md border px-3 py-2 bg-background"
+              className="bg-background min-h-20 rounded-md border px-3 py-2"
               placeholder={t("new.form.addressPlaceholder")}
               aria-invalid={fieldState.invalid}
               disabled={disabled}
@@ -153,8 +153,12 @@ export function ClientFieldGroup({
                     /(\d{3})(\d{3})(\d{0,3})/,
                     (_, p1, p2, p3) => {
                       let result = p1;
-                      if (p2) result += ` ${p2}`;
-                      if (p3) result += ` ${p3}`;
+                      if (p2) {
+                        result += ` ${p2}`;
+                      }
+                      if (p3) {
+                        result += ` ${p3}`;
+                      }
                       return result;
                     },
                   );
