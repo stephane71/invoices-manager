@@ -10,6 +10,13 @@ export const clientFormSchema = z.object({
       message: "new.error.phone",
     }),
   address: z.string(),
+  siren: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^\d{9}$/.test(val.replace(/\s/g, "")),
+      { message: "new.error.siren" },
+    ),
 });
 
 export type ClientForm = z.infer<typeof clientFormSchema>;

@@ -24,6 +24,13 @@ const profileSchema = z.object({
       (val) => isValidPhoneNumber(val, { isOptional: true }),
       "Validation.phone.invalid",
     ),
+  siret: z
+    .string()
+    .min(1, "Validation.siret.required")
+    .refine(
+      (val) => /^\d{14}$/.test(val.replace(/\s/g, "")),
+      "Validation.siret.invalid",
+    ),
   addressStreet: z.string().min(1, "Validation.addressStreet.required"),
   addressPostalCode: z.string().min(1, "Validation.addressPostalCode.required"),
   addressCity: z.string().min(1, "Validation.addressCity.required"),
@@ -46,6 +53,7 @@ export default function ProfilPage() {
       fullName: "",
       email: "",
       phone: "",
+      siret: "",
       addressStreet: "",
       addressPostalCode: "",
       addressCity: "",
@@ -77,6 +85,7 @@ export default function ProfilPage() {
             fullName: p.full_name || "",
             email: p.email || "",
             phone: p.phone || "",
+            siret: p.siret || "",
             addressStreet: p.address_street || "",
             addressPostalCode: p.address_postal_code || "",
             addressCity: p.address_city || "",
@@ -114,6 +123,7 @@ export default function ProfilPage() {
           full_name: data.fullName,
           email: data.email,
           phone: data.phone,
+          siret: data.siret,
           address_street: data.addressStreet,
           address_postal_code: data.addressPostalCode,
           address_city: data.addressCity,
@@ -224,6 +234,53 @@ export default function ProfilPage() {
                   icon="Phone"
                   aria-invalid={fieldState.invalid}
                   disabled={loading || isSubmitting}
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? translate(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
+          />
+
+          {/* SIRET */}
+          <Controller
+            name="siret"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {profilTranslate("form.siret")}{" "}
+                  <span className="text-red-500">*</span>
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="123 456 789 00012"
+                  maxLength={17}
+                  icon="Building"
+                  aria-invalid={fieldState.invalid}
+                  disabled={loading || isSubmitting}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/\s/g, "");
+                    if (cleaned.length <= 14 && /^\d*$/.test(cleaned)) {
+                      const formatted = cleaned.replace(
+                        /(\d{3})(\d{3})(\d{3})(\d{0,5})/,
+                        (_, p1, p2, p3, p4) => {
+                          let result = p1;
+                          if (p2) result += ` ${p2}`;
+                          if (p3) result += ` ${p3}`;
+                          if (p4) result += ` ${p4}`;
+                          return result;
+                        },
+                      );
+                      field.onChange(formatted.trim());
+                    }
+                  }}
+                  required
                 />
                 {fieldState.invalid && (
                   <FieldError>

@@ -34,6 +34,10 @@ export const invoiceFormSchema = z.object({
         ),
       { message: "new.error.itemsIncomplete" },
     ),
+  operationType: z.enum(["services", "goods", "mixed"], {
+    message: "new.error.operationTypeRequired",
+  }),
+  vatExemptionMention: z.string().optional().or(z.literal("")),
   paymentIban: z.string().optional().or(z.literal("")),
   paymentBic: z.string().optional().or(z.literal("")),
   paymentLink: z.string().optional().or(z.literal("")),

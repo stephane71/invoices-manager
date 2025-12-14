@@ -3,11 +3,19 @@ import { Control, Controller } from "react-hook-form";
 import { InvoiceForm } from "@/components/invoices/invoices";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface InvoiceFieldGroupProps {
   control: Control<InvoiceForm>;
@@ -50,6 +58,68 @@ export const InvoiceFieldGroup = ({ control }: InvoiceFieldGroupProps) => {
             <FieldLabel htmlFor={field.name}>{t("new.issueDate")}</FieldLabel>
             <Input {...field} id={field.name} type="date" icon="Calendar" />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="operationType"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>
+              {t("new.operationType")} <span className="text-red-500">*</span>
+            </FieldLabel>
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("new.selectOperationType")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="services">
+                  {t("new.operationTypeServices")}
+                </SelectItem>
+                <SelectItem value="goods">
+                  {t("new.operationTypeGoods")}
+                </SelectItem>
+                <SelectItem value="mixed">
+                  {t("new.operationTypeMixed")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldDescription>
+              {t("new.operationTypeDescription")}
+            </FieldDescription>
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="vatExemptionMention"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>
+              {t("new.vatExemptionMention")}
+            </FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              placeholder="TVA non applicable, art. 293 B du CGI"
+              aria-invalid={fieldState.invalid}
+            />
+            <FieldDescription>
+              {t("new.vatExemptionDescription")}
+            </FieldDescription>
+            {fieldState.invalid && (
+              <FieldError>
+                {fieldState.error?.message ? t(fieldState.error.message) : ""}
+              </FieldError>
+            )}
           </Field>
         )}
       />
