@@ -49,7 +49,7 @@ export default function NewClientPage() {
       });
 
       if (res.ok) {
-        router.push("/clients");
+        router.push("/app/clients");
       } else {
         const responseData = await res.json();
 

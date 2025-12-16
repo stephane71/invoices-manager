@@ -37,7 +37,7 @@ export default function ProductsPage() {
   });
 
   const handleCloseSheet = () => {
-    router.push("/products");
+    router.push("/app/products");
   };
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function ProductsPage() {
         size="lg"
         className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
       >
-        <Link href="/products/new" aria-label={t("list.newButton")}>
+        <Link href="/app/products/new" aria-label={t("list.newButton")}>
           <Plus className="size-6" />
         </Link>
       </Button>

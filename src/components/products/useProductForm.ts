@@ -68,7 +68,7 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
       });
 
       if (res.ok) {
-        router.push("/products");
+        router.push("/app/products");
       } else {
         const responseData = await res.json();
 

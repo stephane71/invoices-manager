@@ -216,7 +216,7 @@ export default function NewInvoicePage() {
         }
         throw new Error(serverMessage || t("new.error.createFail"));
       }
-      router.push("/invoices");
+      router.push("/app/invoices");
     } catch (e: unknown) {
       const message =
         e instanceof Error ? e.message : t("new.error.createFail");
@@ -327,7 +327,7 @@ export default function NewInvoicePage() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push("/invoices")}
+              onClick={() => router.push("/app/invoices")}
               disabled={isSubmitting}
             >
               {c("cancel")}

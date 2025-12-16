@@ -28,7 +28,7 @@ export const ClientListItem = ({ id, name }: ClientListItemProps) => {
   return (
     <Item variant="outline" size="sm" asChild>
       <Link
-        href={`/clients?id=${id}`}
+        href={`/app/clients?id=${id}`}
         onClick={handleClick}
         className={isPending ? "opacity-60" : ""}
       >

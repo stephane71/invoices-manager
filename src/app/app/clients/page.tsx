@@ -35,7 +35,7 @@ export default function ClientsPage() {
   const { form, onSubmit, error } = useClientForm({ id: selectedId ?? "" });
 
   const handleCloseSheet = () => {
-    router.push("/clients");
+    router.push("/app/clients");
   };
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ClientsPage() {
         size="lg"
         className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
       >
-        <Link href="/clients/new" aria-label={t("list.newButton")}>
+        <Link href="/app/clients/new" aria-label={t("list.newButton")}>
           <Plus className="size-6" />
         </Link>
       </Button>
