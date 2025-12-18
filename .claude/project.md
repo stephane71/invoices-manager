@@ -123,4 +123,4 @@ const MyFormPage = () => {
 
 ## Reference Implementation
 
-See `/src/components/clients/ClientFieldGroup.tsx` and `/src/app/(app)/clients/new/page.tsx` for reference implementation of the form pattern.
+See `/src/components/clients/ClientFieldGroup.tsx` and `/src/app/app/clients/new/page.tsx` for reference implementation of the form pattern.

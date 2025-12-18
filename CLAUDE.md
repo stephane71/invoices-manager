@@ -90,7 +90,7 @@ This document provides comprehensive guidance for AI assistants (like Claude) wo
 /invoices-manager
 ├── src/
 │   ├── app/                           # Next.js App Router (pages & API routes)
-│   │   ├── (app)/                    # Protected routes group
+│   │   ├── app/                      # Protected routes group (/app/* URLs)
 │   │   │   ├── invoices/             # Invoice management pages
 │   │   │   ├── clients/              # Client management pages
 │   │   │   ├── products/             # Product management pages
@@ -105,7 +105,7 @@ This document provides comprehensive guidance for AI assistants (like Claude) wo
 │   │   │   ├── products/             # Product CRUD
 │   │   │   └── profile/              # Profile endpoints
 │   │   ├── layout.tsx                # Root layout with i18n
-│   │   └── page.tsx                  # Home page (redirects to /invoices)
+│   │   └── page.tsx                  # Landing page (redirects to /app/invoices if authenticated)
 │   ├── components/                    # React components
 │   │   ├── ui/                       # Base shadcn/ui components
 │   │   ├── invoices/                 # Invoice-specific components
@@ -195,7 +195,7 @@ export const getInvoices = async () => {
 **Default to Server Components** for data fetching:
 
 ```typescript
-// app/(app)/invoices/page.tsx - Server Component
+// app/app/invoices/page.tsx - Server Component
 const InvoicesPage = async () => {
   const invoices = await getInvoices(); // Direct database query
   return <InvoicesList invoices={invoices} />;
@@ -419,10 +419,10 @@ const { data, error } = await supabase.auth.signInWithPassword({
 
 ### Protected Routes
 
-All routes under `(app)/` group are protected:
+All routes under `app/` directory are protected:
 
 ```typescript
-// app/(app)/layout.tsx
+// app/app/layout.tsx
 const AppLayout = async ({ children }) => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -451,28 +451,26 @@ const AppLayout = async ({ children }) => {
 
 ### Route Groups
 
-- **(app)/** - Protected routes requiring authentication
-- **(auth)/** - Public authentication routes
-
-Parentheses prevent the group name from appearing in URLs.
+- **app/** - Protected routes requiring authentication (/app/* URLs)
+- **(auth)/** - Public authentication routes (parentheses hide from URL)
 
 ### Key Routes
 
 | Route | Type | Purpose |
 |-------|------|---------|
-| `/` | Server | Redirects to `/invoices` |
+| `/` | Server | Landing page (redirects to /app/invoices if authenticated) |
 | `/sign-in` | Client | Authentication (sign in/up) |
-| `/invoices` | Server | Invoice list |
-| `/invoices/new` | Client | Create invoice form |
-| `/invoices/[id]` | Client | Invoice detail + PDF download |
-| `/clients` | Server | Client list |
-| `/clients/new` | Client | Create client form |
-| `/clients/[id]` | Client | Edit client form |
-| `/products` | Server | Product list with images |
-| `/products/new` | Client | Create product form |
-| `/products/[id]` | Client | Edit product form |
-| `/profil` | Client | User profile settings |
-| `/contact` | Server | Contact page |
+| `/app/invoices` | Server | Invoice list |
+| `/app/invoices/new` | Client | Create invoice form |
+| `/app/invoices/[id]` | Client | Invoice detail + PDF download |
+| `/app/clients` | Server | Client list |
+| `/app/clients/new` | Client | Create client form |
+| `/app/clients/[id]` | Client | Edit client form |
+| `/app/products` | Server | Product list with images |
+| `/app/products/new` | Client | Create product form |
+| `/app/products/[id]` | Client | Edit product form |
+| `/app/profil` | Client | User profile settings |
+| `/app/contact` | Server | Contact page |
 
 ### API Endpoints
 
@@ -569,7 +567,7 @@ export const ClientFieldGroup = ({
 #### 2. Wrap in Form Tag
 
 ```typescript
-// app/(app)/clients/new/page.tsx
+// app/app/clients/new/page.tsx
 const CreateClientPage = () => {
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
@@ -844,7 +842,7 @@ Use for:
 - SEO-critical pages
 
 ```typescript
-// app/(app)/clients/page.tsx
+// app/app/clients/page.tsx
 const ClientsPage = async () => {
   const clients = await getClients(); // Direct DB query
 
@@ -852,7 +850,7 @@ const ClientsPage = async () => {
     <div>
       <h1>Clients</h1>
       {clients.map(client => (
-        <Link key={client.id} href={`/clients/${client.id}`}>
+        <Link key={client.id} href={`/app/clients/${client.id}`}>
           {client.name}
         </Link>
       ))}

@@ -60,7 +60,7 @@ French law requires specific information to appear on all business invoices. Bef
 
 1. **Go to your profile page**
    - Click on "Profil" in the left sidebar menu
-   - Or go to: `/profil`
+   - Or go to: `/app/profil`
 
 2. **Fill in the required fields**
    - Enter your full name
@@ -97,7 +97,7 @@ Make sure all required fields have values before trying to generate a PDF.
 ### "Cannot generate PDF" error?
 
 **Check your profile:**
-1. Go to your profile page (`/profil`)
+1. Go to your profile page (`/app/profil`)
 2. Make sure you have entered:
    - ✅ Full name (at least 2 characters)
    - ✅ Address with a comma (e.g., "Street, City")
