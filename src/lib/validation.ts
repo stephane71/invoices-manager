@@ -28,22 +28,43 @@ export const productSchema = z.object({
   image_url: z.url().or(z.literal("")).optional().nullable(),
 });
 
-export const clientSchema = z.object({
+// Base client fields shared between person and company
+const baseClientFields = {
   id: z.uuid(),
-  name: z.string().min(1),
+  account_id: z.uuid().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
   address: z.string().optional().nullable(),
   phone: optionalPhone,
   email: optionalEmail,
-  // SIREN validation (9 digits, spaces optional)
-  siren: z
-    .string()
-    .optional()
-    .nullable()
-    .refine(
-      (val) => !val || /^\d{9}$/.test(val.replace(/\s/g, "")),
-      { message: "SIREN must be 9 digits" }
-    ),
-});
+};
+
+// Client schema using discriminated union for person vs company
+export const clientSchema = z.discriminatedUnion("client_type", [
+  // Person schema
+  z.object({
+    ...baseClientFields,
+    client_type: z.literal("person"),
+    name: z.string().min(1, "Name is required"),
+    firstname: z.string().min(1, "Firstname is required"),
+    siren: z.null().or(z.undefined()).or(z.literal("")),
+    tva_number: z.null().or(z.undefined()).or(z.literal("")),
+  }),
+  // Company schema
+  z.object({
+    ...baseClientFields,
+    client_type: z.literal("company"),
+    name: z.string().min(1, "Company name is required"),
+    firstname: z.null().or(z.undefined()).or(z.literal("")),
+    siren: z
+      .string()
+      .min(1, "SIREN is required for companies")
+      .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
+        message: "SIREN must be 9 digits",
+      }),
+    tva_number: z.string().optional().nullable().or(z.literal("")),
+  }),
+]);
 
 export const invoiceItemSchema = z.object({
   id: z.uuid(),
@@ -94,10 +115,9 @@ export const profileSchema = z.object({
     .string()
     .optional()
     .nullable()
-    .refine(
-      (val) => !val || /^\d{14}$/.test(val.replace(/\s/g, "")),
-      { message: "SIRET must be 14 digits" }
-    ),
+    .refine((val) => !val || /^\d{14}$/.test(val.replace(/\s/g, "")), {
+      message: "SIRET must be 14 digits",
+    }),
 });
 
 // Profile completeness validation for PDF generation
@@ -125,7 +145,7 @@ export type ProfileValidationResult = {
  * @returns ProfileValidationResult with completion status and missing/warning fields
  */
 export const validateProfileForPdfGeneration = (
-  profile: z.infer<typeof profileSchema>
+  profile: z.infer<typeof profileSchema>,
 ): ProfileValidationResult => {
   const missingFields: string[] = [];
   const warnings: string[] = [];

@@ -17,7 +17,9 @@ export default function NewClientPage() {
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
+      client_type: "person", // Default to person
       name: "",
+      firstname: "",
       email: "",
       address: "",
       phone: "",
@@ -35,12 +37,26 @@ export default function NewClientPage() {
     setError("");
 
     try {
-      const clientData = {
-        name: data.name.trim(),
-        email: data.email.trim() || undefined,
-        phone: data.phone.trim() || undefined,
-        address: data.address.trim() || undefined,
-      };
+      // Build client data based on client type
+      const clientData =
+        data.client_type === "person"
+          ? {
+              client_type: "person" as const,
+              name: data.name.trim(),
+              firstname: data.firstname.trim(),
+              email: data.email.trim() || undefined,
+              phone: data.phone.trim() || undefined,
+              address: data.address.trim() || undefined,
+            }
+          : {
+              client_type: "company" as const,
+              name: data.name.trim(),
+              siren: data.siren.trim(),
+              tva_number: data.tva_number?.trim() || undefined,
+              email: data.email.trim() || undefined,
+              phone: data.phone.trim() || undefined,
+              address: data.address.trim() || undefined,
+            };
 
       const res = await fetch(`/api/clients`, {
         method: "POST",

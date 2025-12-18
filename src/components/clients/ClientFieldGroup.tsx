@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, useWatch } from "react-hook-form";
 import { ClientForm } from "@/components/clients/clients";
 import {
   Field,
@@ -9,6 +9,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { formatSiren } from "@/lib/utils";
 
 export interface FieldErrors {
@@ -22,27 +29,81 @@ interface ClientFormProps {
   control: Control<ClientForm>;
   disabled?: boolean;
   children?: ReactNode;
+  showTypeSelector?: boolean; // Show client type selector (true for creation, false for edit)
 }
 
 export function ClientFieldGroup({
   control,
   disabled = false,
   children,
+  showTypeSelector = true,
 }: ClientFormProps) {
   const t = useTranslations("Clients");
 
+  // Watch the client_type field to conditionally render fields
+  const clientType = useWatch({
+    control,
+    name: "client_type",
+  });
+
   return (
     <FieldGroup>
+      {/* Client Type Selector - only shown on creation page */}
+      {showTypeSelector && (
+        <Controller
+          name="client_type"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>
+                {t("new.form.clientType")}
+              </FieldLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={disabled}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t("new.form.selectClientType")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="person">
+                    {t("new.form.clientTypePerson")}
+                  </SelectItem>
+                  <SelectItem value="company">
+                    {t("new.form.clientTypeCompany")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {fieldState.invalid && (
+                <FieldError>
+                  {fieldState.error?.message ? t(fieldState.error.message) : ""}
+                </FieldError>
+              )}
+            </Field>
+          )}
+        />
+      )}
+
+      {/* Name field - label changes based on client type */}
       <Controller
         name="name"
         control={control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>{t("new.form.name")}</FieldLabel>
+            <FieldLabel htmlFor={field.name}>
+              {clientType === "company"
+                ? t("new.form.companyName")
+                : t("new.form.name")}
+            </FieldLabel>
             <Input
               {...field}
               id={field.name}
-              placeholder={t("new.form.namePlaceholder")}
+              placeholder={
+                clientType === "company"
+                  ? t("new.form.companyNamePlaceholder")
+                  : t("new.form.namePlaceholder")
+              }
               icon="User"
               aria-invalid={fieldState.invalid}
               disabled={disabled}
@@ -56,6 +117,35 @@ export function ClientFieldGroup({
           </Field>
         )}
       />
+
+      {/* Firstname field - only for persons */}
+      {clientType === "person" && (
+        <Controller
+          name="firstname"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>
+                {t("new.form.firstname")}
+              </FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                placeholder={t("new.form.firstnamePlaceholder")}
+                icon="User"
+                aria-invalid={fieldState.invalid}
+                disabled={disabled}
+                required
+              />
+              {fieldState.invalid && (
+                <FieldError>
+                  {fieldState.error?.message ? t(fieldState.error.message) : ""}
+                </FieldError>
+              )}
+            </Field>
+          )}
+        />
+      )}
 
       <Controller
         name="email"
@@ -130,38 +220,70 @@ export function ClientFieldGroup({
         )}
       />
 
-      <Controller
-        name="siren"
-        control={control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>
-              {t("new.form.siren")}{" "}
-              <span className="text-sm text-gray-500">({t("optional")})</span>
-            </FieldLabel>
-            <Input
-              {...field}
-              id={field.name}
-              placeholder="123 456 789"
-              maxLength={11}
-              icon="Building"
-              aria-invalid={fieldState.invalid}
-              disabled={disabled}
-              onChange={(e) => {
-                const cleaned = e.target.value.replace(/\s/g, "");
-                if (cleaned.length <= 9 && /^\d*$/.test(cleaned)) {
-                  field.onChange(formatSiren(cleaned));
-                }
-              }}
-            />
-            {fieldState.invalid && (
-              <FieldError>
-                {fieldState.error?.message ? t(fieldState.error.message) : ""}
-              </FieldError>
-            )}
-          </Field>
-        )}
-      />
+      {/* SIREN field - only for companies, required */}
+      {clientType === "company" && (
+        <Controller
+          name="siren"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>
+                {t("new.form.siren")} <span className="text-red-600">*</span>
+              </FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                placeholder="123 456 789"
+                maxLength={11}
+                icon="Building"
+                aria-invalid={fieldState.invalid}
+                disabled={disabled}
+                required
+                onChange={(e) => {
+                  const cleaned = e.target.value.replace(/\s/g, "");
+                  if (cleaned.length <= 9 && /^\d*$/.test(cleaned)) {
+                    field.onChange(formatSiren(cleaned));
+                  }
+                }}
+              />
+              {fieldState.invalid && (
+                <FieldError>
+                  {fieldState.error?.message ? t(fieldState.error.message) : ""}
+                </FieldError>
+              )}
+            </Field>
+          )}
+        />
+      )}
+
+      {/* TVA Number field - only for companies, optional */}
+      {clientType === "company" && (
+        <Controller
+          name="tva_number"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>
+                {t("new.form.tvaNumber")}{" "}
+                <span className="text-sm text-gray-500">({t("optional")})</span>
+              </FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                placeholder="FR12345678901"
+                icon="Building"
+                aria-invalid={fieldState.invalid}
+                disabled={disabled}
+              />
+              {fieldState.invalid && (
+                <FieldError>
+                  {fieldState.error?.message ? t(fieldState.error.message) : ""}
+                </FieldError>
+              )}
+            </Field>
+          )}
+        />
+      )}
 
       {children && <div className="flex gap-2">{children}</div>}
     </FieldGroup>
