@@ -253,6 +253,27 @@
     },
     "imageAlt": "Photo de Stéphane Maire"
   },
+  "Auth": {
+    "signIn": {
+      "title": "Se connecter",
+      "email": "Email",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "submitting": "Connexion en cours…",
+      "switchToSignUp": "Créer un compte"
+    },
+    "signUp": {
+      "title": "Créer un compte",
+      "email": "Email",
+      "password": "Mot de passe",
+      "submit": "S'inscrire",
+      "submitting": "Inscription en cours…",
+      "switchToSignIn": "Vous avez déjà un compte ? Se connecter"
+    },
+    "error": {
+      "authFailed": "Échec de l'authentification"
+    }
+  },
   "Profile": {
     "title": "Mon profil",
     "form": {

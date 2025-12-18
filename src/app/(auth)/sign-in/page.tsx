@@ -24,7 +24,8 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 export default function SignInPage() {
-  const t = useTranslations("Validation");
+  const tValidation = useTranslations("Validation");
+  const tAuth = useTranslations("Auth");
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [error, setError] = useState<string | null>(null);
@@ -70,14 +71,14 @@ export default function SignInPage() {
       router.refresh();
     } catch (err: unknown) {
       // @ts-expect-error error type is not correct
-      setError(err?.message || "Authentication failed");
+      setError(err?.message || tAuth("error.authFailed"));
     }
   }
 
   return (
     <div className="mx-auto max-w-sm px-4 py-8">
-      <h1 className="text-2xl font-semibold mb-4">
-        {mode === "signin" ? "Sign in" : "Create account"}
+      <h1 className="mb-4 text-2xl font-semibold">
+        {mode === "signin" ? tAuth("signIn.title") : tAuth("signUp.title")}
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
@@ -86,7 +87,9 @@ export default function SignInPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {tAuth(`${mode === "signin" ? "signIn" : "signUp"}.email`)}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -100,7 +103,7 @@ export default function SignInPage() {
                 {fieldState.invalid && (
                   <FieldError>
                     {fieldState.error?.message
-                      ? t(fieldState.error.message)
+                      ? tValidation(fieldState.error.message)
                       : ""}
                   </FieldError>
                 )}
@@ -113,7 +116,9 @@ export default function SignInPage() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {tAuth(`${mode === "signin" ? "signIn" : "signUp"}.password`)}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -129,7 +134,7 @@ export default function SignInPage() {
                 {fieldState.invalid && (
                   <FieldError>
                     {fieldState.error?.message
-                      ? t(fieldState.error.message)
+                      ? tValidation(fieldState.error.message)
                       : ""}
                   </FieldError>
                 )}
@@ -141,21 +146,19 @@ export default function SignInPage() {
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting
-              ? "Please wait…"
-              : mode === "signin"
-                ? "Sign in"
-                : "Sign up"}
+              ? tAuth(`${mode === "signin" ? "signIn" : "signUp"}.submitting`)
+              : tAuth(`${mode === "signin" ? "signIn" : "signUp"}.submit`)}
           </Button>
         </FieldGroup>
       </form>
       <div className="mt-4 text-sm">
         {mode === "signin" ? (
           <Button variant="link" onClick={() => setMode("signup")}>
-            Create an account
+            {tAuth("signIn.switchToSignUp")}
           </Button>
         ) : (
           <Button variant="link" onClick={() => setMode("signin")}>
-            Have an account? Sign in
+            {tAuth("signUp.switchToSignIn")}
           </Button>
         )}
       </div>

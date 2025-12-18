@@ -253,6 +253,27 @@
     },
     "imageAlt": "Photo of Stéphane Maire"
   },
+  "Auth": {
+    "signIn": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Please wait…",
+      "switchToSignUp": "Create an account"
+    },
+    "signUp": {
+      "title": "Create account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign up",
+      "submitting": "Please wait…",
+      "switchToSignIn": "Have an account? Sign in"
+    },
+    "error": {
+      "authFailed": "Authentication failed"
+    }
+  },
   "Profile": {
     "title": "My profile",
     "form": {
