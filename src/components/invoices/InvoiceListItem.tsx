@@ -39,7 +39,7 @@ export const InvoiceListItem = ({
   return (
     <Item variant="outline" size="sm" asChild>
       <Link
-        href={`/invoices?id=${id}`}
+        href={`/app/invoices?id=${id}`}
         onClick={handleClick}
         className={isPending ? "opacity-60" : ""}
       >

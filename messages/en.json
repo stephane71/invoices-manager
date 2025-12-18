@@ -3,6 +3,61 @@
     "title": "Lemonora",
     "description": "Robust and clear invoicing solution"
   },
+  "Landing": {
+    "hero": {
+      "title": "Lemonora",
+      "subtitle": "Robust and clear invoicing solution for freelancers and small businesses",
+      "getStarted": "Get started",
+      "signIn": "Sign in"
+    },
+    "features": {
+      "title": "Everything you need to manage your invoices",
+      "subtitle": "Powerful features designed to simplify your invoicing workflow",
+      "invoices": {
+        "title": "Invoice Management",
+        "description": "Create and manage professional invoices with line items and PDF generation"
+      },
+      "clients": {
+        "title": "Client Management",
+        "description": "Organize and track all your clients in one place"
+      },
+      "products": {
+        "title": "Product Catalog",
+        "description": "Manage your products with images and pricing"
+      },
+      "compliance": {
+        "title": "Legal Compliance",
+        "description": "French legal invoice requirements (SIRET, VAT, operation types)"
+      },
+      "multilingual": {
+        "title": "Multi-language",
+        "description": "Full support for English and French"
+      },
+      "modern": {
+        "title": "Modern & Secure",
+        "description": "Clean interface with secure cloud-based data storage"
+      }
+    },
+    "benefits": {
+      "title": "Why choose Lemonora?",
+      "subtitle": "Built for freelancers and auto-entrepreneurs",
+      "list": {
+        "0": "Professional PDF invoices with French legal compliance",
+        "1": "Manage clients, products, and invoices in one place",
+        "2": "Multi-language support (English & French)",
+        "3": "Secure cloud storage",
+        "4": "Clean, modern interface built with latest technologies"
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join freelancers and small businesses using Lemonora to manage their invoicing",
+      "button": "Start now"
+    },
+    "footer": {
+      "rights": "All rights reserved."
+    }
+  },
   "Nav": {
     "invoices": "Invoices",
     "clients": "Clients",

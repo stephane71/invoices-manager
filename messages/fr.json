@@ -3,6 +3,61 @@
     "title": "Lemonora",
     "description": "Solution de facturation robuste et claire"
   },
+  "Landing": {
+    "hero": {
+      "title": "Lemonora",
+      "subtitle": "Solution de facturation robuste et claire pour freelances et petites entreprises",
+      "getStarted": "Commencer",
+      "signIn": "Se connecter"
+    },
+    "features": {
+      "title": "Tout ce dont vous avez besoin pour gérer vos factures",
+      "subtitle": "Des fonctionnalités puissantes conçues pour simplifier votre facturation",
+      "invoices": {
+        "title": "Gestion de factures",
+        "description": "Créez et gérez des factures professionnelles avec articles et génération PDF"
+      },
+      "clients": {
+        "title": "Gestion de clients",
+        "description": "Organisez et suivez tous vos clients au même endroit"
+      },
+      "products": {
+        "title": "Catalogue de produits",
+        "description": "Gérez vos produits avec images et tarifs"
+      },
+      "compliance": {
+        "title": "Conformité légale",
+        "description": "Respect des exigences légales françaises (SIRET, TVA, types d'opérations)"
+      },
+      "multilingual": {
+        "title": "Multilingue",
+        "description": "Support complet pour le français et l'anglais"
+      },
+      "modern": {
+        "title": "Moderne & Sécurisé",
+        "description": "Interface claire avec stockage sécurisé dans le cloud"
+      }
+    },
+    "benefits": {
+      "title": "Pourquoi choisir Lemonora ?",
+      "subtitle": "Conçu pour les freelances et auto-entrepreneurs",
+      "list": {
+        "0": "Factures PDF professionnelles avec conformité légale française",
+        "1": "Gérez clients, produits et factures au même endroit",
+        "2": "Support multilingue (français & anglais)",
+        "3": "Stockage sécurisé dans le cloud",
+        "4": "Interface moderne et claire avec les dernières technologies"
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Rejoignez les freelances et petites entreprises qui utilisent Lemonora pour gérer leur facturation",
+      "button": "Commencer maintenant"
+    },
+    "footer": {
+      "rights": "Tous droits réservés."
+    }
+  },
   "Nav": {
     "invoices": "Factures",
     "clients": "Clients",

@@ -25,7 +25,7 @@ export const InvoicesEmptyState = () => {
       </EmptyHeader>
       <EmptyContent>
         <Button asChild>
-          <Link href="/invoices/new">
+          <Link href="/app/invoices/new">
             <Plus className="mr-2 size-4" />
             {t("empty.action")}
           </Link>

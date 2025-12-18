@@ -25,7 +25,7 @@ export const ProductsEmptyState = () => {
       </EmptyHeader>
       <EmptyContent>
         <Button asChild>
-          <Link href="/products/new">
+          <Link href="/app/products/new">
             <Plus className="mr-2 size-4" />
             {t("empty.action")}
           </Link>

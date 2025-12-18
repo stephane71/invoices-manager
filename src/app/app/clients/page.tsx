@@ -5,39 +5,37 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
-import { ProductListItem } from "@/components/products/ProductListItem";
-import { ProductListItemSkeleton } from "@/components/products/ProductListItemSkeleton";
-import { ProductsEmptyState } from "@/components/products/ProductsEmptyState";
-import { useProductForm } from "@/components/products/useProductForm";
+import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
+import { ClientListItem } from "@/components/clients/ClientListItem";
+import { ClientListItemSkeleton } from "@/components/clients/ClientListItemSkeleton";
+import { ClientsEmptyState } from "@/components/clients/ClientsEmptyState";
+import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
-import type { Product } from "@/types/models";
+import type { Client } from "@/types/models";
 
-export default function ProductsPage() {
-  const t = useTranslations("Products");
+export default function ClientsPage() {
+  const t = useTranslations("Clients");
   const tCommon = useTranslations("Common");
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const selectedId = searchParams.get("id");
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadProducts = async () => {
-    const res = await fetch("/api/products");
+  const loadClients = async () => {
+    const res = await fetch("/api/clients");
     const data = await res.json();
-    setProducts(data);
+    setClients(data);
     setLoading(false);
   };
 
-  const { form, onSubmit, error, imageUrl, onSelectImage } = useProductForm({
-    id: selectedId ?? "",
-  });
+  const { form, onSubmit, error } = useClientForm({ id: selectedId ?? "" });
 
   const handleCloseSheet = () => {
-    router.push("/products");
+    router.push("/app/clients");
   };
 
   useEffect(() => {
@@ -45,7 +43,7 @@ export default function ProductsPage() {
       return;
     }
 
-    void loadProducts();
+    void loadClients();
   }, [selectedId]);
 
   return (
@@ -53,19 +51,13 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-2">
         {loading ? (
           Array.from({ length: 5 }).map((_, index) => (
-            <ProductListItemSkeleton key={index} />
+            <ClientListItemSkeleton key={index} />
           ))
-        ) : products.length === 0 ? (
-          <ProductsEmptyState />
+        ) : clients.length === 0 ? (
+          <ClientsEmptyState />
         ) : (
-          products.map((p) => (
-            <ProductListItem
-              key={p.id}
-              name={p.name}
-              price={p.price}
-              id={p.id}
-              imageUrl={p.image_url || ""}
-            />
+          clients.map((cItem) => (
+            <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
           ))
         )}
       </div>
@@ -75,7 +67,7 @@ export default function ProductsPage() {
         size="lg"
         className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
       >
-        <Link href="/products/new" aria-label={t("list.newButton")}>
+        <Link href="/app/clients/new" aria-label={t("list.newButton")}>
           <Plus className="size-6" />
         </Link>
       </Button>
@@ -87,12 +79,10 @@ export default function ProductsPage() {
         content={
           selectedId && (
             <form
-              id={`product-form-${selectedId}`}
+              id={`client-form-${selectedId}`}
               onSubmit={form.handleSubmit(onSubmit)}
             >
-              <ProductFieldGroup
-                imageUrl={imageUrl}
-                onSelectImage={onSelectImage}
+              <ClientFieldGroup
                 control={form.control}
                 disabled={form.formState.isSubmitting}
               />
@@ -103,7 +93,7 @@ export default function ProductsPage() {
         footer={
           <Button
             type="submit"
-            form={`product-form-${selectedId}`}
+            form={`client-form-${selectedId}`}
             disabled={form.formState.isSubmitting}
             className="w-full"
           >

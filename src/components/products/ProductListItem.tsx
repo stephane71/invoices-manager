@@ -39,7 +39,7 @@ export const ProductListItem = ({
   return (
     <Item variant="outline" size="sm" asChild>
       <Link
-        href={`/products?id=${id}`}
+        href={`/app/products?id=${id}`}
         onClick={handleClick}
         className={isPending ? "opacity-60" : ""}
       >

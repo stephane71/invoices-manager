@@ -52,7 +52,7 @@ export default function InvoicesPage() {
   }, []);
 
   const handleCloseSheet = () => {
-    router.push("/invoices");
+    router.push("/app/invoices");
     // Reload invoices after closing sheet to reflect any changes
     const loadInvoices = async () => {
       const res = await fetch("/api/invoices");
@@ -91,7 +91,7 @@ export default function InvoicesPage() {
         size="lg"
         className="fixed right-6 bottom-6 h-14 w-14 rounded-full p-0 shadow-lg transition-shadow hover:shadow-xl"
       >
-        <Link href="/invoices/new" aria-label={tInvoices("list.newButton")}>
+        <Link href="/app/invoices/new" aria-label={tInvoices("list.newButton")}>
           <Plus className="size-6" />
         </Link>
       </Button>

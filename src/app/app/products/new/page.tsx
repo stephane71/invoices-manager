@@ -50,7 +50,7 @@ export default function NewProductPage() {
       });
 
       if (res.ok) {
-        router.push("/products");
+        router.push("/app/products");
       } else {
         const responseData = await res.json();
 
