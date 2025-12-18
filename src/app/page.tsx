@@ -1,19 +1,32 @@
-import { useTranslations } from "next-intl";
+import {
+  Check,
+  FileText,
+  Globe,
+  Package,
+  Shield,
+  Users,
+  Zap,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  Users,
-  Package,
-  Globe,
-  Shield,
-  Zap,
-  Check,
-} from "lucide-react";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export default function LandingPage() {
-  const t = useTranslations("Landing");
+export default async function LandingPage() {
+  // Check if user is already authenticated
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // If user is authenticated, redirect to the app
+  if (user) {
+    redirect("/app/invoices");
+  }
+
+  const t = await getTranslations("Landing");
 
   const features = [
     {
@@ -52,7 +65,7 @@ export default function LandingPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 md:py-32">
-        <div className="flex flex-col items-center text-center space-y-8">
+        <div className="flex flex-col items-center space-y-8 text-center">
           <Image
             src="/Lemonora.svg"
             alt="Lemonora"
@@ -61,17 +74,22 @@ export default function LandingPage() {
             className="mb-4"
             priority
           />
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+          <h1 className="text-5xl font-bold tracking-tight md:text-7xl">
             {t("hero.title")}
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
+          <p className="text-muted-foreground max-w-2xl text-xl md:text-2xl">
             {t("hero.subtitle")}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <Button asChild size="lg" className="text-lg px-8">
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <Button asChild size="lg" className="px-8 text-lg">
               <Link href="/sign-in">{t("hero.getStarted")}</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="text-lg px-8">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="px-8 text-lg"
+            >
               <Link href="/sign-in">{t("hero.signIn")}</Link>
             </Button>
           </div>
@@ -81,23 +99,23 @@ export default function LandingPage() {
       {/* Features Section */}
       <section className="bg-muted/50 py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
               {t("features.title")}
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
               {t("features.subtitle")}
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-background p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="bg-background rounded-lg p-6 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg">
-                    <feature.icon className="w-6 h-6 text-primary" />
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="bg-primary/10 rounded-lg p-3">
+                    <feature.icon className="text-primary h-6 w-6" />
                   </div>
                   <h3 className="text-xl font-semibold">{feature.title}</h3>
                 </div>
@@ -110,12 +128,12 @@ export default function LandingPage() {
 
       {/* Benefits Section */}
       <section className="container mx-auto px-4 py-20">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
               {t("benefits.title")}
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               {t("benefits.subtitle")}
             </p>
           </div>
@@ -128,7 +146,7 @@ export default function LandingPage() {
               t("benefits.list.4"),
             ].map((benefit, index) => (
               <div key={index} className="flex items-start gap-3">
-                <Check className="w-6 h-6 text-primary mt-1 shrink-0" />
+                <Check className="text-primary mt-1 h-6 w-6 shrink-0" />
                 <p className="text-lg">{benefit}</p>
               </div>
             ))}
@@ -139,13 +157,18 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="mb-6 text-3xl font-bold md:text-4xl">
             {t("cta.title")}
           </h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
+          <p className="mx-auto mb-8 max-w-2xl text-lg opacity-90">
             {t("cta.subtitle")}
           </p>
-          <Button asChild size="lg" variant="secondary" className="text-lg px-8">
+          <Button
+            asChild
+            size="lg"
+            variant="secondary"
+            className="px-8 text-lg"
+          >
             <Link href="/sign-in">{t("cta.button")}</Link>
           </Button>
         </div>
@@ -153,8 +176,10 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Lemonora. {t("footer.rights")}</p>
+        <div className="text-muted-foreground container mx-auto px-4 text-center text-sm">
+          <p>
+            &copy; {new Date().getFullYear()} Lemonora. {t("footer.rights")}
+          </p>
         </div>
       </footer>
     </div>
