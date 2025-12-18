@@ -63,7 +63,7 @@ export const ProfileCompletenessAlert = ({
           )}
         </div>
         <Button asChild variant="outline" size="sm" className="mt-2">
-          <Link href="/profil">{t("completeness.completeProfile")}</Link>
+          <Link href="/app/profil">{t("completeness.completeProfile")}</Link>
         </Button>
       </CardContent>
     </Card>

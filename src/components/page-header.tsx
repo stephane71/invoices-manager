@@ -48,7 +48,7 @@ export function PageHeader() {
       <SidebarTrigger className="-ml-1" />
       {headerTitle && <h1 className="text-xl font-semibold">{headerTitle}</h1>}
       <Link
-        href="/profil"
+        href="/app/profil"
         className="bg-primary text-primary-foreground inline-flex size-9 items-center justify-center rounded-full font-semibold"
         aria-label="Ouvrir mon profil"
         title="Mon profil"
