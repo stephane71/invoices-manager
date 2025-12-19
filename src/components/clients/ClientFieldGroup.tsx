@@ -47,9 +47,6 @@ export function ClientFieldGroup({
           control={control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>
-                {t("new.form.clientType")}
-              </FieldLabel>
               <ClientTypeSelector
                 value={field.value}
                 onChange={field.onChange}
