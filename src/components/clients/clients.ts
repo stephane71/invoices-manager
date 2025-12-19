@@ -14,30 +14,26 @@ const baseFormFields = {
 };
 
 // Client Person Form Schema
-export const clientPersonFormSchema = z
-  .object({
-    ...baseFormFields,
-    client_type: z.literal("person"),
-    firstname: z.string().min(1, "new.error.firstname"),
-    lastname: z.string().min(1, "new.error.lastname"),
-  })
-  .strict();
+export const clientPersonFormSchema = z.object({
+  ...baseFormFields,
+  client_type: z.literal("person"),
+  firstname: z.string().min(1, "new.error.firstname"),
+  lastname: z.string().min(1, "new.error.lastname"),
+});
 
 // Client Company Form Schema
-export const clientCompanyFormSchema = z
-  .object({
-    ...baseFormFields,
-    client_type: z.literal("company"),
-    name: z.string().min(1, "new.error.companyName"),
-    siren: z
-      .string()
-      .min(1, "new.error.sirenRequired")
-      .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
-        message: "new.error.siren",
-      }),
-    tva_number: z.string().optional().or(z.literal("")),
-  })
-  .strict();
+export const clientCompanyFormSchema = z.object({
+  ...baseFormFields,
+  client_type: z.literal("company"),
+  name: z.string().min(1, "new.error.companyName"),
+  siren: z
+    .string()
+    .min(1, "new.error.sirenRequired")
+    .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
+      message: "new.error.siren",
+    }),
+  tva_number: z.string().optional().or(z.literal("")),
+});
 
 // Client form schema using discriminated union for person vs company
 export const clientFormSchema = z.discriminatedUnion("client_type", [
