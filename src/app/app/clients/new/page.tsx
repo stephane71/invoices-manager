@@ -5,7 +5,11 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
-import { ClientForm, clientFormSchema } from "@/components/clients/clients";
+import {
+  CLIENT_FORM_PERSON_DEFAULT,
+  ClientForm,
+  clientFormSchema,
+} from "@/components/clients/clients";
 import { Button } from "@/components/ui/button";
 
 export default function NewClientPage() {
@@ -16,14 +20,7 @@ export default function NewClientPage() {
 
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
-    defaultValues: {
-      client_type: "person", // Default to person
-      name: "",
-      firstname: "",
-      email: "",
-      address: "",
-      phone: "",
-    },
+    defaultValues: CLIENT_FORM_PERSON_DEFAULT,
   });
 
   const {
@@ -37,13 +34,13 @@ export default function NewClientPage() {
     setError("");
 
     try {
-      // Build client data based on client type
+      // Build client data based on client type using discriminated union
       const clientData =
         data.client_type === "person"
           ? {
               client_type: "person" as const,
-              name: data.name.trim(),
               firstname: data.firstname.trim(),
+              lastname: data.lastname.trim(),
               email: data.email.trim() || undefined,
               phone: data.phone.trim() || undefined,
               address: data.address.trim() || undefined,

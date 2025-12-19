@@ -29,7 +29,7 @@ interface ClientFormProps {
   control: Control<ClientForm>;
   disabled?: boolean;
   children?: ReactNode;
-  showTypeSelector?: boolean; // Show client type selector (true for creation, false for edit)
+  showTypeSelector?: boolean;
 }
 
 export function ClientFieldGroup({
@@ -85,54 +85,81 @@ export function ClientFieldGroup({
         />
       )}
 
-      {/* Name field - label changes based on client type */}
-      <Controller
-        name="name"
-        control={control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>
-              {clientType === "company"
-                ? t("new.form.companyName")
-                : t("new.form.name")}
-            </FieldLabel>
-            <Input
-              {...field}
-              id={field.name}
-              placeholder={
-                clientType === "company"
-                  ? t("new.form.companyNamePlaceholder")
-                  : t("new.form.namePlaceholder")
-              }
-              icon="User"
-              aria-invalid={fieldState.invalid}
-              disabled={disabled}
-              required
-            />
-            {fieldState.invalid && (
-              <FieldError>
-                {fieldState.error?.message ? t(fieldState.error.message) : ""}
-              </FieldError>
-            )}
-          </Field>
-        )}
-      />
-
-      {/* Firstname field - only for persons */}
+      {/* Person-specific fields: firstname + lastname */}
       {clientType === "person" && (
+        <>
+          <Controller
+            name="firstname"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.firstname")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("new.form.firstnamePlaceholder")}
+                  icon="User"
+                  aria-invalid={fieldState.invalid}
+                  disabled={disabled}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? t(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="lastname"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {t("new.form.lastname")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("new.form.lastnamePlaceholder")}
+                  icon="User"
+                  aria-invalid={fieldState.invalid}
+                  disabled={disabled}
+                  required
+                />
+                {fieldState.invalid && (
+                  <FieldError>
+                    {fieldState.error?.message
+                      ? t(fieldState.error.message)
+                      : ""}
+                  </FieldError>
+                )}
+              </Field>
+            )}
+          />
+        </>
+      )}
+
+      {/* Company-specific field: name */}
+      {clientType === "company" && (
         <Controller
-          name="firstname"
+          name="name"
           control={control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor={field.name}>
-                {t("new.form.firstname")}
+                {t("new.form.companyName")}
               </FieldLabel>
               <Input
                 {...field}
                 id={field.name}
-                placeholder={t("new.form.firstnamePlaceholder")}
-                icon="User"
+                placeholder={t("new.form.companyNamePlaceholder")}
+                icon="Building"
                 aria-invalid={fieldState.invalid}
                 disabled={disabled}
                 required

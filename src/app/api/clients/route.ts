@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientSchema } from "@/lib/validation";
 import { listClients, upsertClient } from "@/lib/db";
 import { handleApiError } from "@/lib/errors";
+import { clientCreateSchema } from "@/lib/validation";
 
 export async function GET() {
   try {
@@ -16,10 +16,12 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
-    const parsed = clientSchema.partial({ id: true }).parse(json);
+    // The discriminated union will automatically choose the right schema based on client_type
+    const parsed = clientCreateSchema.parse(json);
     const created = await upsertClient(parsed);
     return NextResponse.json(created, { status: 201 });
   } catch (e: unknown) {
+    console.log(e);
     const errorResponse = handleApiError(e);
     return NextResponse.json(errorResponse, { status: 400 });
   }

@@ -39,31 +39,59 @@ const baseClientFields = {
   email: optionalEmail,
 };
 
+// Client Person Schema - for individual/person clients
+export const clientPersonSchema = z.object({
+  ...baseClientFields,
+  client_type: z.literal("person"),
+  firstname: z.string().min(1, "Firstname is required"),
+  lastname: z.string().min(1, "Lastname is required"),
+  // Company-only fields must be null/undefined/empty for persons
+  name: z.null().or(z.undefined()).or(z.literal("")).optional(),
+  siren: z.null().or(z.undefined()).or(z.literal("")).optional(),
+  tva_number: z.null().or(z.undefined()).or(z.literal("")).optional(),
+});
+
+// Client Company Schema - for business/company clients
+export const clientCompanySchema = z.object({
+  ...baseClientFields,
+  client_type: z.literal("company"),
+  name: z.string().min(1, "Company name is required"),
+  siren: z
+    .string()
+    .min(1, "SIREN is required for companies")
+    .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
+      message: "SIREN must be 9 digits",
+    }),
+  tva_number: z.string().optional().nullable().or(z.literal("")),
+  // Person-only fields must be null/undefined/empty for companies
+  firstname: z.null().or(z.undefined()).or(z.literal("")).optional(),
+  lastname: z.null().or(z.undefined()).or(z.literal("")).optional(),
+});
+
 // Client schema using discriminated union for person vs company
 export const clientSchema = z.discriminatedUnion("client_type", [
-  // Person schema
-  z.object({
-    ...baseClientFields,
-    client_type: z.literal("person"),
-    name: z.string().min(1, "Name is required"),
-    firstname: z.string().min(1, "Firstname is required"),
-    siren: z.null().or(z.undefined()).or(z.literal("")),
-    tva_number: z.null().or(z.undefined()).or(z.literal("")),
-  }),
-  // Company schema
-  z.object({
-    ...baseClientFields,
-    client_type: z.literal("company"),
-    name: z.string().min(1, "Company name is required"),
-    firstname: z.null().or(z.undefined()).or(z.literal("")),
-    siren: z
-      .string()
-      .min(1, "SIREN is required for companies")
-      .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
-        message: "SIREN must be 9 digits",
-      }),
-    tva_number: z.string().optional().nullable().or(z.literal("")),
-  }),
+  clientPersonSchema,
+  clientCompanySchema,
+]);
+
+// Partial schemas for updates (PATCH operations)
+export const clientPersonPartialSchema = clientPersonSchema.partial();
+export const clientCompanyPartialSchema = clientCompanySchema.partial();
+export const clientPartialSchema = z.discriminatedUnion("client_type", [
+  clientPersonPartialSchema.extend({ client_type: z.literal("person") }),
+  clientCompanyPartialSchema.extend({ client_type: z.literal("company") }),
+]);
+
+// Creation schemas (id is optional)
+export const clientPersonCreateSchema = clientPersonSchema.partial({
+  id: true,
+});
+export const clientCompanyCreateSchema = clientCompanySchema.partial({
+  id: true,
+});
+export const clientCreateSchema = z.discriminatedUnion("client_type", [
+  clientPersonCreateSchema,
+  clientCompanyCreateSchema,
 ]);
 
 export const invoiceItemSchema = z.object({
