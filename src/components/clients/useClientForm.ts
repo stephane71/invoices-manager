@@ -27,13 +27,12 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
   const { reset, setError: setFieldError } = form;
 
   useEffect(() => {
-    let active = true;
+    if (!id) {
+      return;
+    }
 
     fetch(`/api/clients/${id}`).then(async (r) => {
       const d = await r.json();
-      if (!active) {
-        return;
-      }
 
       if (d.client_type === "person") {
         reset({
@@ -56,10 +55,6 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
         });
       }
     });
-
-    return () => {
-      active = false;
-    };
   }, [id, reset]);
 
   const onSubmit = async (data: ClientForm) => {

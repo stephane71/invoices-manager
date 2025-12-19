@@ -40,33 +40,30 @@ const baseClientFields = {
 };
 
 // Client Person Schema - for individual/person clients
-export const clientPersonSchema = z.object({
-  ...baseClientFields,
-  client_type: z.literal("person"),
-  firstname: z.string().min(1, "Firstname is required"),
-  lastname: z.string().min(1, "Lastname is required"),
-  // Company-only fields must be null/undefined/empty for persons
-  name: z.null().or(z.undefined()).or(z.literal("")).optional(),
-  siren: z.null().or(z.undefined()).or(z.literal("")).optional(),
-  tva_number: z.null().or(z.undefined()).or(z.literal("")).optional(),
-});
+export const clientPersonSchema = z
+  .object({
+    ...baseClientFields,
+    client_type: z.literal("person"),
+    firstname: z.string().min(1, "Firstname is required"),
+    lastname: z.string().min(1, "Lastname is required"),
+  })
+  .strict();
 
 // Client Company Schema - for business/company clients
-export const clientCompanySchema = z.object({
-  ...baseClientFields,
-  client_type: z.literal("company"),
-  name: z.string().min(1, "Company name is required"),
-  siren: z
-    .string()
-    .min(1, "SIREN is required for companies")
-    .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
-      message: "SIREN must be 9 digits",
-    }),
-  tva_number: z.string().optional().nullable().or(z.literal("")),
-  // Person-only fields must be null/undefined/empty for companies
-  firstname: z.null().or(z.undefined()).or(z.literal("")).optional(),
-  lastname: z.null().or(z.undefined()).or(z.literal("")).optional(),
-});
+export const clientCompanySchema = z
+  .object({
+    ...baseClientFields,
+    client_type: z.literal("company"),
+    name: z.string().min(1, "Company name is required"),
+    siren: z
+      .string()
+      .min(1, "SIREN is required for companies")
+      .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
+        message: "SIREN must be 9 digits",
+      }),
+    tva_number: z.string().optional().nullable().or(z.literal("")),
+  })
+  .strict();
 
 // Client schema using discriminated union for person vs company
 export const clientSchema = z.discriminatedUnion("client_type", [

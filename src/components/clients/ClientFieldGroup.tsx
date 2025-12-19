@@ -40,7 +40,6 @@ export function ClientFieldGroup({
 }: ClientFormProps) {
   const t = useTranslations("Clients");
 
-  // Watch the client_type field to conditionally render fields
   const clientType = useWatch({
     control,
     name: "client_type",
@@ -48,7 +47,6 @@ export function ClientFieldGroup({
 
   return (
     <FieldGroup>
-      {/* Client Type Selector - only shown on creation page */}
       {showTypeSelector && (
         <Controller
           name="client_type"
@@ -59,8 +57,8 @@ export function ClientFieldGroup({
                 {t("new.form.clientType")}
               </FieldLabel>
               <Select
+                {...field}
                 onValueChange={field.onChange}
-                defaultValue={field.value}
                 disabled={disabled}
               >
                 <SelectTrigger>

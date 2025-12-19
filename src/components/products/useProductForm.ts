@@ -33,13 +33,12 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
   const { reset, setError: setFieldError } = form;
 
   useEffect(() => {
-    let active = true;
+    if (!id) {
+      return;
+    }
 
     fetch(`/api/products/${id}`).then(async (r) => {
       const d = await r.json();
-      if (!active) {
-        return;
-      }
 
       reset({
         name: d.name || "",
@@ -48,10 +47,6 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
       });
       setImageUrl(d.image_url || null);
     });
-
-    return () => {
-      active = false;
-    };
   }, [id, reset]);
 
   const onSubmit = async (data: ProductForm) => {

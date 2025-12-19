@@ -1,4 +1,5 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -28,7 +29,21 @@ export default function NewClientPage() {
     handleSubmit,
     setError: setFieldError,
     formState: { isSubmitting },
+    // reset,
   } = form;
+
+  // const clientType = useWatch({
+  //   control,
+  //   name: "client_type",
+  // });
+
+  // useEffect(() => {
+  //   if (clientType === "company") {
+  //     reset(CLIENT_FORM_COMPANY_DEFAULT);
+  //   } else if (clientType === "person") {
+  //     reset(CLIENT_FORM_PERSON_DEFAULT);
+  //   }
+  // }, [clientType, reset]);
 
   async function onSubmit(data: ClientForm) {
     setError("");
