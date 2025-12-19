@@ -59,3 +59,13 @@ export const CLIENT_FORM_PERSON_DEFAULT: ClientForm = {
   phone: "",
   address: "",
 };
+
+export const CLIENT_FORM_COMPANY_DEFAULT: ClientForm = {
+  client_type: "company",
+  name: "",
+  siren: "",
+  tva_number: "",
+  email: "",
+  phone: "",
+  address: "",
+};

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import {
+  CLIENT_FORM_COMPANY_DEFAULT,
   CLIENT_FORM_PERSON_DEFAULT,
   ClientForm,
   clientFormSchema,
@@ -21,7 +22,10 @@ export default function NewClientPage() {
 
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
-    defaultValues: CLIENT_FORM_PERSON_DEFAULT,
+    defaultValues: {
+      ...CLIENT_FORM_COMPANY_DEFAULT,
+      ...CLIENT_FORM_PERSON_DEFAULT,
+    } as ClientForm,
   });
 
   const {
@@ -29,21 +33,7 @@ export default function NewClientPage() {
     handleSubmit,
     setError: setFieldError,
     formState: { isSubmitting },
-    // reset,
   } = form;
-
-  // const clientType = useWatch({
-  //   control,
-  //   name: "client_type",
-  // });
-
-  // useEffect(() => {
-  //   if (clientType === "company") {
-  //     reset(CLIENT_FORM_COMPANY_DEFAULT);
-  //   } else if (clientType === "person") {
-  //     reset(CLIENT_FORM_PERSON_DEFAULT);
-  //   }
-  // }, [clientType, reset]);
 
   async function onSubmit(data: ClientForm) {
     setError("");
