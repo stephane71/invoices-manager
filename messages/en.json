@@ -130,8 +130,8 @@
       "form": {
         "clientType": "Client Type",
         "selectClientType": "Select client type",
-        "clientTypePerson": "Person (Individual)",
-        "clientTypeCompany": "Company (Legal Entity)",
+        "clientTypePerson": "Person",
+        "clientTypeCompany": "Company",
         "firstname": "First Name",
         "lastname": "Last Name",
         "companyName": "Company Name",

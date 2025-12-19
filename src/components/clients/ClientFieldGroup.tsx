@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import { Control, Controller, useWatch } from "react-hook-form";
+import { ClientTypeSelector } from "@/components/clients/ClientTypeSelector";
 import { ClientForm } from "@/components/clients/clients";
 import {
   Field,
@@ -9,13 +10,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formatSiren } from "@/lib/utils";
 
 export interface FieldErrors {
@@ -56,23 +50,10 @@ export function ClientFieldGroup({
               <FieldLabel htmlFor={field.name}>
                 {t("new.form.clientType")}
               </FieldLabel>
-              <Select
-                {...field}
-                onValueChange={field.onChange}
-                disabled={disabled}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t("new.form.selectClientType")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="person">
-                    {t("new.form.clientTypePerson")}
-                  </SelectItem>
-                  <SelectItem value="company">
-                    {t("new.form.clientTypeCompany")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <ClientTypeSelector
+                value={field.value}
+                onChange={field.onChange}
+              />
               {fieldState.invalid && (
                 <FieldError>
                   {fieldState.error?.message ? t(fieldState.error.message) : ""}
