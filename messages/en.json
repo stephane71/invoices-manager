@@ -128,12 +128,21 @@
     "new": {
       "title": "New client",
       "form": {
-        "name": "Full name",
+        "clientType": "Client Type",
+        "selectClientType": "Select client type",
+        "clientTypePerson": "Person",
+        "clientTypeCompany": "Company",
+        "firstname": "First Name",
+        "lastname": "Last Name",
+        "companyName": "Company Name",
+        "firstnamePlaceholder": "First name",
+        "lastnamePlaceholder": "Last name",
+        "companyNamePlaceholder": "Company name or social reason",
         "email": "Email",
         "phone": "Phone number",
         "address": "Address",
         "siren": "SIREN",
-        "namePlaceholder": "Client name",
+        "tvaNumber": "VAT Number",
         "emailPlaceholder": "email@example.com",
         "phonePlaceholder": "+1 555 123 4567",
         "addressPlaceholder": "Street, City, ZIP code"
@@ -141,7 +150,10 @@
       "createButton": "Create client",
       "error": {
         "createFail": "Failed to create client",
-        "name": "Name is required",
+        "firstname": "First name is required",
+        "lastname": "Last name is required",
+        "companyName": "Company name is required",
+        "sirenRequired": "SIREN is required for companies",
         "email": "Valid email is required",
         "phone": "Valid phone number is required",
         "siren": "SIREN must be 9 digits"

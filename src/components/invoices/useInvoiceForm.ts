@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { InvoiceListItem } from "@/components/invoices/invoices";
 import type { ProfileValidationResult } from "@/lib/validation";
-import { Client, Invoice } from "@/types/models";
 
 export type UseInvoiceFormProps = {
   id: string;
 };
 
 export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
-  const [invoice, setInvoice] = useState<
-    (Invoice & { clients: Pick<Client, "name"> }) | null
-  >(null);
+  const [invoice, setInvoice] = useState<InvoiceListItem | null>(null);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profileValidation, setProfileValidation] =
@@ -56,9 +54,7 @@ export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
           return;
         }
         if (!res.ok) {
-          throw new Error(
-            data?.error || "Failed to load profile validation"
-          );
+          throw new Error(data?.error || "Failed to load profile validation");
         }
         setProfileValidation(data);
       } catch (e: unknown) {

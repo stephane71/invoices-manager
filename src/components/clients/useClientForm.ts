@@ -3,7 +3,11 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClientForm, clientFormSchema } from "@/components/clients/clients";
+import {
+  CLIENT_FORM_PERSON_DEFAULT,
+  ClientForm,
+  clientFormSchema,
+} from "@/components/clients/clients";
 
 export type UseClientFormProps = {
   id: string;
@@ -17,50 +21,66 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
 
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      address: "",
-      phone: "",
-      siren: "",
-    },
+    defaultValues: CLIENT_FORM_PERSON_DEFAULT,
   });
 
   const { reset, setError: setFieldError } = form;
 
   useEffect(() => {
-    let active = true;
+    if (!id) {
+      return;
+    }
 
     fetch(`/api/clients/${id}`).then(async (r) => {
       const d = await r.json();
-      if (!active) {
-        return;
-      }
-      reset({
-        name: d.name || "",
-        email: d.email || "",
-        address: d.address || "",
-        phone: d.phone || "",
-        siren: d.siren || "",
-      });
-    });
 
-    return () => {
-      active = false;
-    };
+      if (d.client_type === "person") {
+        reset({
+          client_type: "person",
+          firstname: d.firstname || "",
+          lastname: d.lastname || "",
+          email: d.email || "",
+          address: d.address || "",
+          phone: d.phone || "",
+        });
+      } else {
+        reset({
+          client_type: "company",
+          name: d.name || "",
+          siren: d.siren || "",
+          tva_number: d.tva_number || "",
+          email: d.email || "",
+          address: d.address || "",
+          phone: d.phone || "",
+        });
+      }
+    });
   }, [id, reset]);
 
   const onSubmit = async (data: ClientForm) => {
     setError("");
 
     try {
-      const clientData = {
-        name: data.name.trim(),
-        email: data.email.trim() || undefined,
-        phone: data.phone.trim() || undefined,
-        address: data.address.trim() || undefined,
-        siren: data.siren?.trim() || undefined,
-      };
+      // Build client data based on client type
+      const clientData =
+        data.client_type === "person"
+          ? {
+              client_type: "person" as const,
+              firstname: data.firstname.trim(),
+              lastname: data.lastname.trim(),
+              email: data.email.trim() || undefined,
+              phone: data.phone.trim() || undefined,
+              address: data.address.trim() || undefined,
+            }
+          : {
+              client_type: "company" as const,
+              name: data.name.trim(),
+              siren: data.siren.trim(),
+              tva_number: data.tva_number?.trim() || undefined,
+              email: data.email.trim() || undefined,
+              phone: data.phone.trim() || undefined,
+              address: data.address.trim() || undefined,
+            };
 
       const res = await fetch(`/api/clients/${id}`, {
         method: "PATCH",

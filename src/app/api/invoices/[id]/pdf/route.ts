@@ -9,7 +9,11 @@ import { APP_LOCALE } from "@/lib/constants";
 import { getClient, getInvoice, getProfile, updateInvoice } from "@/lib/db";
 import { buildPaymentInfo } from "@/lib/invoice-utils";
 import { uploadInvoicePdf } from "@/lib/storage";
-import { centsToCurrencyString, formatSiret } from "@/lib/utils";
+import {
+  centsToCurrencyString,
+  formatSiret,
+  getClientDisplayName,
+} from "@/lib/utils";
 import { validateProfileForPdfGeneration } from "@/lib/validation";
 
 export async function POST(
@@ -111,7 +115,11 @@ export async function POST(
 
     // CLIENT
 
-    const clientSiren = client.siren ? `SIREN: ${client.siren}` : "";
+    // Only companies have SIREN - check client type before accessing
+    const clientSiren =
+      client.client_type === "company" && client.siren
+        ? `SIREN: ${client.siren}`
+        : "";
     // Use structured address fields (new format)
     const addressStreet = profile?.address_street || "";
     const addressCity = profile?.address_city
@@ -133,7 +141,7 @@ export async function POST(
     const inputs = [
       {
         // New template fields
-        client_name: client.name,
+        client_name: getClientDisplayName(client),
         client_information: clientInfo,
         facture_number: invoice.number || invoice.id,
         shopName,

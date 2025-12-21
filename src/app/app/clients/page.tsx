@@ -7,11 +7,13 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientListItem } from "@/components/clients/ClientListItem";
+import { ClientListItemHeader } from "@/components/clients/ClientListItemHeader";
 import { ClientListItemSkeleton } from "@/components/clients/ClientListItemSkeleton";
 import { ClientsEmptyState } from "@/components/clients/ClientsEmptyState";
 import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
+import { getClientDisplayName } from "@/lib/utils";
 import type { Client } from "@/types/models";
 
 export default function ClientsPage() {
@@ -57,7 +59,11 @@ export default function ClientsPage() {
           <ClientsEmptyState />
         ) : (
           clients.map((cItem) => (
-            <ClientListItem key={cItem.id} id={cItem.id} name={cItem.name} />
+            <ClientListItem
+              key={cItem.id}
+              id={cItem.id}
+              name={getClientDisplayName(cItem)}
+            />
           ))
         )}
       </div>
@@ -81,10 +87,16 @@ export default function ClientsPage() {
             <form
               id={`client-form-${selectedId}`}
               onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
             >
+              <ClientListItemHeader
+                name={getClientDisplayName(form.getValues())}
+                type={form.getValues("client_type")}
+              />
               <ClientFieldGroup
                 control={form.control}
                 disabled={form.formState.isSubmitting}
+                showTypeSelector={false}
               />
               {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
             </form>

@@ -9,18 +9,16 @@ import {
   ClientFieldGroup,
   type FieldErrors,
 } from "@/components/clients/ClientFieldGroup";
-import { ClientForm, clientFormSchema } from "@/components/clients/clients";
+import {
+  CLIENT_FORM_PERSON_DEFAULT,
+  ClientForm,
+  clientFormSchema,
+} from "@/components/clients/clients";
 import { SelectionSheet } from "@/components/invoices/SelectionSheet";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { getClientDisplayName } from "@/lib/utils";
 import type { Client } from "@/types/models";
-
-const FORM_DATA_DEFAULT: ClientForm = {
-  name: "",
-  email: "",
-  phone: "",
-  address: "",
-};
 
 export type ClientBlockProps = {
   clients: Client[];
@@ -47,7 +45,7 @@ export default function ClientBlock({
 
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
-    defaultValues: FORM_DATA_DEFAULT,
+    defaultValues: CLIENT_FORM_PERSON_DEFAULT,
   });
 
   const { control, reset, handleSubmit, setError: setFieldError } = form;
@@ -68,7 +66,7 @@ export default function ClientBlock({
 
   const resetNewForm = useCallback(() => {
     setShowNewForm(false);
-    reset(FORM_DATA_DEFAULT);
+    reset(CLIENT_FORM_PERSON_DEFAULT);
   }, [reset]);
 
   // When user selects an existing client, collapse and reset the direct-new form
@@ -103,17 +101,7 @@ export default function ClientBlock({
         return;
       }
 
-      const name = data.name.trim();
-      if (!name) {
-        return;
-      }
-
-      onRequestCreateNewClientAction({
-        name,
-        email: data.email.trim(),
-        phone: data.phone.trim(),
-        address: data.address.trim(),
-      });
+      onRequestCreateNewClientAction(data);
     },
     [showNewForm, onRequestCreateNewClientAction],
   );
@@ -121,7 +109,7 @@ export default function ClientBlock({
   // Get selected client display text
   const selectedClient = clients.find((c) => c.id === clientId);
   const displayText = selectedClient
-    ? selectedClient.name
+    ? getClientDisplayName(selectedClient)
     : t("new.selectClientPlaceholder");
 
   return (
@@ -158,7 +146,7 @@ export default function ClientBlock({
         items={clients}
         getItemKey={(client) => client.id}
         filterItem={(client, query) =>
-          client.name.toLowerCase().includes(query)
+          getClientDisplayName(client).toLowerCase().includes(query)
         }
         onSelect={handleSelect}
         renderItem={(client, onSelect) => (
@@ -167,7 +155,7 @@ export default function ClientBlock({
             onClick={onSelect}
             className="hover:bg-accent flex w-full flex-col items-start gap-1 px-4 py-3 text-left"
           >
-            <div className="font-medium">{client.name}</div>
+            <div className="font-medium">{getClientDisplayName(client)}</div>
             {client.email && (
               <div className="text-muted-foreground text-sm">
                 {client.email}

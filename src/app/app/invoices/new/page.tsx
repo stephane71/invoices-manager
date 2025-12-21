@@ -86,8 +86,8 @@ export default function NewInvoicePage() {
       fetch("/api/profile"),
     ])
       .then(async ([c, p, prof]) => {
-        const clientsData = await c.json();
-        const productsData = await p.json();
+        const clientsData = (await c.json()) as Client[];
+        const productsData = (await p.json()) as Product[];
         const profileData = await prof.json();
         if (!active) {
           return;
@@ -136,16 +136,7 @@ export default function NewInvoicePage() {
           return prev;
         }
 
-        return [
-          ...prev,
-          {
-            id: newId,
-            name: clientData.name,
-            email: clientData.email ?? null,
-            phone: clientData.phone ?? null,
-            address: clientData.address ?? null,
-          } as Client,
-        ];
+        return [...prev, { id: newId, ...clientData }];
       });
     } catch (e: unknown) {
       if (e instanceof ClientCreationError) {

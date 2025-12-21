@@ -28,22 +28,68 @@ export const productSchema = z.object({
   image_url: z.url().or(z.literal("")).optional().nullable(),
 });
 
-export const clientSchema = z.object({
+// Base client fields shared between person and company
+const baseClientFields = {
   id: z.uuid(),
-  name: z.string().min(1),
+  account_id: z.uuid().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
   address: z.string().optional().nullable(),
   phone: optionalPhone,
   email: optionalEmail,
-  // SIREN validation (9 digits, spaces optional)
-  siren: z
-    .string()
-    .optional()
-    .nullable()
-    .refine(
-      (val) => !val || /^\d{9}$/.test(val.replace(/\s/g, "")),
-      { message: "SIREN must be 9 digits" }
-    ),
+};
+
+// Client Person Schema - for individual/person clients
+export const clientPersonSchema = z
+  .object({
+    ...baseClientFields,
+    client_type: z.literal("person"),
+    firstname: z.string().min(1, "Firstname is required"),
+    lastname: z.string().min(1, "Lastname is required"),
+  })
+  .strict();
+
+// Client Company Schema - for business/company clients
+export const clientCompanySchema = z
+  .object({
+    ...baseClientFields,
+    client_type: z.literal("company"),
+    name: z.string().min(1, "Company name is required"),
+    siren: z
+      .string()
+      .min(1, "SIREN is required for companies")
+      .refine((val) => /^\d{9}$/.test(val.replace(/\s/g, "")), {
+        message: "SIREN must be 9 digits",
+      }),
+    tva_number: z.string().optional().nullable().or(z.literal("")),
+  })
+  .strict();
+
+// Client schema using discriminated union for person vs company
+export const clientSchema = z.discriminatedUnion("client_type", [
+  clientPersonSchema,
+  clientCompanySchema,
+]);
+
+// Partial schemas for updates (PATCH operations)
+export const clientPersonPartialSchema = clientPersonSchema.partial();
+export const clientCompanyPartialSchema = clientCompanySchema.partial();
+export const clientPartialSchema = z.discriminatedUnion("client_type", [
+  clientPersonPartialSchema.extend({ client_type: z.literal("person") }),
+  clientCompanyPartialSchema.extend({ client_type: z.literal("company") }),
+]);
+
+// Creation schemas (id is optional)
+export const clientPersonCreateSchema = clientPersonSchema.partial({
+  id: true,
 });
+export const clientCompanyCreateSchema = clientCompanySchema.partial({
+  id: true,
+});
+export const clientCreateSchema = z.discriminatedUnion("client_type", [
+  clientPersonCreateSchema,
+  clientCompanyCreateSchema,
+]);
 
 export const invoiceItemSchema = z.object({
   id: z.uuid(),
@@ -94,10 +140,9 @@ export const profileSchema = z.object({
     .string()
     .optional()
     .nullable()
-    .refine(
-      (val) => !val || /^\d{14}$/.test(val.replace(/\s/g, "")),
-      { message: "SIRET must be 14 digits" }
-    ),
+    .refine((val) => !val || /^\d{14}$/.test(val.replace(/\s/g, "")), {
+      message: "SIRET must be 14 digits",
+    }),
 });
 
 // Profile completeness validation for PDF generation
@@ -125,7 +170,7 @@ export type ProfileValidationResult = {
  * @returns ProfileValidationResult with completion status and missing/warning fields
  */
 export const validateProfileForPdfGeneration = (
-  profile: z.infer<typeof profileSchema>
+  profile: z.infer<typeof profileSchema>,
 ): ProfileValidationResult => {
   const missingFields: string[] = [];
   const warnings: string[] = [];

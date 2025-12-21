@@ -1,11 +1,17 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
-import { ClientForm, clientFormSchema } from "@/components/clients/clients";
+import {
+  CLIENT_FORM_COMPANY_DEFAULT,
+  CLIENT_FORM_PERSON_DEFAULT,
+  ClientForm,
+  clientFormSchema,
+} from "@/components/clients/clients";
 import { Button } from "@/components/ui/button";
 
 export default function NewClientPage() {
@@ -17,11 +23,9 @@ export default function NewClientPage() {
   const form = useForm<ClientForm>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      address: "",
-      phone: "",
-    },
+      ...CLIENT_FORM_COMPANY_DEFAULT,
+      ...CLIENT_FORM_PERSON_DEFAULT,
+    } as ClientForm,
   });
 
   const {
@@ -35,12 +39,26 @@ export default function NewClientPage() {
     setError("");
 
     try {
-      const clientData = {
-        name: data.name.trim(),
-        email: data.email.trim() || undefined,
-        phone: data.phone.trim() || undefined,
-        address: data.address.trim() || undefined,
-      };
+      // Build client data based on client type using discriminated union
+      const clientData =
+        data.client_type === "person"
+          ? {
+              client_type: "person" as const,
+              firstname: data.firstname.trim(),
+              lastname: data.lastname.trim(),
+              email: data.email.trim() || undefined,
+              phone: data.phone.trim() || undefined,
+              address: data.address.trim() || undefined,
+            }
+          : {
+              client_type: "company" as const,
+              name: data.name.trim(),
+              siren: data.siren.trim(),
+              tva_number: data.tva_number?.trim() || undefined,
+              email: data.email.trim() || undefined,
+              phone: data.phone.trim() || undefined,
+              address: data.address.trim() || undefined,
+            };
 
       const res = await fetch(`/api/clients`, {
         method: "POST",

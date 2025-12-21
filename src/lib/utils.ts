@@ -134,3 +134,23 @@ export const formatSiren = (siren: string): string => {
   const cleaned = siren.replace(/\s/g, "");
   return cleaned.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
 };
+
+/**
+ * Get display name for a client based on client type
+ * @param client - Client object (person or company)
+ * @returns Display name (firstname + lastname for person, company name for company)
+ */
+export const getClientDisplayName = (client: {
+  client_type: "person" | "company";
+  firstname?: string | null;
+  lastname?: string | null;
+  name?: string | null;
+}): string => {
+  if (client.client_type === "person") {
+    const firstname = client.firstname || "";
+    const lastname = client.lastname || "";
+    return `${firstname} ${lastname}`.trim() || "Unnamed Person";
+  } else {
+    return client.name || "Unnamed Company";
+  }
+};

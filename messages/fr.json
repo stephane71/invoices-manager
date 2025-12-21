@@ -128,12 +128,21 @@
     "new": {
       "title": "Nouveau client",
       "form": {
-        "name": "Nom complet",
+        "clientType": "Type de client",
+        "selectClientType": "Sélectionnez le type de client",
+        "clientTypePerson": "Personne",
+        "clientTypeCompany": "Société",
+        "firstname": "Prénom",
+        "lastname": "Nom",
+        "companyName": "Raison sociale",
+        "firstnamePlaceholder": "Prénom",
+        "lastnamePlaceholder": "Nom de famille",
+        "companyNamePlaceholder": "Raison sociale de l'entreprise",
         "email": "Email",
         "phone": "Numéro de téléphone",
         "address": "Adresse",
         "siren": "SIREN",
-        "namePlaceholder": "Nom du client",
+        "tvaNumber": "Numéro de TVA",
         "emailPlaceholder": "email@exemple.com",
         "phonePlaceholder": "+33 6 12 34 56 78",
         "addressPlaceholder": "Rue, Ville, Code postal"
@@ -141,7 +150,10 @@
       "createButton": "Créer le client",
       "error": {
         "createFail": "Échec de la création du client",
-        "name": "Le nom du client est un champs requis.",
+        "firstname": "Le prénom est requis",
+        "lastname": "Le nom est requis",
+        "companyName": "La raison sociale est requise",
+        "sirenRequired": "Le SIREN est obligatoire pour les sociétés",
         "email": "Email invalide",
         "phone": "Numéro de téléphone invalide",
         "siren": "Le SIREN doit contenir 9 chiffres"
