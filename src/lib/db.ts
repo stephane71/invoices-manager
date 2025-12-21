@@ -1,3 +1,4 @@
+import { InvoiceListItem } from "@/components/invoices/invoices";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { Client, Invoice, Product, Profile } from "@/types/models";
 
@@ -118,7 +119,7 @@ export async function listInvoices(params?: {
   const accountId = await getCurrentAccountId();
   let query = supabase
     .from("invoices")
-    .select("*, clients(name)")
+    .select("*, clients(name, firstname, lastname, client_type)")
     .eq("account_id", accountId);
   if (params?.status) {
     query = query.eq("status", params.status);
@@ -138,7 +139,7 @@ export async function listInvoices(params?: {
   if (error) {
     throw error;
   }
-  return data;
+  return data as InvoiceListItem[];
 }
 
 export async function getInvoice(id: string) {
@@ -147,7 +148,7 @@ export async function getInvoice(id: string) {
   // 1) Fetch the invoice row
   const { data: invoice, error } = await supabase
     .from("invoices")
-    .select("*, clients(name)")
+    .select("*, clients(name, firstname, lastname, client_type)")
     .eq("id", id)
     .eq("account_id", accountId)
     .single();
@@ -172,17 +173,16 @@ export async function getInvoice(id: string) {
     total: it.line_total,
   }));
   // 3) Return the enriched invoice
-  return { ...invoice, items } as Invoice & { clients: Pick<Client, "name"> };
+  return { ...invoice, items } as InvoiceListItem;
 }
 
 export async function upsertInvoice(payload: Partial<Invoice>) {
   const supabase = await db();
   const accountId = await getCurrentAccountId();
-  // Ensure we never try to upsert the legacy `items` column (moved to invoice_items table)
-  const { items, ...rest } = payload;
+
   const { data, error } = await supabase
     .from("invoices")
-    .upsert({ ...rest, account_id: accountId })
+    .upsert({ ...payload, account_id: accountId })
     .select()
     .single();
   if (error) {

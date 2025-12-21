@@ -9,6 +9,7 @@ import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
 import { InvoiceListItemSkeleton } from "@/components/invoices/InvoiceListItemSkeleton";
 import { InvoiceView } from "@/components/invoices/InvoiceView";
 import { InvoicesEmptyState } from "@/components/invoices/InvoicesEmptyState";
+import { InvoiceListItem as InvoiceListItemType } from "@/components/invoices/invoices";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { ProfileCompletenessAlert } from "@/components/profil/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Invoice } from "@/types/models";
+import { getClientDisplayName } from "@/lib/utils";
 
 export default function InvoicesPage() {
   const tInvoices = useTranslations("Invoices");
@@ -28,9 +29,7 @@ export default function InvoicesPage() {
 
   const selectedId = searchParams.get("id");
 
-  const [invoices, setInvoices] = useState<
-    (Invoice & { clients: { name: string } })[]
-  >([]);
+  const [invoices, setInvoices] = useState<InvoiceListItemType[]>([]);
   const [loading, setLoading] = useState(true);
 
   const {
@@ -44,7 +43,7 @@ export default function InvoicesPage() {
   useEffect(() => {
     const loadInvoices = async () => {
       const res = await fetch("/api/invoices");
-      const data = await res.json();
+      const data = (await res.json()) as InvoiceListItemType[];
       setInvoices(data);
       setLoading(false);
     };
@@ -56,7 +55,7 @@ export default function InvoicesPage() {
     // Reload invoices after closing sheet to reflect any changes
     const loadInvoices = async () => {
       const res = await fetch("/api/invoices");
-      const data = await res.json();
+      const data = (await res.json()) as InvoiceListItemType[];
       setInvoices(data);
     };
     void loadInvoices();
@@ -77,7 +76,7 @@ export default function InvoicesPage() {
               <InvoiceListItem
                 key={inv.id}
                 id={inv.id}
-                name={inv.clients.name}
+                name={getClientDisplayName(inv.clients)}
                 price={inv.total_amount}
                 number={inv.number}
               />

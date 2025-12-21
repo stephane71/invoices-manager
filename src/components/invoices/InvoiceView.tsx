@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";
+import { InvoiceListItem } from "@/components/invoices/invoices";
 import {
   Item,
   ItemContent,
@@ -9,11 +10,11 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { APP_LOCALE } from "@/lib/constants";
-import { centsToCurrencyString } from "@/lib/utils";
-import { Client, Invoice, InvoiceItem } from "@/types/models";
+import { centsToCurrencyString, getClientDisplayName } from "@/lib/utils";
+import { InvoiceItem } from "@/types/models";
 
 export type InvoiceViewProps = {
-  invoice: Invoice & { clients: Pick<Client, "name"> };
+  invoice: InvoiceListItem;
   total: number;
 };
 
@@ -39,7 +40,7 @@ export const InvoiceView = ({ invoice, total }: InvoiceViewProps) => {
             <ItemTitle>{tInvoices("detail.clientLabel")}</ItemTitle>
           </ItemContent>
           <ItemContent>
-            <ItemTitle>{invoice.clients?.name}</ItemTitle>
+            <ItemTitle>{getClientDisplayName(invoice.clients)}</ItemTitle>
           </ItemContent>
         </Item>
         <ItemSeparator />

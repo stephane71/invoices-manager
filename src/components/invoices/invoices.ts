@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ClientCompany, ClientPerson, Invoice } from "@/types/models";
 
 export const invoiceItemSchema = z.object({
   product_id: z.string().min(1, "Product is required"),
@@ -45,3 +46,9 @@ export const invoiceFormSchema = z.object({
 });
 
 export type InvoiceForm = z.infer<typeof invoiceFormSchema>;
+
+export type InvoiceListItem = Invoice & {
+  clients:
+    | Pick<ClientPerson, "client_type" | "firstname" | "lastname">
+    | Pick<ClientCompany, "client_type" | "name">;
+};

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { invoiceSchema } from "@/lib/validation";
 import { deleteInvoice, getInvoice, upsertInvoice } from "@/lib/db";
+import { invoiceSchema } from "@/lib/validation";
 
 export async function GET(
   _: NextRequest,
