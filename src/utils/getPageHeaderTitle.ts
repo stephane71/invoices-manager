@@ -1,20 +1,22 @@
+import { APP_PREFIX } from "@/lib/constants";
+
 export const getPageHeaderTitle = (
   pathname: string,
   t: (key: string) => string,
 ) => {
-  if (pathname === "/invoices") {
+  if (pathname === `/${APP_PREFIX}/invoices`) {
     return t("Invoices.title");
   }
-  if (pathname === "/clients") {
+  if (pathname === `/${APP_PREFIX}/clients`) {
     return t("Clients.title");
   }
-  if (pathname === "/products") {
+  if (pathname === `/${APP_PREFIX}/products`) {
     return t("Products.title");
   }
-  if (pathname === "/profil") {
+  if (pathname === `/${APP_PREFIX}/profil`) {
     return t("Profile.title");
   }
-  if (pathname === "/contact") {
+  if (pathname === `/${APP_PREFIX}/contact`) {
     return t("Contact.title");
   }
 

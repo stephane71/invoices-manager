@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { APP_PREFIX } from "@/lib/constants";
 import type { ProfileValidationResult } from "@/lib/validation";
 
 export type ProfileCompletenessAlertProps = {
@@ -63,7 +64,9 @@ export const ProfileCompletenessAlert = ({
           )}
         </div>
         <Button asChild variant="outline" size="sm" className="mt-2">
-          <Link href="/app/profil">{t("completeness.completeProfile")}</Link>
+          <Link href={`/${APP_PREFIX}/profil`}>
+            {t("completeness.completeProfile")}
+          </Link>
         </Button>
       </CardContent>
     </Card>

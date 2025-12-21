@@ -11,7 +11,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { APP_LOCALE } from "@/lib/constants";
+import { APP_LOCALE, APP_PREFIX } from "@/lib/constants";
 import { centsToCurrencyString } from "@/lib/utils";
 
 export type InvoiceListItemProps = {
@@ -39,7 +39,7 @@ export const InvoiceListItem = ({
   return (
     <Item variant="outline" size="sm" asChild>
       <Link
-        href={`/app/invoices?id=${id}`}
+        href={`/${APP_PREFIX}/invoices?id=${id}`}
         onClick={handleClick}
         className={isPending ? "opacity-60" : ""}
       >

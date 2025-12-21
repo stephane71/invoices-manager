@@ -12,6 +12,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
+import { APP_PREFIX } from "@/lib/constants";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function LandingPage() {
@@ -23,7 +24,7 @@ export default async function LandingPage() {
 
   // If user is authenticated, redirect to the app
   if (user) {
-    redirect("/app/invoices");
+    redirect(`/${APP_PREFIX}/invoices`);
   }
 
   const t = await getTranslations("Landing");

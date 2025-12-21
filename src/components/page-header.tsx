@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { APP_PREFIX } from "@/lib/constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getPageHeaderTitle } from "@/utils/getPageHeaderTitle";
 
@@ -48,7 +49,7 @@ export function PageHeader() {
       <SidebarTrigger className="-ml-1" />
       {headerTitle && <h1 className="text-xl font-semibold">{headerTitle}</h1>}
       <Link
-        href="/app/profil"
+        href={`/${APP_PREFIX}/profil`}
         className="bg-primary text-primary-foreground inline-flex size-9 items-center justify-center rounded-full font-semibold"
         aria-label="Ouvrir mon profil"
         title="Mon profil"

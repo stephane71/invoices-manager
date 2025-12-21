@@ -14,6 +14,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { APP_PREFIX } from "@/lib/constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const signInSchema = z.object({
@@ -67,7 +68,7 @@ export default function SignInPage() {
           throw error;
         }
       }
-      router.replace("/app/invoices");
+      router.replace(`/${APP_PREFIX}/invoices`);
       router.refresh();
     } catch (err: unknown) {
       // @ts-expect-error error type is not correct

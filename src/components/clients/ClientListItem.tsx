@@ -10,6 +10,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { APP_PREFIX } from "@/lib/constants";
 
 export type ClientListItemProps = {
   id: string;
@@ -28,7 +29,7 @@ export const ClientListItem = ({ id, name }: ClientListItemProps) => {
   return (
     <Item variant="outline" size="sm" asChild>
       <Link
-        href={`/app/clients?id=${id}`}
+        href={`/${APP_PREFIX}/clients?id=${id}`}
         onClick={handleClick}
         className={isPending ? "opacity-60" : ""}
       >

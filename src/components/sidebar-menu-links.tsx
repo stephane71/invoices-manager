@@ -1,15 +1,16 @@
 "use client";
 
+import { FileText, Mail, Package, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useTranslations } from "next-intl";
-import { FileText, Mail, Package, Users } from "lucide-react";
+import { APP_PREFIX } from "@/lib/constants";
 
 export function SidebarMenuLinks() {
   const pathname = usePathname();
@@ -38,10 +39,10 @@ export function SidebarMenuLinks() {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={isActive("/app/invoices")}
+            isActive={isActive(`/${APP_PREFIX}/invoices`)}
             onClick={handleItemClick}
           >
-            <Link href="/app/invoices">
+            <Link href={`/${APP_PREFIX}/invoices`}>
               <FileText />
               <span>{t("invoices")}</span>
             </Link>
@@ -50,10 +51,10 @@ export function SidebarMenuLinks() {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={isActive("/app/clients")}
+            isActive={isActive(`/${APP_PREFIX}/clients`)}
             onClick={handleItemClick}
           >
-            <Link href="/app/clients">
+            <Link href={`/${APP_PREFIX}/clients`}>
               <Users />
               <span>{t("clients")}</span>
             </Link>
@@ -62,10 +63,10 @@ export function SidebarMenuLinks() {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={isActive("/app/products")}
+            isActive={isActive(`/${APP_PREFIX}/products`)}
             onClick={handleItemClick}
           >
-            <Link href="/app/products">
+            <Link href={`/${APP_PREFIX}/products`}>
               <Package />
               <span>{t("products")}</span>
             </Link>
@@ -78,10 +79,10 @@ export function SidebarMenuLinks() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/app/contact")}
+              isActive={isActive(`/${APP_PREFIX}/contact`)}
               onClick={handleItemClick}
             >
-              <Link href="/app/contact">
+              <Link href={`/${APP_PREFIX}/contact`}>
                 <Mail />
                 <span>{t("contact")}</span>
               </Link>

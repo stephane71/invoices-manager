@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ProductForm, productFormSchema } from "@/components/products/products";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
+import { APP_PREFIX } from "@/lib/constants";
 
 export type UseProductFormProps = {
   id: string;
@@ -63,7 +64,7 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
       });
 
       if (res.ok) {
-        router.push("/app/products");
+        router.push(`/${APP_PREFIX}/products`);
       } else {
         const responseData = await res.json();
 

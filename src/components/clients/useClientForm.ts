@@ -8,6 +8,7 @@ import {
   ClientForm,
   clientFormSchema,
 } from "@/components/clients/clients";
+import { APP_PREFIX } from "@/lib/constants";
 
 export type UseClientFormProps = {
   id: string;
@@ -89,7 +90,7 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
       });
 
       if (res.ok) {
-        router.push("/app/clients");
+        router.push(`/${APP_PREFIX}/clients`);
       } else {
         const responseData = await res.json();
 

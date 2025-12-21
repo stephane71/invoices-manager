@@ -10,6 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { APP_PREFIX } from "@/lib/constants";
 
 export const InvoicesEmptyState = () => {
   const t = useTranslations("Invoices");
@@ -25,7 +26,7 @@ export const InvoicesEmptyState = () => {
       </EmptyHeader>
       <EmptyContent>
         <Button asChild>
-          <Link href="/app/invoices/new">
+          <Link href={`/${APP_PREFIX}/invoices/new`}>
             <Plus className="mr-2 size-4" />
             {t("empty.action")}
           </Link>
