@@ -20,6 +20,7 @@ import {
 } from "@/components/invoices/invoices";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
 import {
   ClientCreationError,
   useCreateNewClientFromNewInvoice,
@@ -216,7 +217,11 @@ export default function NewInvoicePage() {
   }
 
   if (loading) {
-    return <div className="p-4">{c("loading")}</div>;
+    return (
+      <div className="absolute inset-0 flex h-full w-full items-center justify-center">
+        <Spinner />
+      </div>
+    );
   }
 
   return (

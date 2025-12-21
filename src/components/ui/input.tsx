@@ -1,5 +1,5 @@
-import * as React from "react";
 import { icons, type LucideIcon } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ function Input({ className, type, icon, ...props }: InputProps) {
   if (IconComponent) {
     return (
       <div className="relative">
-        <IconComponent className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <IconComponent className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         {inputElement}
       </div>
     );

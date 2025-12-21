@@ -14,6 +14,7 @@ import {
   ClientForm,
   clientFormSchema,
 } from "@/components/clients/clients";
+import { ClientListItem } from "@/components/invoices/ClientListItem";
 import { SelectionSheet } from "@/components/invoices/SelectionSheet";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -150,18 +151,11 @@ export default function ClientBlock({
         }
         onSelect={handleSelect}
         renderItem={(client, onSelect) => (
-          <button
-            type="button"
+          <ClientListItem
+            name={getClientDisplayName(client)}
+            type={client.client_type}
             onClick={onSelect}
-            className="hover:bg-accent flex w-full flex-col items-start gap-1 px-4 py-3 text-left"
-          >
-            <div className="font-medium">{getClientDisplayName(client)}</div>
-            {client.email && (
-              <div className="text-muted-foreground text-sm">
-                {client.email}
-              </div>
-            )}
-          </button>
+          />
         )}
       />
 
