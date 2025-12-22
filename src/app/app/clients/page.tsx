@@ -4,7 +4,6 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { ClientFieldGroup } from "@/components/clients/ClientFieldGroup";
 import { ClientListItem } from "@/components/clients/ClientListItem";
 import { ClientListItemHeader } from "@/components/clients/ClientListItemHeader";
@@ -13,8 +12,8 @@ import { ClientsEmptyState } from "@/components/clients/ClientsEmptyState";
 import { useClientForm } from "@/components/clients/useClientForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
+import { useClients } from "@/hooks/queries/useClients";
 import { getClientDisplayName } from "@/lib/utils";
-import type { Client } from "@/types/models";
 
 export default function ClientsPage() {
   const t = useTranslations("Clients");
@@ -24,15 +23,10 @@ export default function ClientsPage() {
 
   const selectedId = searchParams.get("id");
 
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const loadClients = async () => {
-    const res = await fetch("/api/clients");
-    const data = await res.json();
-    setClients(data);
-    setLoading(false);
-  };
+  // Use React Query to fetch clients
+  const { data: clients = [], isLoading } = useClients({
+    enabled: !selectedId, // Only fetch when no client is selected
+  });
 
   const { form, onSubmit, error } = useClientForm({ id: selectedId ?? "" });
 
@@ -40,18 +34,10 @@ export default function ClientsPage() {
     router.push("/app/clients");
   };
 
-  useEffect(() => {
-    if (selectedId) {
-      return;
-    }
-
-    void loadClients();
-  }, [selectedId]);
-
   return (
     <>
       <div className="flex flex-col gap-2">
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: 5 }).map((_, index) => (
             <ClientListItemSkeleton key={index} />
           ))

@@ -4,7 +4,6 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { ProductFieldGroup } from "@/components/products/ProductFieldGroup";
 import { ProductListItem } from "@/components/products/ProductListItem";
 import { ProductListItemSkeleton } from "@/components/products/ProductListItemSkeleton";
@@ -12,7 +11,7 @@ import { ProductsEmptyState } from "@/components/products/ProductsEmptyState";
 import { useProductForm } from "@/components/products/useProductForm";
 import { Button } from "@/components/ui/button";
 import { SheetItem } from "@/components/ui/item/SheetItem";
-import type { Product } from "@/types/models";
+import { useProducts } from "@/hooks/queries/useProducts";
 
 export default function ProductsPage() {
   const t = useTranslations("Products");
@@ -22,15 +21,10 @@ export default function ProductsPage() {
 
   const selectedId = searchParams.get("id");
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const loadProducts = async () => {
-    const res = await fetch("/api/products");
-    const data = await res.json();
-    setProducts(data);
-    setLoading(false);
-  };
+  // Use React Query to fetch products
+  const { data: products = [], isLoading } = useProducts({
+    enabled: !selectedId, // Only fetch when no product is selected
+  });
 
   const { form, onSubmit, error, imageUrl, onSelectImage } = useProductForm({
     id: selectedId ?? "",
@@ -40,18 +34,10 @@ export default function ProductsPage() {
     router.push("/app/products");
   };
 
-  useEffect(() => {
-    if (selectedId) {
-      return;
-    }
-
-    void loadProducts();
-  }, [selectedId]);
-
   return (
     <>
       <div className="flex flex-col gap-2">
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: 5 }).map((_, index) => (
             <ProductListItemSkeleton key={index} />
           ))

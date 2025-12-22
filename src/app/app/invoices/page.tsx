@@ -4,12 +4,10 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { InvoiceListItem } from "@/components/invoices/InvoiceListItem";
 import { InvoiceListItemSkeleton } from "@/components/invoices/InvoiceListItemSkeleton";
 import { InvoiceView } from "@/components/invoices/InvoiceView";
 import { InvoicesEmptyState } from "@/components/invoices/InvoicesEmptyState";
-import { InvoiceListItem as InvoiceListItemType } from "@/components/invoices/invoices";
 import { useInvoiceForm } from "@/components/invoices/useInvoiceForm";
 import { ProfileCompletenessAlert } from "@/components/profil/ProfileCompletenessAlert";
 import { Button } from "@/components/ui/button";
@@ -19,6 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useInvoices } from "@/hooks/queries/useInvoices";
 import { getClientDisplayName } from "@/lib/utils";
 
 export default function InvoicesPage() {
@@ -29,8 +28,8 @@ export default function InvoicesPage() {
 
   const selectedId = searchParams.get("id");
 
-  const [invoices, setInvoices] = useState<InvoiceListItemType[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Use React Query to fetch invoices
+  const { data: invoices = [], isLoading } = useInvoices();
 
   const {
     invoice,
@@ -40,31 +39,15 @@ export default function InvoicesPage() {
     profileValidation,
   } = useInvoiceForm({ id: selectedId ?? "" });
 
-  useEffect(() => {
-    const loadInvoices = async () => {
-      const res = await fetch("/api/invoices");
-      const data = (await res.json()) as InvoiceListItemType[];
-      setInvoices(data);
-      setLoading(false);
-    };
-    void loadInvoices();
-  }, []);
-
   const handleCloseSheet = () => {
     router.push("/app/invoices");
-    // Reload invoices after closing sheet to reflect any changes
-    const loadInvoices = async () => {
-      const res = await fetch("/api/invoices");
-      const data = (await res.json()) as InvoiceListItemType[];
-      setInvoices(data);
-    };
-    void loadInvoices();
+    // Note: No need to manually reload - React Query will handle cache invalidation
   };
 
   return (
     <>
       <div className="flex flex-col gap-2">
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: 5 }).map((_, index) => (
             <InvoiceListItemSkeleton key={index} />
           ))
