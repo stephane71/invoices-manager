@@ -21,9 +21,8 @@ export default function ProductsPage() {
 
   const selectedId = searchParams.get("id");
 
-  // Use React Query to fetch products
   const { data: products = [], isLoading } = useProducts({
-    enabled: !selectedId, // Only fetch when no product is selected
+    enabled: !selectedId,
   });
 
   const { form, onSubmit, error, imageUrl, onSelectImage } = useProductForm({

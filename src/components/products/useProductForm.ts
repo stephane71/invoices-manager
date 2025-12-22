@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ProductForm, productFormSchema } from "@/components/products/products";
-import { useProductImageUpload } from "@/hooks/useProductImageUpload";
-import { useProduct } from "@/hooks/queries/useProduct";
 import { useUpdateProduct } from "@/hooks/mutations/useUpdateProduct";
+import { useProduct } from "@/hooks/queries/useProduct";
+import { useProductImageUpload } from "@/hooks/useProductImageUpload";
 import { ApiError } from "@/lib/api-client";
 import { APP_PREFIX } from "@/lib/constants";
 
@@ -36,15 +36,12 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
 
   const { reset, setError: setFieldError } = form;
 
-  // Fetch product data using React Query
   const { data: product } = useProduct(id, {
-    enabled: !!id, // Only fetch if id exists
+    enabled: !!id,
   });
 
-  // Update mutation with automatic cache invalidation
   const updateProduct = useUpdateProduct(id, {
     onSuccess: () => {
-      // Navigate back to products list after successful update
       router.push(`/${APP_PREFIX}/products`);
     },
     onError: (error: Error) => {

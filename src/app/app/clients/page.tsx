@@ -23,9 +23,8 @@ export default function ClientsPage() {
 
   const selectedId = searchParams.get("id");
 
-  // Use React Query to fetch clients
   const { data: clients = [], isLoading } = useClients({
-    enabled: !selectedId, // Only fetch when no client is selected
+    enabled: !selectedId,
   });
 
   const { form, onSubmit, error } = useClientForm({ id: selectedId ?? "" });

@@ -8,6 +8,9 @@ import {
   ClientForm,
   clientFormSchema,
 } from "@/components/clients/clients";
+import { useClient } from "@/hooks/queries/useClient";
+import { useUpdateClient } from "@/hooks/mutations/useUpdateClient";
+import { ApiError } from "@/lib/api-client";
 import { APP_PREFIX } from "@/lib/constants";
 
 export type UseClientFormProps = {
@@ -27,36 +30,58 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
 
   const { reset, setError: setFieldError } = form;
 
+  // Fetch client data using React Query
+  const { data: client } = useClient(id, {
+    enabled: !!id, // Only fetch if id exists
+  });
+
+  // Update mutation with automatic cache invalidation
+  const updateClient = useUpdateClient(id, {
+    onSuccess: () => {
+      // Navigate back to clients list after successful update
+      router.push(`/${APP_PREFIX}/clients`);
+    },
+    onError: (error: Error) => {
+      // Handle API errors - check if it's an ApiError with fields
+      const apiError = error as ApiError;
+      if (apiError.fields) {
+        Object.entries(apiError.fields).forEach(([key, message]) => {
+          setFieldError(key as keyof ClientForm, {
+            type: "server",
+            message: message as string,
+          });
+        });
+      } else {
+        setError(error.message || tClients("new.error.createFail"));
+      }
+    },
+  });
+
+  // Populate form when client data is loaded
   useEffect(() => {
-    if (!id) {
-      return;
-    }
-
-    fetch(`/api/clients/${id}`).then(async (r) => {
-      const d = await r.json();
-
-      if (d.client_type === "person") {
+    if (client) {
+      if (client.client_type === "person") {
         reset({
           client_type: "person",
-          firstname: d.firstname || "",
-          lastname: d.lastname || "",
-          email: d.email || "",
-          address: d.address || "",
-          phone: d.phone || "",
+          firstname: client.firstname || "",
+          lastname: client.lastname || "",
+          email: client.email || "",
+          address: client.address || "",
+          phone: client.phone || "",
         });
       } else {
         reset({
           client_type: "company",
-          name: d.name || "",
-          siren: d.siren || "",
-          tva_number: d.tva_number || "",
-          email: d.email || "",
-          address: d.address || "",
-          phone: d.phone || "",
+          name: client.name || "",
+          siren: client.siren || "",
+          tva_number: client.tva_number || "",
+          email: client.email || "",
+          address: client.address || "",
+          phone: client.phone || "",
         });
       }
-    });
-  }, [id, reset]);
+    }
+  }, [client, reset]);
 
   const onSubmit = async (data: ClientForm) => {
     setError("");
@@ -83,32 +108,13 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
               address: data.address.trim() || undefined,
             };
 
-      const res = await fetch(`/api/clients/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(clientData),
-      });
-
-      if (res.ok) {
-        router.push(`/${APP_PREFIX}/clients`);
-      } else {
-        const responseData = await res.json();
-
-        if (responseData.fields) {
-          Object.entries(responseData.fields).forEach(([key, message]) => {
-            setFieldError(key as keyof ClientForm, {
-              type: "server",
-              message: message as string,
-            });
-          });
-        } else {
-          setError(responseData.error || tClients("new.error.createFail"));
-        }
-      }
+      await updateClient.mutateAsync(clientData);
     } catch (e: unknown) {
-      setError(
-        e instanceof Error ? e.message : tClients("new.error.createFail"),
-      );
+      // Error handling is done in the mutation's onError callback
+      // This catch is for any unexpected errors
+      if (e instanceof Error && !error) {
+        setError(e.message || tClients("new.error.createFail"));
+      }
     }
   };
 
