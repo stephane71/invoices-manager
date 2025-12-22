@@ -41,7 +41,6 @@ export default function InvoicesPage() {
 
   const handleCloseSheet = () => {
     router.push("/app/invoices");
-    // Note: No need to manually reload - React Query will handle cache invalidation
   };
 
   return (
