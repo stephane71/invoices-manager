@@ -1,0 +1,192 @@
+---
+title: "Facture Électronique"
+date: "2025-12-23"
+excerpt: "Tout ce que vous devez savoir sur la facturation électronique en France : obligations légales, échéances, et bonnes pratiques pour les freelances et auto-entrepreneurs."
+---
+
+# Facture Électronique
+
+La facturation électronique devient progressivement obligatoire en France. Ce guide vous aide à comprendre vos obligations et à vous préparer efficacement.
+
+## Qu'est-ce que la facturation électronique ?
+
+La facturation électronique (ou e-invoicing) est un système de transmission dématérialisée des factures entre entreprises, via des plateformes certifiées. Contrairement à une simple facture PDF envoyée par email, la facture électronique suit un format structuré et transite par une **Plateforme de Dématérialisation Partenaire (PDP)** ou le **Portail Public de Facturation (PPF)**.
+
+### Différence avec la facture PDF
+
+- **Facture PDF classique** : Simple document numérisé sans traitement automatisé
+- **Facture électronique** : Document structuré (XML, JSON) permettant un traitement automatique
+- **Signature électronique** : Garantit l'authenticité et l'intégrité de la facture
+
+## Obligations légales en France
+
+### Calendrier de déploiement (2024-2026)
+
+La réforme de la facturation électronique se déploie progressivement :
+
+**1er septembre 2026** :
+- **Réception obligatoire** pour toutes les entreprises assujetties à la TVA
+- Les entreprises doivent pouvoir recevoir des factures électroniques
+
+**1er septembre 2027** :
+- **Émission obligatoire** pour les grandes entreprises et ETI
+- Les PME et micro-entreprises peuvent continuer à émettre des factures classiques
+
+**1er septembre 2027** :
+- **Émission obligatoire** pour toutes les entreprises, y compris les freelances et auto-entrepreneurs
+
+### Qui est concerné ?
+
+**Toutes les entreprises françaises** assujetties à la TVA qui réalisent des transactions B2B (business-to-business) :
+- Grandes entreprises
+- PME
+- TPE
+- Freelances et auto-entrepreneurs
+- Professions libérales en BNC (y compris micro-BNC)
+
+**Exceptions** :
+- Les particuliers (B2C) ne sont pas concernés pour l'instant
+- Les transactions avec des entreprises étrangères suivent d'autres règles
+
+## Avantages de la facturation électronique
+
+### Pour votre entreprise
+
+1. **Gain de temps** : Automatisation de la saisie et du traitement
+2. **Réduction des coûts** : Moins d'impression, d'envoi postal, de stockage
+3. **Traçabilité** : Suivi en temps réel du statut des factures
+4. **Conformité** : Respect automatique des obligations légales
+5. **Moins d'erreurs** : Réduction des erreurs de saisie manuelle
+6. **Archivage sécurisé** : Conservation légale garantie
+
+### Pour l'administration fiscale
+
+- Lutte contre la fraude à la TVA
+- Pré-remplissage des déclarations de TVA
+- Meilleur contrôle des flux financiers
+
+## Comment se mettre en conformité ?
+
+### 1. Choisir une solution
+
+Vous avez deux options principales :
+
+**Portail Public de Facturation (PPF)** :
+- Gratuit
+- Géré par l'État
+- Solution simple pour les petites structures
+- Accessible via impots.gouv.fr
+
+**Plateforme de Dématérialisation Partenaire (PDP)** :
+- Solutions payantes proposées par des éditeurs certifiés
+- Fonctionnalités avancées (automatisation, intégration comptable)
+- Support technique
+- Exemples : Chorus Pro, solutions des éditeurs de logiciels de facturation
+
+### 2. Préparer vos factures
+
+Vos factures électroniques doivent contenir toutes les mentions légales obligatoires :
+
+**Informations essentielles** :
+- Numéro unique et séquentiel
+- Date d'émission
+- Identité complète du vendeur (SIRET, TVA intracommunautaire)
+- Identité complète de l'acheteur
+- Description détaillée des prestations/produits
+- Prix unitaires HT
+- Taux de TVA applicable
+- Montant total HT et TTC
+
+**Mentions spécifiques** :
+- Pour les auto-entrepreneurs : "TVA non applicable, art. 293 B du CGI"
+- Pour les prestations exonérées : mention de l'article du CGI applicable
+- Numéro de bon de commande si applicable
+
+### 3. Former votre équipe
+
+- Sensibiliser vos collaborateurs au nouveau processus
+- Former à l'utilisation de la plateforme choisie
+- Mettre à jour vos procédures internes
+
+### 4. Tester avant l'échéance
+
+- Commencer à émettre des factures électroniques avant l'obligation
+- Vérifier la compatibilité avec vos clients et fournisseurs
+- Ajuster votre workflow si nécessaire
+
+## Outils et plateformes recommandés
+
+### Pour les freelances et auto-entrepreneurs
+
+1. **Chorus Pro** : Solution gratuite de l'État
+2. **Logiciels de facturation certifiés** :
+   - Pennylane
+   - Freebe
+   - Axonaut
+   - Sellsy
+
+3. **Solutions SaaS** :
+   - Lemonora (optimisé pour les freelances)
+   - QuickBooks
+   - Sage
+
+### Critères de choix
+
+- Certification par l'administration fiscale
+- Facilité d'utilisation
+- Intégration avec votre comptabilité
+- Coût adapté à votre volume de facturation
+- Support client en français
+- Fonctionnalités de relance automatique
+
+## Questions fréquentes
+
+### Puis-je continuer à envoyer des PDF par email ?
+
+Non, pour les transactions B2B entre entreprises françaises, vous devrez obligatoirement passer par une plateforme certifiée à partir des échéances mentionnées.
+
+### Dois-je changer de logiciel de facturation ?
+
+Pas nécessairement. De nombreux logiciels existants se mettent à jour pour être compatibles avec la facturation électronique. Vérifiez avec votre éditeur actuel.
+
+### Qu'arrive-t-il à mes anciennes factures ?
+
+Les factures antérieures à la réforme restent valides. Seules les nouvelles factures émises après l'échéance doivent être électroniques.
+
+### Comment gérer les factures internationales ?
+
+Les factures à destination de clients étrangers suivent les règles actuelles (PDF par email reste possible). La réforme concerne uniquement les transactions B2B domestiques.
+
+### Quel est le coût ?
+
+- Le PPF (Portail Public) est **gratuit**
+- Les PDP (plateformes privées) proposent des tarifs variés, souvent à partir de 10-30€/mois
+- Certaines solutions incluent la facturation électronique dans leurs forfaits globaux
+
+### Que se passe-t-il si je ne me conforme pas ?
+
+Le non-respect de l'obligation de facturation électronique peut entraîner :
+- Des amendes fiscales
+- Des difficultés dans vos relations commerciales
+- Des retards de paiement (certains clients n'accepteront plus les factures non conformes)
+
+## Prochaines étapes
+
+1. **Identifiez votre échéance** selon votre catégorie d'entreprise
+2. **Évaluez vos besoins** en termes de volume et de fonctionnalités
+3. **Comparez les solutions** (PPF vs PDP)
+4. **Testez la plateforme choisie** avec quelques factures
+5. **Formez-vous** aux bonnes pratiques
+6. **Anticipez** : ne pas attendre le dernier moment
+
+## Ressources utiles
+
+- [Site officiel de la facturation électronique](https://www.impots.gouv.fr/)
+- [Chorus Pro](https://chorus-pro.gouv.fr/)
+- [Liste des PDP certifiées](https://annuaire.portail-facturation.fr/)
+- FAQ de la DGFiP
+
+---
+
+**Mise à jour** : Décembre 2025
+**Note** : Les informations peuvent évoluer. Consultez régulièrement les sources officielles.

@@ -62,8 +62,18 @@
     "invoices": "Invoices",
     "clients": "Clients",
     "products": "Products",
+    "learning": "Learn",
     "contact": "Contact me",
     "signIn": "Sign in"
+  },
+  "Learning": {
+    "title": "Learn",
+    "description": "Educational resources for freelancers",
+    "readMore": "Read more",
+    "previous": "Previous",
+    "next": "Next",
+    "backToList": "← Back to learning pages",
+    "publishedOn": "Published on"
   },
   "Common": {
     "view": "View →",

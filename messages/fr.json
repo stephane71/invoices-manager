@@ -62,8 +62,18 @@
     "invoices": "Factures",
     "clients": "Clients",
     "products": "Produits",
+    "learning": "Me Former",
     "contact": "Me contacter",
     "signIn": "Se connecter"
+  },
+  "Learning": {
+    "title": "Me Former",
+    "description": "Ressources éducatives pour les freelances",
+    "readMore": "Lire la suite",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "backToList": "← Retour aux pages de formation",
+    "publishedOn": "Publié le"
   },
   "Common": {
     "view": "Voir →",
