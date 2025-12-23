@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useProfile } from "@/hooks/queries/useProfile";
 import { APP_PREFIX } from "@/lib/constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getPageHeaderTitle } from "@/utils/getPageHeaderTitle";
@@ -16,31 +17,33 @@ export function PageHeader() {
 
   const [initial, setInitial] = useState<string>("?");
 
+  const { data: profile } = useProfile();
+
   useEffect(() => {
-    async function loadInitial() {
+    const loadInitial = async () => {
       try {
-        // Prefer the profile's full_name over auth metadata
-        const res = await fetch("/api/profile", { cache: "no-store" });
         let source = "";
-        if (res.ok) {
-          const json = await res.json().catch(() => ({}));
-          source = json?.data?.full_name || "";
-        }
-        if (!source) {
+
+        // Prefer the profile's full_name
+        if (profile?.full_name) {
+          source = profile.full_name;
+        } else {
           // Fallback to the authenticated user's email if profile/full_name is missing
           const supabase = createSupabaseBrowserClient();
           const { data } = await supabase.auth.getUser();
           const user = data.user as User | null;
           source = user?.email || "?";
         }
+
         const letter = source?.trim()?.charAt(0)?.toUpperCase() || "?";
         setInitial(letter);
       } catch {
         setInitial("?");
       }
-    }
+    };
+
     loadInitial();
-  }, []);
+  }, [profile]);
 
   const headerTitle = getPageHeaderTitle(pathname, t);
 

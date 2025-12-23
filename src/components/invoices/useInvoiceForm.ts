@@ -1,76 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
-import { InvoiceListItem } from "@/components/invoices/invoices";
-import type { ProfileValidationResult } from "@/lib/validation";
+import { useMemo, useState } from "react";
+import { useGenerateInvoicePdf } from "@/hooks/mutations/useGenerateInvoicePdf";
+import { useInvoice } from "@/hooks/queries/useInvoice";
+import { useProfileValidation } from "@/hooks/queries/useProfileValidation";
 
 export type UseInvoiceFormProps = {
   id: string;
 };
 
 export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
-  const [invoice, setInvoice] = useState<InvoiceListItem | null>(null);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [profileValidation, setProfileValidation] =
-    useState<ProfileValidationResult | null>(null);
 
-  useEffect(() => {
-    let active = true;
+  const {
+    data: invoice,
+    error: invoiceError,
+    refetch: refetchInvoice,
+  } = useInvoice(id, {
+    enabled: !!id,
+  });
 
-    const load = async () => {
-      try {
-        const res = await fetch(`/api/invoices/${id}`);
-        const data = await res.json();
-        if (!active) {
-          return;
-        }
-        if (!res.ok) {
-          throw new Error(data?.error || "Failed to load invoice");
-        }
-        setInvoice(data);
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : "Failed to load";
-        setError(msg);
-      }
-    };
+  const { data: profileValidation } = useProfileValidation({
+    enabled: !!id,
+  });
 
-    if (id) {
-      void load();
-    }
+  const generatePdf = useGenerateInvoicePdf(id);
 
-    return () => {
-      active = false;
-    };
-  }, [id]);
-
-  // Fetch profile validation when invoice is selected
-  useEffect(() => {
-    let active = true;
-
-    const loadProfileValidation = async () => {
-      try {
-        const res = await fetch("/api/profile/validate");
-        const data = await res.json();
-        if (!active) {
-          return;
-        }
-        if (!res.ok) {
-          throw new Error(data?.error || "Failed to load profile validation");
-        }
-        setProfileValidation(data);
-      } catch (e: unknown) {
-        console.error("Profile validation fetch error:", e);
-        // Don't set error state - profile validation is non-critical for viewing
-      }
-    };
-
-    if (id) {
-      void loadProfileValidation();
-    }
-
-    return () => {
-      active = false;
-    };
-  }, [id]);
+  const error = invoiceError?.message || null;
 
   const onDownloadInvoice = async () => {
     if (!invoice) {
@@ -85,18 +39,11 @@ export const useInvoiceForm = ({ id }: UseInvoiceFormProps) => {
         return;
       }
       // Otherwise, generate it then open
-      const res = await fetch(`/api/invoices/${invoice.id}/pdf`, {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.error || "Failed to generate PDF");
-      }
-      const url = data?.pdf_url as string | undefined;
+      const result = await generatePdf.mutateAsync();
+      const url = result?.pdf_url;
       if (url) {
-        // update local state
-        setInvoice({ ...invoice, pdf_url: url });
+        // Refetch invoice to get updated pdf_url
+        await refetchInvoice();
         window.open(url, "_blank");
       }
     } catch (e: unknown) {

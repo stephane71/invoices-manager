@@ -4,7 +4,10 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ProductForm, productFormSchema } from "@/components/products/products";
+import { useUpdateProduct } from "@/hooks/mutations/useUpdateProduct";
+import { useProduct } from "@/hooks/queries/useProduct";
 import { useProductImageUpload } from "@/hooks/useProductImageUpload";
+import { ApiError } from "@/lib/api-client";
 import { APP_PREFIX } from "@/lib/constants";
 
 export type UseProductFormProps = {
@@ -16,6 +19,7 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
   const router = useRouter();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   const { uploading, onSelectImage } = useProductImageUpload((url) =>
     setImageUrl(url),
@@ -30,57 +34,57 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
     },
   });
 
-  const [error, setError] = useState("");
   const { reset, setError: setFieldError } = form;
 
+  const { data: product } = useProduct(id, {
+    enabled: !!id,
+  });
+
+  const updateProduct = useUpdateProduct(id, {
+    onSuccess: () => {
+      router.push(`/${APP_PREFIX}/products`);
+    },
+    onError: (error: Error) => {
+      // Handle API errors - check if it's an ApiError with fields
+      const apiError = error as ApiError;
+      if (apiError.fields) {
+        Object.entries(apiError.fields).forEach(([key, message]) => {
+          setFieldError(key as keyof ProductForm, {
+            type: "server",
+            message: message as string,
+          });
+        });
+      } else {
+        setError(error.message || t("edit.error.saveFail"));
+      }
+    },
+  });
+
   useEffect(() => {
-    if (!id) {
-      return;
-    }
-
-    fetch(`/api/products/${id}`).then(async (r) => {
-      const d = await r.json();
-
+    if (product) {
       reset({
-        name: d.name || "",
-        description: d.description || "",
-        price: d.price || 0,
+        name: product.name || "",
+        description: product.description || "",
+        price: product.price || 0,
       });
-      setImageUrl(d.image_url || null);
-    });
-  }, [id, reset]);
+      setImageUrl(product.image_url || null);
+    }
+  }, [product, reset]);
 
   const onSubmit = async (data: ProductForm) => {
     setError("");
 
     try {
-      const res = await fetch(`/api/products/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          image_url: imageUrl,
-        }),
+      await updateProduct.mutateAsync({
+        ...data,
+        image_url: imageUrl,
       });
-
-      if (res.ok) {
-        router.push(`/${APP_PREFIX}/products`);
-      } else {
-        const responseData = await res.json();
-
-        if (responseData.fields) {
-          Object.entries(responseData.fields).forEach(([key, message]) => {
-            setFieldError(key as keyof ProductForm, {
-              type: "server",
-              message: message as string,
-            });
-          });
-        } else {
-          setError(responseData.error || t("edit.error.saveFail"));
-        }
-      }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("edit.error.saveFail"));
+      // Error handling is done in the mutation's onError callback
+      // This catch is for any unexpected errors
+      if (e instanceof Error && !error) {
+        setError(e.message || t("edit.error.saveFail"));
+      }
     }
   };
 

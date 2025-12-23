@@ -13,6 +13,9 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useUpdateProfile } from "@/hooks/mutations/useUpdateProfile";
+import { useProfile } from "@/hooks/queries/useProfile";
+import { ApiError } from "@/lib/api-client";
 import { formatSiret } from "@/lib/utils";
 
 export default function ProfilPage() {
@@ -20,7 +23,6 @@ export default function ProfilPage() {
   const commonTranslate = useTranslations("Common");
   const translate = useTranslations();
 
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -44,81 +46,56 @@ export default function ProfilPage() {
     formState: { isSubmitting },
   } = form;
 
+  const { data: profile, isLoading } = useProfile();
+
+  const updateProfile = useUpdateProfile({
+    onSuccess: () => {
+      setSuccess(profilTranslate("status.updated"));
+      setError(null);
+    },
+    onError: (error: Error) => {
+      const apiError = error as ApiError;
+      setError(apiError.message || profilTranslate("error.unknown"));
+      setSuccess(null);
+    },
+  });
+
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        setError(null);
-        const res = await fetch("/api/profile", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error(
-            profilTranslate("error.load", { status: res.status }),
-          );
-        }
-        const json = await res.json();
-        const p = json?.data;
-        if (p && !cancelled) {
-          reset({
-            fullName: p.full_name || "",
-            email: p.email || "",
-            phone: p.phone || "",
-            siret: p.siret || "",
-            addressStreet: p.address_street || "",
-            addressPostalCode: p.address_postal_code || "",
-            addressCity: p.address_city || "",
-          });
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError(
-            e instanceof Error ? e.message : profilTranslate("error.unknown"),
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
+    if (profile) {
+      reset({
+        fullName: profile.full_name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        siret: profile.siret || "",
+        addressStreet: profile.address_street || "",
+        addressPostalCode: profile.address_postal_code || "",
+        addressCity: profile.address_city || "",
+      });
     }
+  }, [profile, reset]);
 
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [profilTranslate, reset]);
-
-  async function onSubmit(data: ProfileFormData) {
+  const onSubmit = async (data: ProfileFormData) => {
     setError(null);
     setSuccess(null);
 
     try {
-      const res = await fetch("/api/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: data.fullName,
-          email: data.email,
-          phone: data.phone,
-          siret: data.siret,
-          address_street: data.addressStreet,
-          address_postal_code: data.addressPostalCode,
-          address_city: data.addressCity,
-        }),
+      await updateProfile.mutateAsync({
+        full_name: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        siret: data.siret,
+        address_street: data.addressStreet,
+        address_postal_code: data.addressPostalCode,
+        address_city: data.addressCity,
       });
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({ error: null }));
-        throw new Error(
-          json.error || profilTranslate("error.save", { status: res.status }),
-        );
-      }
-      setSuccess(profilTranslate("status.updated"));
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : profilTranslate("error.unknown"),
-      );
+      // Error handling is done in the mutation's onError callback
+      // This catch is for any unexpected errors
+      if (e instanceof Error && !error) {
+        setError(e.message || profilTranslate("error.unknown"));
+      }
     }
-  }
+  };
 
   return (
     <div className="max-w-2xl space-y-6 p-4">
@@ -150,7 +127,7 @@ export default function ProfilPage() {
                   placeholder={profilTranslate("form.fullNamePlaceholder")}
                   icon="User"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                   required
                 />
                 {fieldState.invalid && (
@@ -180,7 +157,7 @@ export default function ProfilPage() {
                   placeholder={profilTranslate("form.emailPlaceholder")}
                   icon="Mail"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                   required
                 />
                 {fieldState.invalid && (
@@ -210,7 +187,7 @@ export default function ProfilPage() {
                   placeholder={profilTranslate("form.phonePlaceholder")}
                   icon="Phone"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                 />
                 {fieldState.invalid && (
                   <FieldError>
@@ -240,7 +217,7 @@ export default function ProfilPage() {
                   maxLength={17}
                   icon="Building"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                   onChange={(e) => {
                     const cleaned = e.target.value.replace(/\s/g, "");
                     if (cleaned.length <= 14 && /^\d*$/.test(cleaned)) {
@@ -275,7 +252,7 @@ export default function ProfilPage() {
                   placeholder={profilTranslate("form.addressStreetPlaceholder")}
                   icon="MapPin"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                   required
                 />
                 {fieldState.invalid && (
@@ -306,7 +283,7 @@ export default function ProfilPage() {
                   )}
                   icon="Hash"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                   required
                 />
                 {fieldState.invalid && (
@@ -335,7 +312,7 @@ export default function ProfilPage() {
                   placeholder={profilTranslate("form.addressCityPlaceholder")}
                   icon="Building"
                   aria-invalid={fieldState.invalid}
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading || isSubmitting}
                   required
                 />
                 {fieldState.invalid && (
@@ -350,7 +327,7 @@ export default function ProfilPage() {
           />
 
           <div className="pt-2">
-            <Button type="submit" disabled={loading || isSubmitting}>
+            <Button type="submit" disabled={isLoading || isSubmitting}>
               {isSubmitting
                 ? commonTranslate("saving")
                 : commonTranslate("save")}

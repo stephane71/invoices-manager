@@ -1,6 +1,6 @@
 # CLAUDE.md - AI Assistant Guide for InvoEase
 
-**Last Updated:** 2025-11-25
+**Last Updated:** 2025-12-23
 **Project:** InvoEase - Invoice Management Application
 **Version:** 0.1.0
 
@@ -16,15 +16,16 @@ This document provides comprehensive guidance for AI assistants (like Claude) wo
 4. [Core Architectural Patterns](#core-architectural-patterns)
 5. [Database Schema & Supabase](#database-schema--supabase)
 6. [Authentication & Authorization](#authentication--authorization)
-7. [Routing & Navigation](#routing--navigation)
-8. [Form Handling & Validation](#form-handling--validation)
-9. [API Patterns](#api-patterns)
-10. [Component Patterns](#component-patterns)
-11. [Code Style Conventions](#code-style-conventions)
-12. [Development Workflows](#development-workflows)
-13. [Common Tasks](#common-tasks)
-14. [Key Files Reference](#key-files-reference)
-15. [Troubleshooting](#troubleshooting)
+7. [Data Fetching & State Management (React Query)](#data-fetching--state-management-react-query)
+8. [Routing & Navigation](#routing--navigation)
+9. [Form Handling & Validation](#form-handling--validation)
+10. [API Patterns](#api-patterns)
+11. [Component Patterns](#component-patterns)
+12. [Code Style Conventions](#code-style-conventions)
+13. [Development Workflows](#development-workflows)
+14. [Common Tasks](#common-tasks)
+15. [Key Files Reference](#key-files-reference)
+16. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -65,6 +66,10 @@ This document provides comprehensive guidance for AI assistants (like Claude) wo
 - **shadcn/ui** - Radix UI-based component library
 - **Lucide React** - Icon library
 - **Geist Font** - Vercel's font family
+
+### Data Fetching & State Management
+- **TanStack Query (React Query) v5** - Asynchronous state management and data fetching
+- **React Query Devtools** - Development tools for debugging queries
 
 ### Forms & Validation
 - **React Hook Form** - Performant form management
@@ -125,6 +130,20 @@ This document provides comprehensive guidance for AI assistants (like Claude) wo
 │   ├── types/
 │   │   └── models.ts                 # TypeScript types for all entities
 │   ├── hooks/                        # Custom React hooks
+│   │   ├── mutations/                # React Query mutation hooks
+│   │   │   ├── useCreateClient.ts
+│   │   │   ├── useUpdateClient.ts
+│   │   │   ├── useCreateInvoice.ts
+│   │   │   ├── useCreateProduct.ts
+│   │   │   └── useUpdateProduct.ts
+│   │   ├── queries/                  # React Query query hooks
+│   │   │   ├── useClients.ts
+│   │   │   ├── useClient.ts
+│   │   │   ├── useInvoices.ts
+│   │   │   ├── useInvoice.ts
+│   │   │   ├── useProducts.ts
+│   │   │   ├── useProfile.ts
+│   │   │   └── useProfileValidation.ts
 │   │   ├── useCreateNewClientFromNewInvoice.ts
 │   │   ├── useMinDelay.ts
 │   │   └── use-mobile.ts
@@ -444,6 +463,506 @@ const AppLayout = async ({ children }) => {
 4. Storage bucket policies for file access
 
 **Never bypass account scoping** - all queries must filter by account_id.
+
+---
+
+## Data Fetching & State Management (React Query)
+
+InvoEase uses **TanStack Query (React Query) v5** for all client-side data fetching, caching, and state management. This provides automatic background refetching, cache invalidation, optimistic updates, and excellent developer experience.
+
+### Architecture Overview
+
+**React Query replaces traditional data fetching patterns:**
+- ❌ No `useEffect` + `fetch` + `useState` for data fetching
+- ❌ No manual cache management
+- ❌ No prop drilling of data
+- ✅ Declarative queries and mutations
+- ✅ Automatic caching and background refetching
+- ✅ Optimistic updates and cache invalidation
+
+### File Organization
+
+```
+src/
+├── lib/
+│   ├── react-query.ts          # QueryClient configuration
+│   ├── query-keys.ts           # Centralized query key definitions
+│   └── api-client.ts           # Fetch wrapper for API calls
+├── components/
+│   └── query-provider.tsx      # QueryClientProvider setup
+└── hooks/
+    ├── queries/                # Data fetching hooks (GET)
+    │   ├── useClients.ts
+    │   ├── useClient.ts
+    │   ├── useInvoices.ts
+    │   └── useProducts.ts
+    └── mutations/              # Data modification hooks (POST/PATCH/DELETE)
+        ├── useCreateClient.ts
+        ├── useUpdateClient.ts
+        ├── useCreateInvoice.ts
+        └── useCreateProduct.ts
+```
+
+### QueryClient Configuration
+
+**Location:** `src/lib/react-query.ts`
+
+**CRITICAL SETTINGS:**
+
+```typescript
+export const createQueryClient = () => {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Data is considered fresh for 1 minute
+        staleTime: 60 * 1000, // 1 minute
+
+        // Unused data is garbage collected after 5 minutes
+        gcTime: 5 * 60 * 1000, // 5 minutes
+
+        // ⚠️ IMPORTANT: Must be true for cache invalidation to work!
+        // This ensures invalidated queries refetch when components remount
+        refetchOnMount: true,
+
+        // Don't refetch on window focus (can be enabled per-query if needed)
+        refetchOnWindowFocus: false,
+
+        // Don't refetch on reconnect by default
+        refetchOnReconnect: false,
+
+        // Retry failed requests once
+        retry: 1,
+      },
+      mutations: {
+        // Don't retry mutations by default
+        retry: 0,
+      },
+    },
+  });
+};
+```
+
+**Why `refetchOnMount: true` is Critical:**
+- When mutations invalidate queries, they mark them as "stale"
+- Stale queries automatically refetch when components mount (if `refetchOnMount: true`)
+- Without this, navigating to a list page after creating/updating won't show fresh data
+- This is React Query's default and recommended behavior
+
+### Query Keys
+
+**Location:** `src/lib/query-keys.ts`
+
+Query keys uniquely identify cached data and enable targeted invalidation:
+
+```typescript
+export const queryKeys = {
+  // Clients
+  clients: ["clients"] as const,           // List all clients
+  client: (id: string) => ["clients", id] as const,  // Single client
+
+  // Invoices
+  invoices: ["invoices"] as const,
+  invoice: (id: string) => ["invoices", id] as const,
+
+  // Products
+  products: ["products"] as const,
+  product: (id: string) => ["products", id] as const,
+
+  // Profile
+  profile: ["profile"] as const,
+  profileValidation: ["profile", "validation"] as const,
+};
+```
+
+**Query Key Hierarchy:**
+- `["clients"]` matches all client queries
+- `["clients", "123"]` matches only client with ID 123
+- Invalidating `["clients"]` invalidates both list and detail queries
+
+### Query Hooks Pattern
+
+**Location:** `src/hooks/queries/`
+
+**Structure:**
+```typescript
+// src/hooks/queries/useClients.ts
+"use client";
+
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
+import type { Client } from "@/types/models";
+
+/**
+ * Fetch all clients for the current user
+ */
+export const useClients = (
+  options?: Omit<UseQueryOptions<Client[], Error>, "queryKey" | "queryFn">
+) => {
+  return useQuery({
+    queryKey: queryKeys.clients,
+    queryFn: () => apiClient.get<Client[]>("/api/clients"),
+    ...options,
+  });
+};
+```
+
+**Usage in Components:**
+```typescript
+"use client";
+
+import { useClients } from "@/hooks/queries/useClients";
+
+const ClientsPage = () => {
+  const { data: clients = [], isLoading, error } = useClients();
+
+  if (isLoading) return <Spinner />;
+  if (error) return <ErrorMessage error={error} />;
+
+  return (
+    <div>
+      {clients.map(client => (
+        <ClientListItem key={client.id} {...client} />
+      ))}
+    </div>
+  );
+};
+```
+
+**Query Options:**
+- `enabled`: Conditionally enable/disable query
+- `staleTime`: Override global staleTime for this query
+- `refetchInterval`: Poll data at intervals
+- `refetchOnWindowFocus`: Override global setting
+
+### Mutation Hooks Pattern
+
+**Location:** `src/hooks/mutations/`
+
+**Structure:**
+```typescript
+// src/hooks/mutations/useCreateClient.ts
+"use client";
+
+import { useMutation, useQueryClient, type UseMutationOptions } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
+import type { Client } from "@/types/models";
+
+type CreateClientData = Omit<Client, "id" | "account_id" | "created_at">;
+
+/**
+ * Create a new client
+ */
+export const useCreateClient = (
+  options?: Omit<
+    UseMutationOptions<Client, Error, CreateClientData, unknown>,
+    "mutationFn"
+  >
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...options,
+    mutationFn: (data: CreateClientData) =>
+      apiClient.post<Client>("/api/clients", data),
+    onSuccess: async (...args) => {
+      // ✅ Invalidate clients list to trigger refetch
+      await queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+
+      // Call user-provided onSuccess
+      await options?.onSuccess?.(...args);
+    },
+  });
+};
+```
+
+**Usage in Components:**
+```typescript
+"use client";
+
+import { useCreateClient } from "@/hooks/mutations/useCreateClient";
+import { useRouter } from "next/navigation";
+
+const NewClientPage = () => {
+  const router = useRouter();
+  const form = useForm<ClientFormData>();
+
+  const createClient = useCreateClient({
+    onSuccess: () => {
+      // Navigate to list page
+      router.push("/app/clients");
+      // List will automatically refetch due to invalidation
+    },
+    onError: (error) => {
+      // Handle error
+      setError(error.message);
+    },
+  });
+
+  const onSubmit = async (data: ClientFormData) => {
+    await createClient.mutateAsync(data);
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Form fields */}
+      <Button disabled={createClient.isPending}>
+        {createClient.isPending ? "Saving..." : "Save"}
+      </Button>
+    </form>
+  );
+};
+```
+
+### Cache Invalidation Best Practices
+
+**1. Always invalidate after mutations:**
+```typescript
+onSuccess: async () => {
+  // Invalidate list query
+  await queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+
+  // Invalidate specific item if updating
+  await queryClient.invalidateQueries({ queryKey: queryKeys.client(id) });
+}
+```
+
+**2. Invalidate related queries:**
+```typescript
+// When creating an invoice, also invalidate client's invoice count
+onSuccess: async () => {
+  await queryClient.invalidateQueries({ queryKey: queryKeys.invoices });
+  await queryClient.invalidateQueries({ queryKey: queryKeys.client(clientId) });
+}
+```
+
+**3. Use exact matching when needed:**
+```typescript
+// Only invalidate exact key, not nested keys
+queryClient.invalidateQueries({
+  queryKey: queryKeys.clients,
+  exact: true  // Won't invalidate ["clients", "123"]
+});
+```
+
+**4. Control refetch behavior:**
+```typescript
+queryClient.invalidateQueries({
+  queryKey: queryKeys.invoices,
+  refetchType: 'active',  // Only refetch active queries (default)
+  // refetchType: 'inactive',  // Only refetch inactive queries
+  // refetchType: 'all',  // Refetch all matching queries
+  // refetchType: 'none',  // Just mark as stale, don't refetch
+});
+```
+
+### Optimistic Updates (Advanced)
+
+For instant UI feedback, use optimistic updates:
+
+```typescript
+export const useUpdateClient = (id: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateClientData) =>
+      apiClient.patch<Client>(`/api/clients/${id}`, data),
+    onMutate: async (newData) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.client(id) });
+
+      // Snapshot previous value
+      const previousClient = queryClient.getQueryData(queryKeys.client(id));
+
+      // Optimistically update to new value
+      queryClient.setQueryData(queryKeys.client(id), (old: Client) => ({
+        ...old,
+        ...newData,
+      }));
+
+      // Return context with snapshot
+      return { previousClient };
+    },
+    onError: (err, newData, context) => {
+      // Rollback on error
+      if (context?.previousClient) {
+        queryClient.setQueryData(
+          queryKeys.client(id),
+          context.previousClient
+        );
+      }
+    },
+    onSettled: () => {
+      // Refetch after error or success
+      queryClient.invalidateQueries({ queryKey: queryKeys.client(id) });
+    },
+  });
+};
+```
+
+### Common Patterns
+
+**1. Dependent Queries:**
+```typescript
+const { data: invoice } = useInvoice(invoiceId);
+const { data: client } = useClient(invoice?.client_id, {
+  enabled: !!invoice?.client_id,  // Only fetch when we have client_id
+});
+```
+
+**2. Conditional Queries:**
+```typescript
+const { data: clients } = useClients({
+  enabled: !selectedId,  // Don't fetch list when viewing details
+});
+```
+
+**3. Prefetching:**
+```typescript
+const queryClient = useQueryClient();
+
+// Prefetch on hover
+const handleMouseEnter = () => {
+  queryClient.prefetchQuery({
+    queryKey: queryKeys.client(id),
+    queryFn: () => apiClient.get(`/api/clients/${id}`),
+  });
+};
+```
+
+**4. Manual Refetch:**
+```typescript
+const { data, refetch } = useClients();
+
+<Button onClick={() => refetch()}>
+  Refresh
+</Button>
+```
+
+### Debugging with React Query Devtools
+
+The app includes React Query Devtools for debugging:
+
+**Features:**
+- View all cached queries and mutations
+- See query states (fetching, stale, fresh, error)
+- Manually refetch or invalidate queries
+- Inspect query data and metadata
+- Monitor network requests
+
+**Access:**
+- Floating icon in bottom-right corner (development only)
+- Click to expand devtools panel
+- Useful for diagnosing cache invalidation issues
+
+### Common Pitfalls & Solutions
+
+**Problem:** List doesn't update after creating an item
+```typescript
+// ❌ Bad: refetchOnMount disabled
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { refetchOnMount: false },  // Don't do this!
+  },
+});
+
+// ✅ Good: Enable refetchOnMount (default)
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { refetchOnMount: true },
+  },
+});
+```
+
+**Problem:** Query marked as stale but not refetching
+```typescript
+// Check if query is enabled
+const { data } = useClients({ enabled: false });  // ❌ Won't refetch
+
+// Check refetchOnMount setting
+const { data } = useClients({ refetchOnMount: false });  // ❌ Won't refetch on mount
+```
+
+**Problem:** Invalidation not working
+```typescript
+// ❌ Bad: Wrong query key
+queryClient.invalidateQueries({ queryKey: ["client"] });  // Typo!
+
+// ✅ Good: Use centralized query keys
+queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+```
+
+**Problem:** Data still showing after deletion
+```typescript
+// ❌ Bad: Only invalidating list
+await queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+
+// ✅ Good: Also remove from cache
+queryClient.removeQueries({ queryKey: queryKeys.client(id) });
+await queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+```
+
+### Performance Considerations
+
+**1. Adjust staleTime based on data volatility:**
+```typescript
+// Rarely changes - longer staleTime
+useProfile({ staleTime: 5 * 60 * 1000 });  // 5 minutes
+
+// Changes frequently - shorter staleTime
+useInvoices({ staleTime: 30 * 1000 });  // 30 seconds
+```
+
+**2. Use gcTime to control memory usage:**
+```typescript
+// Keep in cache longer for frequently accessed data
+useClients({ gcTime: 10 * 60 * 1000 });  // 10 minutes
+
+// Remove quickly for large datasets
+useInvoiceList({ gcTime: 1 * 60 * 1000 });  // 1 minute
+```
+
+**3. Disable queries when not needed:**
+```typescript
+const { data: invoice } = useInvoice(id, {
+  enabled: !!id && isOpen,  // Only fetch when modal is open
+});
+```
+
+### API Client Integration
+
+**Location:** `src/lib/api-client.ts`
+
+Centralized fetch wrapper for type-safe API calls:
+
+```typescript
+export const apiClient = {
+  get: async <T>(url: string): Promise<T> => {
+    const response = await fetch(url);
+    if (!response.ok) throw new ApiError(response);
+    return response.json();
+  },
+
+  post: async <T>(url: string, data: unknown): Promise<T> => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new ApiError(response);
+    return response.json();
+  },
+
+  // ... patch, delete, etc.
+};
+```
+
+**Used by all query and mutation hooks:**
+- Type-safe responses
+- Automatic error handling
+- Consistent request formatting
+- Easy to mock for testing
 
 ---
 

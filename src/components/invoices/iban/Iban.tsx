@@ -7,6 +7,8 @@ import { IbanFieldGroup } from "@/components/invoices/iban/IbanFieldGroup";
 import { IbanBicForm, ibanBicSchema } from "@/components/invoices/iban/schemas";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldError } from "@/components/ui/field";
+import { useUpdateProfile } from "@/hooks/mutations/useUpdateProfile";
+import { ApiError } from "@/lib/api-client";
 
 interface IbanProps {
   iban?: string;
@@ -40,28 +42,32 @@ export const Iban = ({
     formState: { isSubmitting },
   } = form;
 
+  const updateProfile = useUpdateProfile({
+    onSuccess: () => {
+      setIsEditing(false);
+    },
+    onError: (error: Error) => {
+      const apiError = error as ApiError;
+      setError(apiError.message || t("error.unknown"));
+    },
+  });
+
   const onSubmit = async (data: IbanBicForm) => {
     setError(null);
 
     try {
-      const res = await fetch("/api/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          payment_iban: data.paymentIban?.trim() || null,
-          payment_bic: data.paymentBic?.trim() || null,
-        }),
+      await updateProfile.mutateAsync({
+        payment_iban: data.paymentIban?.trim() || null,
+        payment_bic: data.paymentBic?.trim() || null,
       });
 
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({ error: null }));
-        throw new Error(json.error || t("error.save", { status: res.status }));
-      }
-
-      setIsEditing(false);
       onChange({ paymentIban: data.paymentIban, paymentBic: data.paymentBic });
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("error.unknown"));
+      // Error handling is done in the mutation's onError callback
+      // This catch is for any unexpected errors
+      if (e instanceof Error && !error) {
+        setError(e.message || t("error.unknown"));
+      }
     }
   };
 

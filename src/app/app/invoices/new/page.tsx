@@ -21,14 +21,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
+import { useCreateInvoice } from "@/hooks/mutations/useCreateInvoice";
+import { useClients } from "@/hooks/queries/useClients";
+import { useProducts } from "@/hooks/queries/useProducts";
+import { useProfile } from "@/hooks/queries/useProfile";
 import {
   ClientCreationError,
   useCreateNewClientFromNewInvoice,
 } from "@/hooks/useCreateNewClientFromNewInvoice";
 import { useMinDelay } from "@/hooks/useMinDelay";
-import { APP_LOCALE } from "@/lib/constants";
+import { ApiError } from "@/lib/api-client";
+import { APP_LOCALE, APP_PREFIX } from "@/lib/constants";
 import { centsToCurrencyString } from "@/lib/utils";
-import type { Client, Product } from "@/types/models";
 
 const ERROR_DEFAULT = "";
 const FIELD_ERROR_DEFAULT = undefined;
@@ -39,9 +43,6 @@ function todayISO() {
 
 export default function NewInvoicePage() {
   const router = useRouter();
-  const [clients, setClients] = useState<Client[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(ERROR_DEFAULT);
   const [clientFieldErrors, setClientFieldErrors] = useState<
     FieldErrors | typeof FIELD_ERROR_DEFAULT
@@ -79,34 +80,19 @@ export default function NewInvoicePage() {
   const iban = watch("paymentIban");
   const bic = watch("paymentBic");
 
+  // Fetch data using React Query
+  const { data: clients = [], isLoading: clientsLoading } = useClients();
+  const { data: products = [], isLoading: productsLoading } = useProducts();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+
+  const loading = clientsLoading || productsLoading || profileLoading;
+
   useEffect(() => {
-    let active = true;
-    Promise.all([
-      fetch("/api/clients"),
-      fetch("/api/products"),
-      fetch("/api/profile"),
-    ])
-      .then(async ([c, p, prof]) => {
-        const clientsData = (await c.json()) as Client[];
-        const productsData = (await p.json()) as Product[];
-        const profileData = await prof.json();
-        if (!active) {
-          return;
-        }
-        setClients(clientsData || []);
-        setProducts(productsData || []);
-        // Initialize form with profile IBAN/BIC if available
-        if (profileData?.data) {
-          setValue("paymentIban", profileData.data.payment_iban || "");
-          setValue("paymentBic", profileData.data.payment_bic || "");
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [setValue]);
+    if (profile) {
+      setValue("paymentIban", profile.payment_iban || "");
+      setValue("paymentBic", profile.payment_bic || "");
+    }
+  }, [profile, setValue]);
 
   const totalAmount = useMemo(
     () => items.reduce((sum, it) => sum + (Number(it.total) || 0), 0),
@@ -124,21 +110,11 @@ export default function NewInvoicePage() {
 
   const onRequestCreateNewClient = async (clientData: ClientForm) => {
     try {
-      // Clear previous errors
       setClientFieldErrors(FIELD_ERROR_DEFAULT);
       setError(ERROR_DEFAULT);
 
       const newId = await wrap(() => createClientFromSelection(clientData));
       setValue("clientId", newId, { shouldValidate: true });
-      // Optimistic update without triggering a new request
-      // Ensure the new client appears in the select immediately
-      setClients((prev) => {
-        if (prev.some((c) => c.id === newId)) {
-          return prev;
-        }
-
-        return [...prev, { id: newId, ...clientData }];
-      });
     } catch (e: unknown) {
       if (e instanceof ClientCreationError) {
         if (e.fieldErrors) {
@@ -176,45 +152,49 @@ export default function NewInvoicePage() {
 
   /* INVOICE SUBMIT */
 
-  async function onSubmit(data: InvoiceForm) {
+  const createInvoice = useCreateInvoice({
+    onSuccess: () => {
+      router.push(`/${APP_PREFIX}/invoices`);
+    },
+    onError: (error: Error) => {
+      const apiError = error as ApiError;
+      if (
+        apiError.status === 409 ||
+        /duplicate|exists|unique/i.test(String(apiError.message))
+      ) {
+        setError(t("new.error.duplicateNumber"));
+      } else {
+        setError(apiError.message || t("new.error.createFail"));
+      }
+    },
+  });
+
+  const onSubmit = async (data: InvoiceForm) => {
     setError(ERROR_DEFAULT);
 
     try {
-      const res = await fetch("/api/invoices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          number: data.number.trim(),
-          client_id: data.clientId,
-          items: data.items,
-          total_amount: +totalAmount.toFixed(2),
-          issue_date: data.issueDate,
-          operation_type: data.operationType,
-          vat_exemption_mention: data.vatExemptionMention?.trim() || null,
-          payment_iban: data.paymentIban?.trim() || null,
-          payment_bic: data.paymentBic?.trim() || null,
-          payment_link: data.paymentLink?.trim() || null,
-          payment_free_text: data.paymentFreeText?.trim() || null,
-        }),
+      await createInvoice.mutateAsync({
+        number: data.number.trim(),
+        client_id: data.clientId,
+        items: data.items,
+        total_amount: +totalAmount.toFixed(2),
+        issue_date: data.issueDate,
+        status: "draft",
+        operation_type: data.operationType,
+        vat_exemption_mention: data.vatExemptionMention?.trim() || null,
+        payment_iban: data.paymentIban?.trim() || null,
+        payment_bic: data.paymentBic?.trim() || null,
+        payment_link: data.paymentLink?.trim() || null,
+        payment_free_text: data.paymentFreeText?.trim() || null,
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}) as never);
-        const serverMessage: string | undefined = err?.error || err?.message;
-        if (
-          res.status === 409 ||
-          /duplicate|exists|unique/i.test(String(serverMessage))
-        ) {
-          throw new Error(t("new.error.duplicateNumber"));
-        }
-        throw new Error(serverMessage || t("new.error.createFail"));
-      }
-      router.push("/app/invoices");
     } catch (e: unknown) {
-      const message =
-        e instanceof Error ? e.message : t("new.error.createFail");
-      setError(message);
+      // Error handling is done in the mutation's onError callback
+      // This catch is for any unexpected errors
+      if (e instanceof Error && !error) {
+        setError(e.message || t("new.error.createFail"));
+      }
     }
-  }
+  };
 
   if (loading) {
     return (
