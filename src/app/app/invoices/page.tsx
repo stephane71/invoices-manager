@@ -28,7 +28,6 @@ export default function InvoicesPage() {
 
   const selectedId = searchParams.get("id");
 
-  // Use React Query to fetch invoices
   const { data: invoices = [], isLoading } = useInvoices();
 
   const {

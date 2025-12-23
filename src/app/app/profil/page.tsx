@@ -46,10 +46,8 @@ export default function ProfilPage() {
     formState: { isSubmitting },
   } = form;
 
-  // Fetch profile using React Query
   const { data: profile, isLoading } = useProfile();
 
-  // Update profile using React Query mutation
   const updateProfile = useUpdateProfile({
     onSuccess: () => {
       setSuccess(profilTranslate("status.updated"));
@@ -62,7 +60,6 @@ export default function ProfilPage() {
     },
   });
 
-  // Populate form when profile data is loaded
   useEffect(() => {
     if (profile) {
       reset({

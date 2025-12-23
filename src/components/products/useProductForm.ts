@@ -60,7 +60,6 @@ export const useProductForm = ({ id }: UseProductFormProps) => {
     },
   });
 
-  // Populate form when product data is loaded
   useEffect(() => {
     if (product) {
       reset({

@@ -36,7 +36,6 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
 
   const updateClient = useUpdateClient(id, {
     onSuccess: () => {
-      // Navigate back to clients list after successful update
       router.push(`/${APP_PREFIX}/clients`);
     },
     onError: (error: Error) => {
@@ -55,7 +54,6 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
     },
   });
 
-  // Populate form when client data is loaded
   useEffect(() => {
     if (client) {
       if (client.client_type === "person") {
