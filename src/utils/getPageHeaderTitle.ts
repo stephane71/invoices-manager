@@ -19,6 +19,12 @@ export const getPageHeaderTitle = (
   if (pathname === `/${APP_PREFIX}/contact`) {
     return t("Contact.title");
   }
+  if (pathname === `/${APP_PREFIX}/learning`) {
+    return t("Learning.title");
+  }
+  if (pathname.startsWith(`/${APP_PREFIX}/learning/`)) {
+    return null; // No breadcrumb on detail pages, title shown in content
+  }
 
   return null;
 };

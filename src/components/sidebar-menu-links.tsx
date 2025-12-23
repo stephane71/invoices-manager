@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Mail, Package, Users } from "lucide-react";
+import { BookOpen, FileText, Mail, Package, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -76,6 +76,18 @@ export function SidebarMenuLinks() {
 
       <div className="mt-auto mb-4">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive(`/${APP_PREFIX}/learning`)}
+              onClick={handleItemClick}
+            >
+              <Link href={`/${APP_PREFIX}/learning`}>
+                <BookOpen />
+                <span>{t("learning")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
