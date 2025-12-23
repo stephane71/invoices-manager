@@ -25,8 +25,9 @@ export const createQueryClient = () => {
         // Don't refetch on reconnect by default
         refetchOnReconnect: false,
 
-        // Don't refetch on mount if data is still fresh
-        refetchOnMount: false,
+        // Refetch on mount if data is stale (default behavior)
+        // This ensures invalidated queries refetch when components remount
+        refetchOnMount: true,
       },
       mutations: {
         // Don't retry mutations by default

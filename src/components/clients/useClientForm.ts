@@ -8,8 +8,8 @@ import {
   ClientForm,
   clientFormSchema,
 } from "@/components/clients/clients";
-import { useClient } from "@/hooks/queries/useClient";
 import { useUpdateClient } from "@/hooks/mutations/useUpdateClient";
+import { useClient } from "@/hooks/queries/useClient";
 import { ApiError } from "@/lib/api-client";
 import { APP_PREFIX } from "@/lib/constants";
 
@@ -30,12 +30,10 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
 
   const { reset, setError: setFieldError } = form;
 
-  // Fetch client data using React Query
   const { data: client } = useClient(id, {
-    enabled: !!id, // Only fetch if id exists
+    enabled: !!id,
   });
 
-  // Update mutation with automatic cache invalidation
   const updateClient = useUpdateClient(id, {
     onSuccess: () => {
       // Navigate back to clients list after successful update
@@ -87,7 +85,6 @@ export const useClientForm = ({ id }: UseClientFormProps) => {
     setError("");
 
     try {
-      // Build client data based on client type
       const clientData =
         data.client_type === "person"
           ? {

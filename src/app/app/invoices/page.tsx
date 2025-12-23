@@ -93,7 +93,7 @@ export default function InvoicesPage() {
           </>
         }
         footer={
-          profileValidation !== null && !profileValidation.isComplete ? (
+          profileValidation && !profileValidation.isComplete ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>

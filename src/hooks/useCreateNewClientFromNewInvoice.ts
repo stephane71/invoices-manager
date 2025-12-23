@@ -2,6 +2,8 @@ import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import type { FieldErrors } from "@/components/clients/ClientFieldGroup";
 import { ClientForm } from "@/components/clients/clients";
+import { useCreateClient } from "@/hooks/mutations/useCreateClient";
+import { ApiError } from "@/lib/api-client";
 
 export class ClientCreationError extends Error {
   fieldErrors?: FieldErrors;
@@ -15,26 +17,21 @@ export class ClientCreationError extends Error {
 
 export const useCreateNewClientFromNewInvoice = () => {
   const t = useTranslations("Invoices");
+  const createClient = useCreateClient();
 
   return useCallback(
     async (clientData: ClientForm) => {
-      const clientRes = await fetch("/api/clients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(clientData),
-      });
-
-      if (!clientRes.ok) {
-        const errorData = await clientRes.json();
+      try {
+        const newClient = await createClient.mutateAsync(clientData);
+        return newClient.id;
+      } catch (error) {
+        const apiError = error as ApiError;
         throw new ClientCreationError(
-          errorData.error || t("new.error.clientCreateFail"),
-          errorData.fields,
+          apiError.message || t("new.error.clientCreateFail"),
+          apiError.fields,
         );
       }
-
-      const newClient = await clientRes.json();
-      return newClient.id;
     },
-    [t],
+    [t, createClient],
   );
 };

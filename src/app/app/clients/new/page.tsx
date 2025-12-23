@@ -13,6 +13,9 @@ import {
   clientFormSchema,
 } from "@/components/clients/clients";
 import { Button } from "@/components/ui/button";
+import { useCreateClient } from "@/hooks/mutations/useCreateClient";
+import { ApiError } from "@/lib/api-client";
+import { APP_PREFIX } from "@/lib/constants";
 
 export default function NewClientPage() {
   const [error, setError] = useState("");
@@ -35,7 +38,26 @@ export default function NewClientPage() {
     formState: { isSubmitting },
   } = form;
 
-  async function onSubmit(data: ClientForm) {
+  const createClient = useCreateClient({
+    onSuccess: () => {
+      router.push(`/${APP_PREFIX}/clients`);
+    },
+    onError: (error: Error) => {
+      const apiError = error as ApiError;
+      if (apiError.fields) {
+        Object.entries(apiError.fields).forEach(([key, message]) => {
+          setFieldError(key as keyof ClientForm, {
+            type: "server",
+            message: message as string,
+          });
+        });
+      } else {
+        setError(apiError.message || t("new.error.createFail"));
+      }
+    },
+  });
+
+  const onSubmit = async (data: ClientForm) => {
     setError("");
 
     try {
@@ -60,32 +82,15 @@ export default function NewClientPage() {
               address: data.address.trim() || undefined,
             };
 
-      const res = await fetch(`/api/clients`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(clientData),
-      });
-
-      if (res.ok) {
-        router.push("/app/clients");
-      } else {
-        const responseData = await res.json();
-
-        if (responseData.fields) {
-          Object.entries(responseData.fields).forEach(([key, message]) => {
-            setFieldError(key as keyof ClientForm, {
-              type: "server",
-              message: message as string,
-            });
-          });
-        } else {
-          setError(responseData.error || t("new.error.createFail"));
-        }
-      }
+      await createClient.mutateAsync(clientData);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("new.error.createFail"));
+      // Error handling is done in the mutation's onError callback
+      // This catch is for any unexpected errors
+      if (e instanceof Error && !error) {
+        setError(e.message || t("new.error.createFail"));
+      }
     }
-  }
+  };
 
   return (
     <div className="space-y-3">
