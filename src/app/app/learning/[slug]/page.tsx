@@ -6,8 +6,8 @@ import { LearningPageNav } from "@/components/learning/LearningPageNav";
 import { Button } from "@/components/ui/button";
 import { APP_PREFIX } from "@/lib/constants";
 import {
-  getAllLearningPages,
   getAdjacentPages,
+  getAllLearningPages,
   getLearningPage,
 } from "@/lib/learning";
 
@@ -72,17 +72,9 @@ export default async function LearningDetailPage({
         </header>
 
         {/* Content */}
-        <div
-          className="prose prose-slate max-w-none dark:prose-invert
-            prose-headings:font-bold prose-headings:tracking-tight
-            prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-            prose-p:leading-relaxed prose-p:text-muted-foreground
-            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-            prose-strong:font-semibold prose-strong:text-foreground
-            prose-ul:my-6 prose-li:my-2
-            prose-table:my-6"
-          dangerouslySetInnerHTML={{ __html: page.content || "" }}
-        />
+        <div className="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-foreground prose-ul:my-6 prose-li:my-2 prose-table:my-6 max-w-none">
+          {page.content}
+        </div>
 
         {/* Navigation */}
         <LearningPageNav previous={previous} next={next} />

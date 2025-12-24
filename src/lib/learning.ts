@@ -1,17 +1,26 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { remark } from "remark";
-import html from "remark-html";
+import { compileMDX } from "next-mdx-remote/rsc";
+import { Illustration } from "@/components/mdx/Illustration";
+import { InfoBox } from "@/components/mdx/InfoBox";
+import { TaxCalculator } from "@/components/mdx/TaxCalculator";
 
 const learningDirectory = path.join(process.cwd(), "content/learning");
+
+// MDX components available in all learning pages
+const mdxComponents = {
+  InfoBox,
+  TaxCalculator,
+  Illustration,
+};
 
 export type LearningPage = {
   slug: string;
   title: string;
   date: string;
   excerpt: string;
-  content?: string;
+  content?: React.ReactElement;
 };
 
 /**
@@ -26,9 +35,11 @@ export const getAllLearningPages = async (): Promise<LearningPage[]> => {
   const fileNames = fs.readdirSync(learningDirectory);
   const allPagesData = await Promise.all(
     fileNames
-      .filter((fileName) => fileName.endsWith(".md"))
+      .filter(
+        (fileName) => fileName.endsWith(".mdx") || fileName.endsWith(".md"),
+      )
       .map(async (fileName) => {
-        const slug = fileName.replace(/\.md$/, "");
+        const slug = fileName.replace(/\.mdx?$/, "");
         const fullPath = path.join(learningDirectory, fileName);
         const fileContents = fs.readFileSync(fullPath, "utf8");
 
@@ -49,12 +60,14 @@ export const getAllLearningPages = async (): Promise<LearningPage[]> => {
 };
 
 /**
- * Get a single learning page by slug with rendered HTML content
+ * Get a single learning page by slug with rendered MDX content
  */
-export const getLearningPage = async (
-  slug: string,
-): Promise<LearningPage> => {
-  const fullPath = path.join(learningDirectory, `${slug}.md`);
+export const getLearningPage = async (slug: string): Promise<LearningPage> => {
+  // Try .mdx first, then .md for backward compatibility
+  let fullPath = path.join(learningDirectory, `${slug}.mdx`);
+  if (!fs.existsSync(fullPath)) {
+    fullPath = path.join(learningDirectory, `${slug}.md`);
+  }
 
   if (!fs.existsSync(fullPath)) {
     throw new Error(`Learning page not found: ${slug}`);
@@ -62,21 +75,25 @@ export const getLearningPage = async (
 
   const fileContents = fs.readFileSync(fullPath, "utf8");
 
-  // Parse frontmatter
-  const matterResult = matter(fileContents);
-
-  // Convert markdown to HTML
-  const processedContent = await remark()
-    .use(html, { sanitize: false }) // We trust our own markdown content
-    .process(matterResult.content);
-  const contentHtml = processedContent.toString();
+  // Compile MDX with custom components
+  const { content, frontmatter } = await compileMDX<{
+    title: string;
+    date: string;
+    excerpt: string;
+  }>({
+    source: fileContents,
+    components: mdxComponents,
+    options: {
+      parseFrontmatter: true,
+    },
+  });
 
   return {
     slug,
-    title: matterResult.data.title as string,
-    date: matterResult.data.date as string,
-    excerpt: matterResult.data.excerpt as string,
-    content: contentHtml,
+    title: frontmatter.title,
+    date: frontmatter.date,
+    excerpt: frontmatter.excerpt,
+    content,
   };
 };
 
@@ -98,6 +115,7 @@ export const getAdjacentPages = async (
 
   return {
     previous: currentIndex > 0 ? allPages[currentIndex - 1] : null,
-    next: currentIndex < allPages.length - 1 ? allPages[currentIndex + 1] : null,
+    next:
+      currentIndex < allPages.length - 1 ? allPages[currentIndex + 1] : null,
   };
 };
