@@ -1,6 +1,6 @@
 "use client";
 
-import { Calculator, RefreshCw, Sparkles } from "lucide-react";
+import { Calculator, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -54,18 +54,6 @@ export default function SimulateurEIPage() {
           </Button>
         </div>
       </div>
-
-      {/* Reassurance banner */}
-      <Card className="mb-8 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:border-blue-900 dark:from-blue-950/30 dark:to-indigo-950/30">
-        <CardContent className="py-4">
-          <div className="flex items-center gap-3">
-            <Sparkles className="h-5 w-5 shrink-0 text-blue-500" />
-            <p className="text-sm text-blue-700 dark:text-blue-300">
-              {t("page.reassurance")}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
