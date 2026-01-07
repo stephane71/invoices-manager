@@ -24,6 +24,9 @@ import {
   type BenefitType,
   type ConfigState,
   getAvailableTaxRegimes,
+  getMicroThreshold,
+  getVatFranchiseThresholds,
+  getVatReelThresholds,
   SOCIAL_REGIME_OPTIONS,
   type SocialRegime,
   TAX_REGIME_OPTIONS,
@@ -140,7 +143,7 @@ export const ConfigurationForm = ({
 
           {/* Display selected tax regime description */}
           {config.taxRegime && (
-            <div className="bg-muted/30 mt-3 rounded-lg p-3">
+            <div className="bg-muted/30 mt-3 space-y-2 rounded-lg p-3">
               <p className="text-muted-foreground text-sm">
                 {t(
                   TAX_REGIME_OPTIONS.find(
@@ -148,6 +151,29 @@ export const ConfigurationForm = ({
                   )?.descriptionKey || "",
                 )}
               </p>
+              {/* Dynamic thresholds based on tax regime and benefit type */}
+              {config.taxRegime === "MICRO" && (
+                <p className="text-muted-foreground text-sm font-medium">
+                  {t("taxRegime.thresholds.micro", {
+                    threshold: getMicroThreshold(config.benefitType),
+                  })}
+                </p>
+              )}
+              {(config.taxRegime === "REEL_SIMPLIFIE" ||
+                config.taxRegime === "DECLARATION_CONTROLEE") && (
+                <p className="text-muted-foreground text-sm font-medium">
+                  {t("taxRegime.thresholds.reelSimplifie", {
+                    threshold: getMicroThreshold(config.benefitType),
+                  })}
+                </p>
+              )}
+              {config.taxRegime === "REEL_NORMAL" && (
+                <p className="text-muted-foreground text-sm font-medium">
+                  {t("taxRegime.thresholds.reelNormal", {
+                    threshold: getVatReelThresholds(config.benefitType),
+                  })}
+                </p>
+              )}
             </div>
           )}
         </Field>
@@ -242,7 +268,7 @@ export const ConfigurationForm = ({
 
           {/* Display selected VAT regime description */}
           {config.vatRegime && (
-            <div className="bg-muted/30 mt-3 rounded-lg p-3">
+            <div className="bg-muted/30 mt-3 space-y-2 rounded-lg p-3">
               <p className="text-muted-foreground text-sm">
                 {t(
                   VAT_REGIME_OPTIONS.find(
@@ -250,6 +276,35 @@ export const ConfigurationForm = ({
                   )?.descriptionKey || "",
                 )}
               </p>
+              {/* Dynamic thresholds based on VAT regime and benefit type */}
+              {config.vatRegime === "FRANCHISE_BASE" &&
+                (() => {
+                  const franchiseThresholds = getVatFranchiseThresholds(
+                    config.benefitType,
+                  );
+                  return (
+                    <p className="text-muted-foreground text-sm font-medium">
+                      {t("vatRegime.thresholds.franchiseBase", {
+                        base: franchiseThresholds.base,
+                        majore: franchiseThresholds.majore,
+                      })}
+                    </p>
+                  );
+                })()}
+              {config.vatRegime === "REEL_SIMPLIFIE_TVA" && (
+                <p className="text-muted-foreground text-sm font-medium">
+                  {t("vatRegime.thresholds.reelSimplifie", {
+                    threshold: getVatReelThresholds(config.benefitType),
+                  })}
+                </p>
+              )}
+              {config.vatRegime === "REEL_NORMAL_TVA" && (
+                <p className="text-muted-foreground text-sm font-medium">
+                  {t("vatRegime.thresholds.reelNormal", {
+                    threshold: getVatReelThresholds(config.benefitType),
+                  })}
+                </p>
+              )}
             </div>
           )}
         </Field>

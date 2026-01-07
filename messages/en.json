@@ -365,9 +365,14 @@
       "reelSimplifie": "Simplified real",
       "reelSimplifieDesc": "Deduction of actual expenses with simplified accounting obligations. Recommended if your expenses exceed the flat-rate deduction.",
       "reelNormal": "Normal real",
-      "reelNormalDesc": "Deduction of actual expenses with full accounting obligations. Mandatory above certain revenue thresholds.",
+      "reelNormalDesc": "Deduction of actual expenses with full accounting obligations.",
       "declarationControlee": "Controlled declaration",
-      "declarationControleeDesc": "Real regime for BNC. Deduction of actual expenses with accounting obligations adapted to liberal professions."
+      "declarationControleeDesc": "Real regime for BNC. Deduction of actual expenses with accounting obligations adapted to liberal professions.",
+      "thresholds": {
+        "micro": "📊 2025 threshold: {threshold}",
+        "reelSimplifie": "📊 Available from the start, mandatory if revenue > {threshold}",
+        "reelNormal": "📊 Mandatory if revenue > {threshold}"
+      }
     },
     "socialRegime": {
       "label": "Social regime",
@@ -381,11 +386,16 @@
       "label": "VAT regime",
       "tooltip": "The VAT regime is independent of your tax regime. You can be under micro-fiscal while being subject to VAT if you exceed the franchise thresholds.",
       "franchiseBase": "VAT franchise",
-      "franchiseBaseDesc": "No VAT to charge or declare. Reserved for small businesses below thresholds (€91,900 sales, €36,800 services).",
+      "franchiseBaseDesc": "No VAT to charge or declare.",
       "reelSimplifie": "Simplified VAT",
-      "reelSimplifieDesc": "VAT invoicing and recovery. Quarterly or annual declarations. Suitable for medium-sized businesses.",
+      "reelSimplifieDesc": "VAT invoicing and recovery. Quarterly or annual declarations.",
       "reelNormal": "Normal VAT",
-      "reelNormalDesc": "VAT invoicing and recovery. Mandatory monthly declarations. Reserved for large businesses (revenue > €840,000)."
+      "reelNormalDesc": "VAT invoicing and recovery. Mandatory monthly declarations.",
+      "thresholds": {
+        "franchiseBase": "📊 2025 threshold: {base} • Immediate loss if revenue > {majore}",
+        "reelSimplifie": "📊 For revenue < {threshold}",
+        "reelNormal": "📊 Mandatory if revenue > {threshold}"
+      }
     },
     "consequences": {
       "title": "What this implies",

@@ -365,9 +365,14 @@
       "reelSimplifie": "Réel simplifié",
       "reelSimplifieDesc": "Déduction des charges réelles avec obligations comptables allégées. Recommandé si vos charges dépassent l'abattement forfaitaire.",
       "reelNormal": "Réel normal",
-      "reelNormalDesc": "Déduction des charges réelles avec obligations comptables complètes. Obligatoire au-delà de certains seuils de CA.",
+      "reelNormalDesc": "Déduction des charges réelles avec obligations comptables complètes.",
       "declarationControlee": "Déclaration contrôlée",
-      "declarationControleeDesc": "Régime réel pour les BNC. Déduction des charges réelles avec obligations comptables adaptées aux professions libérales."
+      "declarationControleeDesc": "Régime réel pour les BNC. Déduction des charges réelles avec obligations comptables adaptées aux professions libérales.",
+      "thresholds": {
+        "micro": "📊 Seuil 2025 : {threshold}",
+        "reelSimplifie": "📊 Accessible dès le démarrage, obligatoire si CA > {threshold}",
+        "reelNormal": "📊 Obligatoire si CA > {threshold}"
+      }
     },
     "socialRegime": {
       "label": "Régime social",
@@ -381,11 +386,16 @@
       "label": "Régime de TVA",
       "tooltip": "Le régime de TVA est indépendant de votre régime fiscal. Vous pouvez être au micro-fiscal tout en étant assujetti à la TVA si vous dépassez les seuils de franchise.",
       "franchiseBase": "Franchise en base de TVA",
-      "franchiseBaseDesc": "Pas de TVA à facturer ni à déclarer. Réservé aux petites entreprises sous les seuils (91 900€ vente, 36 800€ services).",
+      "franchiseBaseDesc": "Pas de TVA à facturer ni à déclarer.",
       "reelSimplifie": "Réel simplifié TVA",
-      "reelSimplifieDesc": "Facturation et récupération de la TVA. Déclarations trimestrielles ou annuelles. Adapté aux CA moyens.",
+      "reelSimplifieDesc": "Facturation et récupération de la TVA. Déclarations trimestrielles ou annuelles.",
       "reelNormal": "Réel normal TVA",
-      "reelNormalDesc": "Facturation et récupération de la TVA. Déclarations mensuelles obligatoires. Réservé aux grandes entreprises (CA > 840 000€)."
+      "reelNormalDesc": "Facturation et récupération de la TVA. Déclarations mensuelles obligatoires.",
+      "thresholds": {
+        "franchiseBase": "📊 Seuil 2025 : {base} • Perte immédiate si CA > {majore}",
+        "reelSimplifie": "📊 Pour CA < {threshold}",
+        "reelNormal": "📊 Obligatoire si CA > {threshold}"
+      }
     },
     "consequences": {
       "title": "Ce que cela implique",
