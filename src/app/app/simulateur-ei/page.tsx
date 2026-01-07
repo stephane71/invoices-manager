@@ -34,7 +34,7 @@ export default function SimulateurEIPage() {
     <div className="min-h-screen">
       {/* Hero Section - Calming introduction */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-between">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 rounded-lg p-2">

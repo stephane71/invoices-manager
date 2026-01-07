@@ -2,6 +2,7 @@ import type {
   BenefitType,
   BenefitTypeOption,
   ConfigState,
+  SocialRegimeOption,
   TaxRegime,
   TaxRegimeOption,
   VatRegimeOption,
@@ -120,6 +121,22 @@ export const TAX_REGIME_OPTIONS: TaxRegimeOption[] = [
     labelKey: "taxRegime.declarationControlee",
     descriptionKey: "taxRegime.declarationControleeDesc",
     availableFor: ["BNC"],
+  },
+];
+
+/**
+ * Social regime options for UI
+ */
+export const SOCIAL_REGIME_OPTIONS: SocialRegimeOption[] = [
+  {
+    value: "MICRO_SOCIAL",
+    labelKey: "socialRegime.microSocial",
+    descriptionKey: "socialRegime.microSocialDesc",
+  },
+  {
+    value: "TNS_CLASSIQUE",
+    labelKey: "socialRegime.tnsClassique",
+    descriptionKey: "socialRegime.tnsClassiqueDesc",
   },
 ];
 

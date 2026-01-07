@@ -371,10 +371,11 @@
     },
     "socialRegime": {
       "label": "Social regime",
-      "automatic": "Automatic",
-      "description": "The social regime is automatically determined by your tax regime.",
+      "tooltip": "The social regime determines how your social contributions are calculated: flat-rate on revenue (micro-social) or on actual profit (classic TNS).",
       "microSocial": "Simplified micro-social",
-      "tnsClassique": "Classic TNS"
+      "microSocialDesc": "Contributions calculated on revenue with a flat rate. Simple and predictable, ideal for small activities.",
+      "tnsClassique": "Classic TNS",
+      "tnsClassiqueDesc": "Contributions calculated on actual profit (~45%). More advantageous if your expenses are high relative to your revenue."
     },
     "vatRegime": {
       "label": "VAT regime",

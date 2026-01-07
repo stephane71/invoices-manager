@@ -93,6 +93,13 @@ export interface TaxRegimeOption {
   availableFor: BenefitType[];
 }
 
+// Social regime option for UI
+export interface SocialRegimeOption {
+  value: SocialRegime;
+  labelKey: string;
+  descriptionKey: string;
+}
+
 // VAT regime option for UI
 export interface VatRegimeOption {
   value: VatRegime;

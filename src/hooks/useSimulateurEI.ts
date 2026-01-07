@@ -10,7 +10,6 @@ import {
   getApplicableAlerts,
   getApplicableConsequences,
   getAvailableTaxRegimes,
-  getSocialRegime,
   type SimulationResult,
   type ThresholdAlert,
 } from "@/lib/simulateur-ei";
@@ -47,24 +46,18 @@ export const useSimulateurEI = (): UseSimulateurEIReturn => {
   const [expenses, setExpenses] = useState<number>(0);
 
   /**
-   * Update configuration with automatic recalculation of coupled values
+   * Update configuration with validation of coupled values
    */
   const setConfig = useCallback((updates: Partial<ConfigState>) => {
     setConfigState((prev) => {
       const newConfig = { ...prev, ...updates };
 
-      // Automatic coupling: tax regime → social regime
-      if (updates.taxRegime !== undefined) {
-        newConfig.socialRegime = getSocialRegime(updates.taxRegime);
-      }
-
       // If benefit type changes, check if current tax regime is still valid
       if (updates.benefitType !== undefined) {
         const availableRegimes = getAvailableTaxRegimes(updates.benefitType);
         if (!availableRegimes.includes(newConfig.taxRegime)) {
-          // Reset to MICRO (always available) and update social regime
+          // Reset to MICRO (always available)
           newConfig.taxRegime = "MICRO";
-          newConfig.socialRegime = "MICRO_SOCIAL";
         }
       }
 
