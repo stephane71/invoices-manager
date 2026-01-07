@@ -86,22 +86,26 @@ export const ConfigurationForm = ({
               <Label
                 key={option.value}
                 htmlFor={option.value}
-                className="hover:bg-accent/50 has-[[data-state=checked]]:bg-primary/5 has-[[data-state=checked]]:border-primary flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors"
+                className="hover:bg-accent/50 has-[[data-state=checked]]:bg-primary/5 has-[[data-state=checked]]:border-primary flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
               >
-                <RadioGroupItem
-                  value={option.value}
-                  id={option.value}
-                  className="mt-0.5"
-                />
-                <div className="flex-1 space-y-1">
-                  <div className="font-medium">{t(option.labelKey)}</div>
-                  <div className="text-muted-foreground text-sm">
-                    {t(option.descriptionKey)}
-                  </div>
-                </div>
+                <RadioGroupItem value={option.value} id={option.value} />
+                <div className="font-medium">{t(option.labelKey)}</div>
               </Label>
             ))}
           </RadioGroup>
+
+          {/* Display selected benefit type description */}
+          {config.benefitType && (
+            <div className="bg-muted/30 mt-3 rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
+                {t(
+                  BENEFIT_TYPE_OPTIONS.find(
+                    (opt) => opt.value === config.benefitType,
+                  )?.descriptionKey || "",
+                )}
+              </p>
+            </div>
+          )}
         </Field>
 
         {/* Tax Regime */}
