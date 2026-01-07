@@ -361,9 +361,13 @@
       "label": "Tax regime",
       "tooltip": "The tax regime determines how your taxable profit is calculated: flat-rate (micro) or based on your actual expenses (real).",
       "micro": "Micro-fiscal regime",
+      "microDesc": "Simplified calculation with flat-rate deduction. Ideal to start without complex accounting.",
       "reelSimplifie": "Simplified real",
+      "reelSimplifieDesc": "Deduction of actual expenses with simplified accounting obligations. Recommended if your expenses exceed the flat-rate deduction.",
       "reelNormal": "Normal real",
-      "declarationControlee": "Controlled declaration"
+      "reelNormalDesc": "Deduction of actual expenses with full accounting obligations. Mandatory above certain revenue thresholds.",
+      "declarationControlee": "Controlled declaration",
+      "declarationControleeDesc": "Real regime for BNC. Deduction of actual expenses with accounting obligations adapted to liberal professions."
     },
     "socialRegime": {
       "label": "Social regime",

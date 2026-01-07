@@ -123,25 +123,39 @@ export const ConfigurationForm = ({
               </Tooltip>
             </TooltipProvider>
           </FieldLabel>
-          <Select
+          <RadioGroup
             value={config.taxRegime}
             onValueChange={(value) =>
               onConfigChange({ taxRegime: value as TaxRegime })
             }
+            className="grid gap-3 pt-2"
           >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TAX_REGIME_OPTIONS.filter((option) =>
-                availableTaxRegimes.includes(option.value),
-              ).map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {t(option.labelKey)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {TAX_REGIME_OPTIONS.filter((option) =>
+              availableTaxRegimes.includes(option.value),
+            ).map((option) => (
+              <Label
+                key={option.value}
+                htmlFor={option.value}
+                className="hover:bg-accent/50 has-[[data-state=checked]]:bg-primary/5 has-[[data-state=checked]]:border-primary flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
+              >
+                <RadioGroupItem value={option.value} id={option.value} />
+                <div className="font-medium">{t(option.labelKey)}</div>
+              </Label>
+            ))}
+          </RadioGroup>
+
+          {/* Display selected tax regime description */}
+          {config.taxRegime && (
+            <div className="bg-muted/30 mt-3 rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
+                {t(
+                  TAX_REGIME_OPTIONS.find(
+                    (opt) => opt.value === config.taxRegime,
+                  )?.descriptionKey || "",
+                )}
+              </p>
+            </div>
+          )}
         </Field>
 
         {/* Social Regime (Read-only, auto-calculated) */}

@@ -361,9 +361,13 @@
       "label": "Régime fiscal",
       "tooltip": "Le régime fiscal détermine comment votre bénéfice imposable est calculé : forfaitairement (micro) ou sur la base de vos charges réelles (réel).",
       "micro": "Régime micro-fiscal",
+      "microDesc": "Calcul simplifié avec abattement forfaitaire. Idéal pour démarrer sans comptabilité complexe.",
       "reelSimplifie": "Réel simplifié",
+      "reelSimplifieDesc": "Déduction des charges réelles avec obligations comptables allégées. Recommandé si vos charges dépassent l'abattement forfaitaire.",
       "reelNormal": "Réel normal",
-      "declarationControlee": "Déclaration contrôlée"
+      "reelNormalDesc": "Déduction des charges réelles avec obligations comptables complètes. Obligatoire au-delà de certains seuils de CA.",
+      "declarationControlee": "Déclaration contrôlée",
+      "declarationControleeDesc": "Régime réel pour les BNC. Déduction des charges réelles avec obligations comptables adaptées aux professions libérales."
     },
     "socialRegime": {
       "label": "Régime social",

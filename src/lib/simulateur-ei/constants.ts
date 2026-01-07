@@ -100,21 +100,25 @@ export const TAX_REGIME_OPTIONS: TaxRegimeOption[] = [
   {
     value: "MICRO",
     labelKey: "taxRegime.micro",
+    descriptionKey: "taxRegime.microDesc",
     availableFor: ["BIC_VENTE", "BIC_SERVICE", "BNC"],
   },
   {
     value: "REEL_SIMPLIFIE",
     labelKey: "taxRegime.reelSimplifie",
+    descriptionKey: "taxRegime.reelSimplifieDesc",
     availableFor: ["BIC_VENTE", "BIC_SERVICE"],
   },
   {
     value: "REEL_NORMAL",
     labelKey: "taxRegime.reelNormal",
+    descriptionKey: "taxRegime.reelNormalDesc",
     availableFor: ["BIC_VENTE", "BIC_SERVICE"],
   },
   {
     value: "DECLARATION_CONTROLEE",
     labelKey: "taxRegime.declarationControlee",
+    descriptionKey: "taxRegime.declarationControleeDesc",
     availableFor: ["BNC"],
   },
 ];

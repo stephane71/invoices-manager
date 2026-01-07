@@ -89,6 +89,7 @@ export interface BenefitTypeOption {
 export interface TaxRegimeOption {
   value: TaxRegime;
   labelKey: string;
+  descriptionKey: string;
   availableFor: BenefitType[];
 }
 
