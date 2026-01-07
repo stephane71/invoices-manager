@@ -62,6 +62,7 @@
     "invoices": "Factures",
     "clients": "Clients",
     "products": "Produits",
+    "simulateur": "Simulateur EI",
     "contact": "Me contacter",
     "signIn": "Se connecter"
   },
@@ -325,6 +326,179 @@
       "save": "Erreur d'enregistrement ({status})",
       "unknown": "Erreur inconnue",
       "invalidPhone": "Format de numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)"
+    }
+  },
+  "SimulateurEI": {
+    "page": {
+      "title": "Simulateur Entreprise Individuelle",
+      "subtitle": "Comprenez vos obligations et estimez vos revenus selon vos choix de régimes fiscaux et sociaux.",
+      "reset": "Réinitialiser",
+      "reassurance": "Ce simulateur est un outil pédagogique pour vous aider à y voir plus clair. Prenez le temps de comprendre chaque option — il n'y a pas de mauvais choix, seulement celui qui correspond le mieux à votre situation.",
+      "disclaimer": "Les résultats de ce simulateur sont fournis à titre indicatif et ne constituent pas un conseil fiscal ou juridique. Consultez un expert-comptable pour une analyse personnalisée de votre situation.",
+      "dataYear": "Données basées sur les taux et seuils 2025"
+    },
+    "steps": {
+      "configure": "Configurez votre situation",
+      "understand": "Comprenez les implications",
+      "simulate": "Simulez vos revenus",
+      "results": "Vos résultats"
+    },
+    "configuration": {
+      "title": "Votre configuration",
+      "description": "Sélectionnez les régimes qui correspondent à votre activité."
+    },
+    "benefitType": {
+      "label": "Type de bénéfices",
+      "tooltip": "Le type de bénéfices dépend de la nature de votre activité : vente de marchandises, prestations de services commerciales ou artisanales, ou activité libérale.",
+      "bicVente": "BIC — Vente de marchandises",
+      "bicVenteDesc": "Achat-revente, fournitures, vente à consommer sur place",
+      "bicService": "BIC — Prestations de services",
+      "bicServiceDesc": "Artisanat, services commerciaux et activités mixtes",
+      "bnc": "BNC — Activités libérales",
+      "bncDesc": "Professions libérales réglementées et non réglementées"
+    },
+    "taxRegime": {
+      "label": "Régime fiscal",
+      "tooltip": "Le régime fiscal détermine comment votre bénéfice imposable est calculé : forfaitairement (micro) ou sur la base de vos charges réelles (réel).",
+      "micro": "Régime micro-fiscal",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormal": "Réel normal",
+      "declarationControlee": "Déclaration contrôlée"
+    },
+    "socialRegime": {
+      "label": "Régime social",
+      "automatic": "Automatique",
+      "description": "Le régime social est automatiquement déterminé par votre régime fiscal.",
+      "microSocial": "Micro-social simplifié",
+      "tnsClassique": "TNS classique"
+    },
+    "vatRegime": {
+      "label": "Régime de TVA",
+      "tooltip": "Le régime de TVA est indépendant de votre régime fiscal. Vous pouvez être au micro-fiscal tout en étant assujetti à la TVA si vous dépassez les seuils de franchise.",
+      "franchiseBase": "Franchise en base de TVA",
+      "reelSimplifie": "Réel simplifié TVA",
+      "reelNormal": "Réel normal TVA"
+    },
+    "consequences": {
+      "title": "Ce que cela implique",
+      "description": "Voici les conséquences de votre configuration actuelle.",
+      "microSeuilVente": {
+        "title": "Seuil de chiffre d'affaires",
+        "description": "Votre CA annuel HT ne doit pas dépasser 188 700 € pour rester au régime micro-fiscal. Au-delà pendant 2 années consécutives, vous basculez automatiquement au régime réel simplifié."
+      },
+      "microSeuilService": {
+        "title": "Seuil de chiffre d'affaires",
+        "description": "Votre CA annuel HT ne doit pas dépasser 77 700 € pour rester au régime micro-fiscal."
+      },
+      "microSeuilBnc": {
+        "title": "Seuil de chiffre d'affaires",
+        "description": "Votre CA annuel HT ne doit pas dépasser 77 700 € pour rester au régime micro-BNC."
+      },
+      "microAbattementVente": {
+        "title": "Abattement forfaitaire de 71%",
+        "description": "Un abattement de 71% est appliqué sur votre CA pour déterminer votre bénéfice imposable. Vous ne pouvez pas déduire vos charges réelles."
+      },
+      "microAbattementService": {
+        "title": "Abattement forfaitaire de 50%",
+        "description": "Un abattement de 50% est appliqué sur votre CA pour déterminer votre bénéfice imposable."
+      },
+      "microAbattementBnc": {
+        "title": "Abattement forfaitaire de 34%",
+        "description": "Un abattement de 34% est appliqué sur votre CA pour déterminer votre bénéfice imposable."
+      },
+      "microComptabilite": {
+        "title": "Comptabilité simplifiée",
+        "description": "Vous devez uniquement tenir un livre des recettes chronologique. Pas de bilan ni de compte de résultat obligatoire."
+      },
+      "reelComptabilite": {
+        "title": "Comptabilité obligatoire",
+        "description": "Vous devez tenir une comptabilité complète : livre-journal, grand livre, inventaire annuel, bilan et compte de résultat."
+      },
+      "reelDeficit": {
+        "title": "Déficit reportable",
+        "description": "En cas de déficit, vous pouvez le reporter sur les 6 années suivantes et le déduire de vos futurs bénéfices."
+      },
+      "reelCharges": {
+        "title": "Déduction des charges réelles",
+        "description": "Vous pouvez déduire l'intégralité de vos charges professionnelles justifiées : achats, loyers, assurances, frais de déplacement, etc."
+      },
+      "socialMicro": {
+        "title": "Cotisations sur le chiffre d'affaires",
+        "description": "Vos cotisations sociales sont calculées sur votre CA encaissé, au taux forfaitaire. Si CA = 0 €, cotisations = 0 €."
+      },
+      "socialTns": {
+        "title": "Cotisations sur le bénéfice",
+        "description": "Vos cotisations sociales (~45% du bénéfice) sont calculées sur votre bénéfice imposable. Elles sont prélevées par acomptes provisionnels avec régularisation annuelle. Des cotisations minimales sont dues même si bénéfice = 0 €."
+      },
+      "tvaFranchiseVente": {
+        "title": "Seuils de franchise TVA",
+        "description": "Vous bénéficiez de la franchise tant que votre CA reste ≤ 91 900 €. Au-delà de 101 000 €, vous perdez immédiatement la franchise."
+      },
+      "tvaFranchiseService": {
+        "title": "Seuils de franchise TVA",
+        "description": "Vous bénéficiez de la franchise tant que votre CA reste ≤ 36 800 €. Au-delà de 39 100 €, vous perdez immédiatement la franchise."
+      },
+      "tvaFranchiseMention": {
+        "title": "Mention obligatoire sur les factures",
+        "description": "Vous devez indiquer sur vos factures : « TVA non applicable, article 293 B du Code général des impôts »."
+      },
+      "tvaFranchiseNoDeduction": {
+        "title": "Pas de récupération de TVA",
+        "description": "Vous ne pouvez pas récupérer la TVA sur vos achats et investissements."
+      },
+      "tvaReelSimplifie": {
+        "title": "Déclaration TVA simplifiée",
+        "description": "Vous devez verser 2 acomptes semestriels (juillet et décembre) et déposer une déclaration annuelle CA12. Note : ce régime sera supprimé en 2027."
+      },
+      "tvaReelNormal": {
+        "title": "Déclaration TVA mensuelle",
+        "description": "Vous devez déposer une déclaration CA3 chaque mois (ou chaque trimestre si TVA < 4 000 €/an)."
+      },
+      "alertMicroTvaReel": {
+        "title": "Configuration atypique",
+        "description": "Vous êtes au régime micro-fiscal mais assujetti à la TVA. C'est possible (si vous dépassez les seuils de franchise TVA) mais rare. Vérifiez que c'est bien votre situation."
+      }
+    },
+    "simulator": {
+      "title": "Simulation financière",
+      "description": "Entrez votre chiffre d'affaires prévisionnel pour estimer vos revenus.",
+      "turnover": "Chiffre d'affaires annuel",
+      "turnoverTooltip": "Votre chiffre d'affaires annuel hors taxes prévu ou réalisé.",
+      "expenses": "Charges déductibles",
+      "expensesTooltip": "Total de vos charges professionnelles déductibles : achats, loyers, assurances, frais de déplacement, etc.",
+      "expensesDescription": "Uniquement les charges professionnelles justifiées et déductibles."
+    },
+    "results": {
+      "title": "Résultats de la simulation",
+      "subtitle": "Estimation basée sur les taux 2025",
+      "enterTurnover": "Entrez un chiffre d'affaires",
+      "enterTurnoverHint": "Utilisez le curseur ou saisissez un montant pour voir vos résultats.",
+      "turnover": "Chiffre d'affaires",
+      "flatRateDeduction": "Abattement forfaitaire",
+      "deductibleExpenses": "Charges déductibles",
+      "taxableProfit": "Bénéfice imposable",
+      "taxableProfitHint": "Base de l'impôt sur le revenu",
+      "socialContributions": "Cotisations sociales",
+      "ofTurnover": "du CA",
+      "ofProfit": "du bénéfice",
+      "estimatedAmount": "Montant estimé",
+      "availableIncome": "Revenu disponible avant IR",
+      "beforeIncomeTax": "Avant impôt sur le revenu",
+      "incomeTaxNote": "L'impôt sur le revenu sera calculé sur votre bénéfice imposable de {amount}, ajouté à vos autres revenus du foyer fiscal (barème progressif)."
+    },
+    "alertTitles": {
+      "info": "Information",
+      "warning": "Attention",
+      "error": "Alerte"
+    },
+    "alerts": {
+      "exceedMicroBicVente": "Votre CA dépasse le seuil micro-fiscal de 188 700 €. Vous devrez basculer au régime réel si ce dépassement se répète 2 années consécutives.",
+      "exceedMicroService": "Votre CA dépasse le seuil micro-fiscal de 77 700 €. Vous devrez basculer au régime réel si ce dépassement se répète 2 années consécutives.",
+      "exceedFranchiseVente": "Votre CA dépasse le seuil de franchise TVA (91 900 €). Vous devrez peut-être vous assujettir à la TVA.",
+      "exceedFranchiseVenteMajore": "Votre CA dépasse le seuil majoré de 101 000 €. Vous perdez immédiatement la franchise de TVA dès le 1er jour du dépassement.",
+      "exceedFranchiseService": "Votre CA dépasse le seuil de franchise TVA (36 800 €). Vous devrez peut-être vous assujettir à la TVA.",
+      "exceedFranchiseServiceMajore": "Votre CA dépasse le seuil majoré de 39 100 €. Vous perdez immédiatement la franchise de TVA.",
+      "suggestReel": "Si vos charges réelles dépassent l'abattement forfaitaire, le régime réel pourrait être plus avantageux. Faites le calcul !"
     }
   },
   "Validation": {

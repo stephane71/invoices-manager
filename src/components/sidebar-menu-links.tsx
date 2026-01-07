@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Mail, Package, Users } from "lucide-react";
+import { Calculator, FileText, Mail, Package, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -69,6 +69,18 @@ export function SidebarMenuLinks() {
             <Link href={`/${APP_PREFIX}/products`}>
               <Package />
               <span>{t("products")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={isActive(`/${APP_PREFIX}/simulateur-ei`)}
+            onClick={handleItemClick}
+          >
+            <Link href={`/${APP_PREFIX}/simulateur-ei`}>
+              <Calculator />
+              <span>{t("simulateur")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
