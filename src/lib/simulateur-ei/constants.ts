@@ -147,14 +147,17 @@ export const VAT_REGIME_OPTIONS: VatRegimeOption[] = [
   {
     value: "FRANCHISE_BASE",
     labelKey: "vatRegime.franchiseBase",
+    descriptionKey: "vatRegime.franchiseBaseDesc",
   },
   {
     value: "REEL_SIMPLIFIE_TVA",
     labelKey: "vatRegime.reelSimplifie",
+    descriptionKey: "vatRegime.reelSimplifieDesc",
   },
   {
     value: "REEL_NORMAL_TVA",
     labelKey: "vatRegime.reelNormal",
+    descriptionKey: "vatRegime.reelNormalDesc",
   },
 ];
 

@@ -14,13 +14,6 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -225,23 +218,40 @@ export const ConfigurationForm = ({
               </Tooltip>
             </TooltipProvider>
           </FieldLabel>
-          <Select
+          <RadioGroup
             value={config.vatRegime}
             onValueChange={(value) =>
               onConfigChange({ vatRegime: value as VatRegime })
             }
+            className="grid gap-3 pt-2"
           >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {VAT_REGIME_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {t(option.labelKey)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {VAT_REGIME_OPTIONS.map((option) => (
+              <Label
+                key={option.value}
+                htmlFor={`vat-${option.value}`}
+                className="hover:bg-accent/50 has-[[data-state=checked]]:bg-primary/5 has-[[data-state=checked]]:border-primary flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
+              >
+                <RadioGroupItem
+                  value={option.value}
+                  id={`vat-${option.value}`}
+                />
+                <div className="font-medium">{t(option.labelKey)}</div>
+              </Label>
+            ))}
+          </RadioGroup>
+
+          {/* Display selected VAT regime description */}
+          {config.vatRegime && (
+            <div className="bg-muted/30 mt-3 rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
+                {t(
+                  VAT_REGIME_OPTIONS.find(
+                    (opt) => opt.value === config.vatRegime,
+                  )?.descriptionKey || "",
+                )}
+              </p>
+            </div>
+          )}
         </Field>
       </CardContent>
     </Card>

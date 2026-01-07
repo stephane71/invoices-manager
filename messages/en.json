@@ -381,8 +381,11 @@
       "label": "VAT regime",
       "tooltip": "The VAT regime is independent of your tax regime. You can be under micro-fiscal while being subject to VAT if you exceed the franchise thresholds.",
       "franchiseBase": "VAT franchise",
+      "franchiseBaseDesc": "No VAT to charge or declare. Reserved for small businesses below thresholds (€91,900 sales, €36,800 services).",
       "reelSimplifie": "Simplified VAT",
-      "reelNormal": "Normal VAT"
+      "reelSimplifieDesc": "VAT invoicing and recovery. Quarterly or annual declarations. Suitable for medium-sized businesses.",
+      "reelNormal": "Normal VAT",
+      "reelNormalDesc": "VAT invoicing and recovery. Mandatory monthly declarations. Reserved for large businesses (revenue > €840,000)."
     },
     "consequences": {
       "title": "What this implies",

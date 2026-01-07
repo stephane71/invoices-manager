@@ -381,8 +381,11 @@
       "label": "Régime de TVA",
       "tooltip": "Le régime de TVA est indépendant de votre régime fiscal. Vous pouvez être au micro-fiscal tout en étant assujetti à la TVA si vous dépassez les seuils de franchise.",
       "franchiseBase": "Franchise en base de TVA",
+      "franchiseBaseDesc": "Pas de TVA à facturer ni à déclarer. Réservé aux petites entreprises sous les seuils (91 900€ vente, 36 800€ services).",
       "reelSimplifie": "Réel simplifié TVA",
-      "reelNormal": "Réel normal TVA"
+      "reelSimplifieDesc": "Facturation et récupération de la TVA. Déclarations trimestrielles ou annuelles. Adapté aux CA moyens.",
+      "reelNormal": "Réel normal TVA",
+      "reelNormalDesc": "Facturation et récupération de la TVA. Déclarations mensuelles obligatoires. Réservé aux grandes entreprises (CA > 840 000€)."
     },
     "consequences": {
       "title": "Ce que cela implique",

@@ -104,4 +104,5 @@ export interface SocialRegimeOption {
 export interface VatRegimeOption {
   value: VatRegime;
   labelKey: string;
+  descriptionKey: string;
 }
