@@ -42,8 +42,8 @@ export const ResultsDisplay = ({ results, turnover }: ResultsDisplayProps) => {
   }
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="from-primary/5 to-primary/10 border-b bg-gradient-to-br">
+    <Card className="overflow-hidden pt-0">
+      <CardHeader className="from-primary/5 to-primary/10 border-b bg-gradient-to-br pt-4">
         <CardTitle className="text-lg">{t("results.title")}</CardTitle>
         <CardDescription>{t("results.subtitle")}</CardDescription>
       </CardHeader>

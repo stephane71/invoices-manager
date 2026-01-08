@@ -348,6 +348,11 @@
       "socialRegime": "Social",
       "vatRegime": "VAT"
     },
+    "navigation": {
+      "company": "Company",
+      "turnover": "Turnover",
+      "results": "Results"
+    },
     "configuration": {
       "title": "Your configuration",
       "description": "Select the regimes that match your activity."

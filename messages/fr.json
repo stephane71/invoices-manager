@@ -348,6 +348,11 @@
       "socialRegime": "Social",
       "vatRegime": "TVA"
     },
+    "navigation": {
+      "company": "Entreprise",
+      "turnover": "Chiffre d'affaires",
+      "results": "Résultats"
+    },
     "configuration": {
       "title": "Votre configuration",
       "description": "Sélectionnez les régimes qui correspondent à votre activité."

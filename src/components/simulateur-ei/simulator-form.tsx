@@ -93,7 +93,7 @@ export const SimulatorForm = ({
   );
 
   return (
-    <Card className="border-none bg-transparent shadow-none">
+    <Card className="border-none bg-transparent p-0 shadow-none">
       <CardHeader className="px-0 pt-0">
         <CardTitle className="text-lg">{t("simulator.title")}</CardTitle>
         <CardDescription>{t("simulator.description")}</CardDescription>

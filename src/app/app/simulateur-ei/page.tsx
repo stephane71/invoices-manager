@@ -1,7 +1,14 @@
 "use client";
 
-import { Calculator, RefreshCw } from "lucide-react";
+import {
+  Building2,
+  Calculator,
+  ChartColumn,
+  RefreshCw,
+  Wallet,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import {
   BenefitTypeTab,
@@ -13,13 +20,15 @@ import {
   VatRegimeTab,
 } from "@/components/simulateur-ei";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSimulateurEI } from "@/hooks/useSimulateurEI";
 
+type SimulationStep = "configuration" | "simulation" | "results";
+
 export default function SimulateurEIPage() {
   const t = useTranslations("SimulateurEI");
+  const [currentStep, setCurrentStep] =
+    useState<SimulationStep>("configuration");
   const {
     config,
     setConfig,
@@ -32,8 +41,13 @@ export default function SimulateurEIPage() {
     reset,
   } = useSimulateurEI();
 
+  const handleReset = () => {
+    reset();
+    setCurrentStep("configuration");
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-24">
       {/* Hero Section */}
       <div className="mb-6">
         <div className="space-y-2">
@@ -48,32 +62,35 @@ export default function SimulateurEIPage() {
           <p className="text-muted-foreground max-w-2xl">
             {t("page.subtitle")}
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            className="gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            {t("page.reset")}
+          </Button>
         </div>
-        <Button variant="outline" size="sm" onClick={reset} className="gap-2">
-          <RefreshCw className="h-4 w-4" />
-          {t("page.reset")}
-        </Button>
       </div>
 
-      {/* Configuration Tabs - Sticky Header */}
-      <Tabs defaultValue="benefitType" className="w-full">
-        <div className="sticky top-16 z-10 w-full bg-white py-2">
-          <TabsList className="w-full">
-            <TabsTrigger value="benefitType">
-              {t("tabs.benefitType")}
-            </TabsTrigger>
-            <TabsTrigger value="taxRegime">{t("tabs.taxRegime")}</TabsTrigger>
-            <TabsTrigger value="socialRegime">
-              {t("tabs.socialRegime")}
-            </TabsTrigger>
-            <TabsTrigger value="vatRegime">{t("tabs.vatRegime")}</TabsTrigger>
-          </TabsList>
-        </div>
+      {/* Step 1: Configuration */}
+      {currentStep === "configuration" && (
+        <Tabs defaultValue="benefitType" className="w-full">
+          <div className="sticky top-16 z-10 w-full bg-white py-2">
+            <TabsList className="w-full">
+              <TabsTrigger value="benefitType">
+                {t("tabs.benefitType")}
+              </TabsTrigger>
+              <TabsTrigger value="taxRegime">{t("tabs.taxRegime")}</TabsTrigger>
+              <TabsTrigger value="socialRegime">
+                {t("tabs.socialRegime")}
+              </TabsTrigger>
+              <TabsTrigger value="vatRegime">{t("tabs.vatRegime")}</TabsTrigger>
+            </TabsList>
+          </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left Column: Configuration Tabs */}
-          <div className="lg:col-span-5">
+          <div className="mx-auto max-w-2xl">
             <TabsContent value="benefitType" className="mt-0">
               <BenefitTypeTab config={config} onConfigChange={setConfig} />
             </TabsContent>
@@ -90,55 +107,66 @@ export default function SimulateurEIPage() {
               <VatRegimeTab config={config} onConfigChange={setConfig} />
             </TabsContent>
           </div>
+        </Tabs>
+      )}
 
-          {/* Right Column: Simulation */}
-          <div className="space-y-6 lg:col-span-7">
-            {/* Step 2: Simulation Input */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="mb-4 flex items-center gap-2">
-                  <span className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium">
-                    2
-                  </span>
-                  <span className="text-muted-foreground text-sm font-medium">
-                    {t("steps.simulate")}
-                  </span>
-                </div>
-                <SimulatorForm
-                  turnover={turnover}
-                  expenses={expenses}
-                  taxRegime={config.taxRegime}
-                  socialRegime={config.socialRegime}
-                  onTurnoverChange={setTurnover}
-                  onExpensesChange={setExpenses}
-                />
-              </CardContent>
-            </Card>
+      {/* Step 2: Simulation */}
+      {currentStep === "simulation" && (
+        <div>
+          <SimulatorForm
+            turnover={turnover}
+            expenses={expenses}
+            taxRegime={config.taxRegime}
+            socialRegime={config.socialRegime}
+            onTurnoverChange={setTurnover}
+            onExpensesChange={setExpenses}
+          />
 
-            {/* Threshold Alerts */}
-            {alerts.length > 0 && <ThresholdAlerts alerts={alerts} />}
-
-            {/* Results */}
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-sm font-medium text-white">
-                  3
-                </span>
-                <span className="text-muted-foreground text-sm font-medium">
-                  {t("steps.results")}
-                </span>
-              </div>
-              <ResultsDisplay results={results} turnover={turnover} />
+          {/* Threshold Alerts */}
+          {alerts.length > 0 && (
+            <div className="mt-6">
+              <ThresholdAlerts alerts={alerts} />
             </div>
-          </div>
+          )}
         </div>
-      </Tabs>
+      )}
 
-      {/* Footer disclaimer */}
-      <Separator className="my-8" />
-      <div className="text-muted-foreground mx-auto max-w-2xl text-center text-sm">
-        <p>{t("page.disclaimer")}</p>
-        <p className="mt-2 text-xs">{t("page.dataYear")}</p>
+      {/* Step 3: Results */}
+      {currentStep === "results" && (
+        <ResultsDisplay results={results} turnover={turnover} />
+      )}
+
+      {/* Fixed Navigation Footer */}
+      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur">
+        <div className="container mx-auto flex items-center justify-center gap-2 px-4 py-3">
+          <Button
+            variant={currentStep === "configuration" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setCurrentStep("configuration")}
+            className="flex-1 gap-2 sm:flex-none"
+          >
+            <Building2 className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("navigation.company")}</span>
+          </Button>
+          <Button
+            variant={currentStep === "simulation" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setCurrentStep("simulation")}
+            className="flex-1 gap-2 sm:flex-none"
+          >
+            <Wallet className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("navigation.turnover")}</span>
+          </Button>
+          <Button
+            variant={currentStep === "results" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setCurrentStep("results")}
+            className="flex-1 gap-2 sm:flex-none"
+          >
+            <ChartColumn className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("navigation.results")}</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
