@@ -62,10 +62,11 @@ export const calculateSimulation = (
 
     cotisationsSociales = turnover * tauxCotisations;
   } else {
-    // TNS classic: contributions based on profit
+    // TNS classic: contributions based on profit after expenses
     baseCotisations = "benefice";
     tauxCotisations = TAUX_TNS_CLASSIQUE;
-    cotisationsSociales = beneficeImposable * tauxCotisations;
+    const beneficeSocial = Math.max(turnover - expenses, 0);
+    cotisationsSociales = beneficeSocial * tauxCotisations;
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -74,6 +75,7 @@ export const calculateSimulation = (
 
   // Note: contributions are deducted from available income,
   // not from taxable profit (which is the base for income tax)
+  // Expenses are only deducted if tax regime is real (not micro)
   const revenuAvantIR =
     turnover - (taxRegime === "MICRO" ? 0 : expenses) - cotisationsSociales;
 

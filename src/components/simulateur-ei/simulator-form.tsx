@@ -20,12 +20,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { isRealRegime, type TaxRegime } from "@/lib/simulateur-ei";
+import {
+  isRealRegime,
+  type SocialRegime,
+  type TaxRegime,
+} from "@/lib/simulateur-ei";
 
 interface SimulatorFormProps {
   turnover: number;
   expenses: number;
   taxRegime: TaxRegime;
+  socialRegime: SocialRegime;
   onTurnoverChange: (value: number) => void;
   onExpensesChange: (value: number) => void;
 }
@@ -54,11 +59,14 @@ export const SimulatorForm = ({
   turnover,
   expenses,
   taxRegime,
+  socialRegime,
   onTurnoverChange,
   onExpensesChange,
 }: SimulatorFormProps) => {
   const t = useTranslations("SimulateurEI");
-  const showExpenses = isRealRegime(taxRegime);
+  // Show expenses when EITHER tax regime is real OR social regime is TNS_CLASSIQUE
+  const showExpenses =
+    isRealRegime(taxRegime) || socialRegime === "TNS_CLASSIQUE";
 
   const handleTurnoverInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +143,7 @@ export const SimulatorForm = ({
           </div>
         </Field>
 
-        {/* Expenses Input (only for real regime) */}
+        {/* Expenses Input (when either tax regime is real or social regime is TNS Classique) */}
         {showExpenses && (
           <Field>
             <FieldLabel className="flex items-center gap-2">

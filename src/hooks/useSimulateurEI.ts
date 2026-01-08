@@ -76,7 +76,7 @@ export const useSimulateurEI = (): UseSimulateurEIReturn => {
     return calculateSimulation({
       ...config,
       turnover,
-      expenses: config.taxRegime === "MICRO" ? 0 : expenses,
+      expenses,
     });
   }, [config, turnover, expenses]);
 

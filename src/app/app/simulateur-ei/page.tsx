@@ -109,6 +109,7 @@ export default function SimulateurEIPage() {
                 turnover={turnover}
                 expenses={expenses}
                 taxRegime={config.taxRegime}
+                socialRegime={config.socialRegime}
                 onTurnoverChange={setTurnover}
                 onExpensesChange={setExpenses}
               />
