@@ -3,6 +3,7 @@
 import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { RegimeCharacteristics } from "./regime-characteristics";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ import {
   BENEFIT_TYPE_OPTIONS,
   type BenefitType,
   type ConfigState,
+  getBenefitTypeCharacteristics,
 } from "@/lib/simulateur-ei";
 
 interface BenefitTypeTabProps {
@@ -89,6 +91,13 @@ export const BenefitTypeTab = ({
                 )}
               </p>
             </div>
+          )}
+
+          {/* Display benefit type characteristics */}
+          {config.benefitType && (
+            <RegimeCharacteristics
+              sections={getBenefitTypeCharacteristics(config.benefitType)}
+            />
           )}
         </Field>
       </CardContent>

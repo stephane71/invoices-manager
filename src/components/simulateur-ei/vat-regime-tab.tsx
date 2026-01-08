@@ -3,6 +3,7 @@
 import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { RegimeCharacteristics } from "./regime-characteristics";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ import {
   type ConfigState,
   getVatFranchiseThresholds,
   getVatReelThresholds,
+  getVatRegimeCharacteristics,
   VAT_REGIME_OPTIONS,
   type VatRegime,
 } from "@/lib/simulateur-ei";
@@ -120,6 +122,16 @@ export const VatRegimeTab = ({ config, onConfigChange }: VatRegimeTabProps) => {
                 </p>
               )}
             </div>
+          )}
+
+          {/* Display VAT regime characteristics */}
+          {config.vatRegime && (
+            <RegimeCharacteristics
+              sections={getVatRegimeCharacteristics(
+                config.vatRegime,
+                config.benefitType,
+              )}
+            />
           )}
         </Field>
       </CardContent>

@@ -535,6 +535,222 @@
       "exceedFranchiseService": "Votre CA dépasse le seuil de franchise TVA (36 800 €). Vous devrez peut-être vous assujettir à la TVA.",
       "exceedFranchiseServiceMajore": "Votre CA dépasse le seuil majoré de 39 100 €. Vous perdez immédiatement la franchise de TVA.",
       "suggestReel": "Si vos charges réelles dépassent l'abattement forfaitaire, le régime réel pourrait être plus avantageux. Faites le calcul !"
+    },
+    "characteristics": {
+      "title": "Caractéristiques du régime",
+      "benefitType": {
+        "category": {
+          "title": "Catégorie fiscale",
+          "type": "Type de revenus",
+          "examples": "Exemples d'activités"
+        },
+        "thresholds": {
+          "title": "Seuils applicables",
+          "micro": "Seuil micro-entreprise",
+          "abattement": "Abattement forfaitaire"
+        },
+        "social": {
+          "title": "Cotisations sociales",
+          "rate": "Taux micro-social"
+        },
+        "BIC_VENTE": {
+          "category": "BIC (Bénéfices Industriels et Commerciaux)",
+          "examples": "Achat-revente, fournitures, vente à consommer sur place, commerce de détail",
+          "microThreshold": "188 700 € de CA HT annuel",
+          "abattement": "71% d'abattement forfaitaire",
+          "socialRate": "12,3% du CA"
+        },
+        "BIC_SERVICE": {
+          "category": "BIC (Bénéfices Industriels et Commerciaux)",
+          "examples": "Artisanat, services commerciaux, réparation, restauration, hébergement",
+          "microThreshold": "77 700 € de CA HT annuel",
+          "abattement": "50% d'abattement forfaitaire",
+          "socialRate": "21,2% du CA"
+        },
+        "BNC": {
+          "category": "BNC (Bénéfices Non Commerciaux)",
+          "examples": "Professions libérales, consultants, formateurs, développeurs, graphistes",
+          "microThreshold": "77 700 € de CA HT annuel",
+          "abattement": "34% d'abattement forfaitaire",
+          "socialRate": "23,1% du CA"
+        }
+      },
+      "taxRegime": {
+        "calculation": {
+          "title": "Mode de calcul",
+          "method": "Méthode",
+          "rate": "Taux applicable",
+          "deductions": "Déductions possibles"
+        },
+        "accounting": {
+          "title": "Comptabilité",
+          "type": "Type de comptabilité",
+          "documents": "Documents obligatoires"
+        },
+        "declaration": {
+          "title": "Déclarations",
+          "form": "Formulaires",
+          "frequency": "Fréquence",
+          "deadline": "Échéance",
+          "transmission": "Mode de transmission"
+        },
+        "options": {
+          "title": "Options disponibles"
+        },
+        "micro": {
+          "calculationMethod": "Abattement forfaitaire sur le chiffre d'affaires",
+          "abattement": {
+            "BIC_VENTE": "71% d'abattement (vous êtes imposé sur 29% du CA)",
+            "BIC_SERVICE": "50% d'abattement (vous êtes imposé sur 50% du CA)",
+            "BNC": "34% d'abattement (vous êtes imposé sur 66% du CA)"
+          },
+          "accountingType": "Comptabilité ultra-simplifiée",
+          "documents": "Livre des recettes + registre des achats (pour ventes)",
+          "form": "Formulaire 2042-C-PRO",
+          "frequency": "Déclaration annuelle",
+          "deadline": "Mai-juin (avec la déclaration de revenus)",
+          "options": {
+            "vfl": "Versement libératoire de l'IR",
+            "vflDesc": "Paiement de l'IR en même temps que les cotisations sociales (taux forfaitaire)",
+            "vflTooltip": "Conditions : revenu fiscal de référence N-2 ≤ 28 797 € pour 1 part. Option à formuler lors de la création ou avant le 30 septembre.",
+            "optionReel": "Option pour le régime réel",
+            "optionReelDesc": "Possibilité d'opter pour le régime réel si vos charges réelles sont élevées"
+          }
+        },
+        "reelSimplifie": {
+          "calculationMethod": "Déduction des charges réelles",
+          "deductions": "Toutes les charges professionnelles justifiées : achats, loyers, assurances, frais de déplacement...",
+          "accountingType": "Comptabilité réelle simplifiée",
+          "documents": "Livre-journal, grand livre, livre d'inventaire, comptes annuels simplifiés",
+          "form": "2042-C-PRO + Déclaration de résultats (2031 BIC / 2035 BNC) + Annexes 2033",
+          "frequency": "Déclaration annuelle",
+          "deadline": "2ème jour ouvré après le 1er mai + 15 jours",
+          "transmission": "Télétransmission obligatoire (mode EFI ou EDI)",
+          "options": {
+            "is": "Option pour l'IS",
+            "isDesc": "Possibilité d'être imposé à l'impôt sur les sociétés (15% puis 25%)",
+            "isTooltip": "Disponible depuis 2022 pour les EI. Assimilation à une EURL. Option irrévocable sauf transformation.",
+            "deficit": "Report du déficit",
+            "deficitDesc": "En cas de déficit, report possible sur les 6 années suivantes"
+          }
+        },
+        "declarationControlee": {
+          "form": "2042-C-PRO + Déclaration 2035 + Annexes"
+        },
+        "reelNormal": {
+          "calculationMethod": "Comptabilité d'engagement complète",
+          "deductions": "Déduction intégrale des charges réelles avec comptabilité détaillée",
+          "accountingType": "Comptabilité complète",
+          "documents": "Livre-journal, grand livre, livre d'inventaire, bilan, compte de résultat, annexes comptables",
+          "form": "2042-C-PRO + Liasse fiscale complète (2050-2059) + CA3 mensuelle TVA",
+          "frequency": "Annuelle pour l'IR, mensuelle pour la TVA",
+          "transmission": "Télétransmission obligatoire (mode EDI)"
+        }
+      },
+      "socialRegime": {
+        "calculation": {
+          "title": "Mode de calcul",
+          "base": "Base de calcul",
+          "rate": "Taux de cotisation",
+          "reform": "Réforme 2026"
+        },
+        "declaration": {
+          "title": "Déclarations",
+          "frequency": "Fréquence",
+          "mechanism": "Mécanisme",
+          "organism": "Organisme collecteur"
+        },
+        "exonerations": {
+          "title": "Exonérations possibles",
+          "acre": "ACRE",
+          "other": "Autres exonérations"
+        },
+        "protection": {
+          "title": "Protection sociale",
+          "health": "Maladie-maternité",
+          "retirement": "Retraite",
+          "exclusions": "Exclusions",
+          "recommended": "Compléments recommandés"
+        },
+        "micro": {
+          "calculationBase": "Chiffre d'affaires réellement encaissé",
+          "rate": {
+            "BIC_VENTE": "12,3% du CA (vente de marchandises)",
+            "BIC_SERVICE": "21,2% du CA (prestations de services BIC)",
+            "BNC": "23,1% du CA (activités libérales BNC)"
+          },
+          "frequency": "Mensuelle ou trimestrielle au choix",
+          "organism": "URSSAF (unique collecteur)",
+          "acre": "ACRE : 50% de réduction la 1ère année",
+          "acreTooltip": "Conditions : première année d'activité, pas d'ACRE dans les 3 dernières années. Demande lors de l'immatriculation ou dans les 45 jours.",
+          "health": "Remboursements identiques au régime général",
+          "retirement": "Trimestres validés selon le CA réalisé",
+          "exclusions": "Pas d'assurance chômage ni de couverture accident du travail"
+        },
+        "tns": {
+          "calculationBase": "Bénéfice imposable (revenu professionnel)",
+          "rate": "Environ 45% du bénéfice",
+          "reform2026": "Abattement de 26% sur l'assiette (réforme 2026)",
+          "reform2026Tooltip": "À partir de 2026, les cotisations seront calculées sur le revenu brut abattu de 26%, réduisant ainsi la base de cotisations.",
+          "frequency": "Acomptes provisionnels + régularisation annuelle",
+          "mechanism": "Cotisations basées sur revenus N-2, régularisées après déclaration fiscale",
+          "organism": "URSSAF (unique collecteur)",
+          "acre": "ACRE : exonération partielle sur 24 mois",
+          "otherExonerations": "JEI/JEU, ZFU selon éligibilité",
+          "health": "Remboursements identiques au régime général",
+          "retirement": "Trimestres validés selon cotisations versées",
+          "recommended": "Mutuelle Madelin, prévoyance, retraite complémentaire facultative"
+        }
+      },
+      "vatRegime": {
+        "obligations": {
+          "title": "Obligations",
+          "billing": "Facturation",
+          "mention": "Mentions obligatoires",
+          "declaration": "Déclaration",
+          "payment": "Paiement",
+          "frequency": "Fréquence"
+        },
+        "advantages": {
+          "title": "Avantages"
+        },
+        "limits": {
+          "title": "Limites",
+          "noRecovery": "Récupération TVA",
+          "threshold": "Seuil de maintien"
+        },
+        "franchise": {
+          "billing": "Pas de TVA à facturer aux clients",
+          "mention": "« TVA non applicable, art. 293 B du CGI »",
+          "declaration": "Aucune déclaration de TVA",
+          "advantage1": "Simplicité administrative",
+          "advantage1Desc": "Aucune déclaration de TVA à effectuer",
+          "advantage2": "Prix compétitifs",
+          "advantage2Desc": "Tarifs plus attractifs pour les clients particuliers",
+          "noRecovery": "Pas de récupération de la TVA sur vos achats",
+          "threshold": {
+            "BIC_VENTE": "Maintien si CA ≤ 91 900 € • Perte immédiate si CA > 101 000 €",
+            "BIC_SERVICE": "Maintien si CA ≤ 36 800 € • Perte immédiate si CA > 39 100 €",
+            "BNC": "Maintien si CA ≤ 36 800 € • Perte immédiate si CA > 39 100 €"
+          }
+        },
+        "reelSimplifie": {
+          "billing": "TVA facturée et récupérable",
+          "declaration": "Déclaration annuelle CA12 + 2 acomptes semestriels",
+          "payment": "Acomptes en juillet et décembre",
+          "advantage1": "Récupération de la TVA",
+          "advantage1Desc": "Possibilité de récupérer la TVA sur tous vos achats professionnels",
+          "advantage2": "Déclarations allégées",
+          "advantage2Desc": "Seulement 2 acomptes + 1 déclaration annuelle"
+        },
+        "reelNormal": {
+          "billing": "TVA facturée et récupérable",
+          "declaration": "Déclaration mensuelle CA3",
+          "frequency": "Mensuelle (ou trimestrielle si TVA < 4 000 €/an)",
+          "advantage1": "Suivi précis de la trésorerie",
+          "advantage1Desc": "Déclarations mensuelles permettant un meilleur suivi de la TVA"
+        }
+      }
     }
   },
   "Validation": {

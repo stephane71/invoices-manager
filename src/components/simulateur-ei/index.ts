@@ -1,5 +1,6 @@
 export { BenefitTypeTab } from "./benefit-type-tab";
 export { ConfigurationForm } from "./configuration-form";
+export { RegimeCharacteristics } from "./regime-characteristics";
 export { ResultsDisplay } from "./results-display";
 export { SimulatorForm } from "./simulator-form";
 export { SocialRegimeTab } from "./social-regime-tab";

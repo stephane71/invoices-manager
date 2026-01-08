@@ -3,6 +3,7 @@
 import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { RegimeCharacteristics } from "./regime-characteristics";
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   type ConfigState,
+  getSocialRegimeCharacteristics,
   SOCIAL_REGIME_OPTIONS,
   type SocialRegime,
 } from "@/lib/simulateur-ei";
@@ -92,6 +94,16 @@ export const SocialRegimeTab = ({
                 )}
               </p>
             </div>
+          )}
+
+          {/* Display social regime characteristics */}
+          {config.socialRegime && (
+            <RegimeCharacteristics
+              sections={getSocialRegimeCharacteristics(
+                config.socialRegime,
+                config.benefitType,
+              )}
+            />
           )}
         </Field>
       </CardContent>

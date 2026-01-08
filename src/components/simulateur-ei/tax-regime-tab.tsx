@@ -3,6 +3,7 @@
 import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { RegimeCharacteristics } from "./regime-characteristics";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ import {
   type ConfigState,
   getAvailableTaxRegimes,
   getMicroThreshold,
+  getTaxRegimeCharacteristics,
   getVatReelThresholds,
   TAX_REGIME_OPTIONS,
   type TaxRegime,
@@ -115,6 +117,16 @@ export const TaxRegimeTab = ({ config, onConfigChange }: TaxRegimeTabProps) => {
                 </p>
               )}
             </div>
+          )}
+
+          {/* Display tax regime characteristics */}
+          {config.taxRegime && (
+            <RegimeCharacteristics
+              sections={getTaxRegimeCharacteristics(
+                config.taxRegime,
+                config.benefitType,
+              )}
+            />
           )}
         </Field>
       </CardContent>
