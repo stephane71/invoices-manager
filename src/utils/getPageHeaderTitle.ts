@@ -19,6 +19,9 @@ export const getPageHeaderTitle = (
   if (pathname === `/${APP_PREFIX}/contact`) {
     return t("Contact.title");
   }
+  if (pathname === `/${APP_PREFIX}/simulateur-ei`) {
+    return t("SimulateurEI.page.title");
+  }
 
   return null;
 };

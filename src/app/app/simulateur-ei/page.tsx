@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Building2,
-  Calculator,
-  ChartColumn,
-  RefreshCw,
-  Wallet,
-} from "lucide-react";
+import { Building2, ChartColumn, RefreshCw, Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -49,29 +43,17 @@ export default function SimulateurEIPage() {
   return (
     <div className="min-h-screen pb-24">
       {/* Hero Section */}
-      <div className="mb-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 rounded-lg p-2">
-              <Calculator className="text-primary h-6 w-6" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {t("page.title")}
-            </h1>
-          </div>
-          <p className="text-muted-foreground max-w-2xl">
-            {t("page.subtitle")}
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            className="gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            {t("page.reset")}
-          </Button>
-        </div>
+      <div className="mb-6 space-y-2">
+        <p className="text-muted-foreground max-w-2xl">{t("page.subtitle")}</p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReset}
+          className="gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          {t("page.reset")}
+        </Button>
       </div>
 
       {/* Step 1: Configuration */}
