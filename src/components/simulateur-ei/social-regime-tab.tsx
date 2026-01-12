@@ -3,6 +3,10 @@
 import { useTranslations } from "next-intl";
 import { RegimeCharacteristics } from "./regime-characteristics";
 import {
+  type TaxBaseHighlight,
+  TaxBaseVisualizationBar,
+} from "./tax-base-visualization-bar";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -23,6 +27,18 @@ interface SocialRegimeTabProps {
   config: ConfigState;
   onConfigChange: (updates: Partial<ConfigState>) => void;
 }
+
+/**
+ * Get highlight mode based on social regime
+ * - MICRO_SOCIAL: entire bar is highlighted (contributions on turnover)
+ * - TNS_CLASSIQUE: only benefits portion is highlighted (contributions on profit)
+ */
+const getHighlightMode = (socialRegime: SocialRegime): TaxBaseHighlight => {
+  if (socialRegime === "MICRO_SOCIAL") {
+    return "full";
+  }
+  return "benefits-only";
+};
 
 export const SocialRegimeTab = ({
   config,
@@ -62,6 +78,15 @@ export const SocialRegimeTab = ({
               </Label>
             ))}
           </RadioGroup>
+
+          {/* Social contribution base visualization bar */}
+          {config.socialRegime && (
+            <TaxBaseVisualizationBar
+              highlightMode={getHighlightMode(config.socialRegime)}
+              translationKey="socialBaseVisualization"
+              className="mt-4"
+            />
+          )}
 
           {/* Display social regime characteristics */}
           {config.socialRegime && (

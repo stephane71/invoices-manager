@@ -528,6 +528,31 @@
       "exceedFranchiseServiceMajore": "Votre CA dépasse le seuil majoré de 39 100 €. Vous perdez immédiatement la franchise de TVA.",
       "suggestReel": "Si vos charges réelles dépassent l'abattement forfaitaire, le régime réel pourrait être plus avantageux. Faites le calcul !"
     },
+    "taxBaseVisualization": {
+      "title": "Assiette de calcul de l'impôt",
+      "charges": "Charges",
+      "benefits": "Bénéfices",
+      "taxBase": "Assiette fiscale",
+      "taxedPortion": "Portion imposable",
+      "chargesLabel": "Dépenses et charges professionnelles",
+      "benefitsLabel": "Bénéfice imposable",
+      "explanation": {
+        "full": "Avec le régime MICRO, l'intégralité de votre chiffre d'affaires constitue l'assiette fiscale. Un abattement forfaitaire est ensuite appliqué pour estimer votre bénéfice imposable.",
+        "benefitsOnly": "Avec le régime RÉEL, seul votre bénéfice réel (chiffre d'affaires moins charges réelles) est imposable."
+      }
+    },
+    "socialBaseVisualization": {
+      "title": "Assiette de calcul des cotisations",
+      "charges": "Charges",
+      "benefits": "Bénéfices",
+      "taxBase": "Assiette des cotisations",
+      "chargesLabel": "Dépenses et charges professionnelles",
+      "benefitsLabel": "Bénéfice net",
+      "explanation": {
+        "full": "Avec le régime MICRO-SOCIAL, vos cotisations sont calculées sur l'intégralité de votre chiffre d'affaires, à un taux forfaitaire.",
+        "benefitsOnly": "Avec le régime TNS CLASSIQUE, vos cotisations sont calculées sur votre bénéfice réel (chiffre d'affaires moins charges)."
+      }
+    },
     "characteristics": {
       "title": "Caractéristiques du régime",
       "benefitType": {

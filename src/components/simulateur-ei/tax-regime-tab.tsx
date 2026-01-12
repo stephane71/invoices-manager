@@ -3,6 +3,10 @@
 import { useTranslations } from "next-intl";
 import { RegimeCharacteristics } from "./regime-characteristics";
 import {
+  type TaxBaseHighlight,
+  TaxBaseVisualizationBar,
+} from "./tax-base-visualization-bar";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -25,6 +29,18 @@ interface TaxRegimeTabProps {
   config: ConfigState;
   onConfigChange: (updates: Partial<ConfigState>) => void;
 }
+
+/**
+ * Get highlight mode based on tax regime
+ * - MICRO: entire bar is highlighted (full turnover is tax base)
+ * - RÉEL regimes: only benefits portion is highlighted
+ */
+const getHighlightMode = (taxRegime: TaxRegime): TaxBaseHighlight => {
+  if (taxRegime === "MICRO") {
+    return "full";
+  }
+  return "benefits-only";
+};
 
 export const TaxRegimeTab = ({ config, onConfigChange }: TaxRegimeTabProps) => {
   const t = useTranslations("SimulateurEI");
@@ -60,6 +76,14 @@ export const TaxRegimeTab = ({ config, onConfigChange }: TaxRegimeTabProps) => {
               </Label>
             ))}
           </RadioGroup>
+
+          {/* Tax base visualization bar */}
+          {config.taxRegime && (
+            <TaxBaseVisualizationBar
+              highlightMode={getHighlightMode(config.taxRegime)}
+              className="mt-4"
+            />
+          )}
 
           {/* Display tax regime characteristics */}
           {config.taxRegime && (

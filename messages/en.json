@@ -528,6 +528,31 @@
       "exceedFranchiseServiceMajore": "Your revenue exceeds the increased threshold of €39,100. You immediately lose the VAT franchise.",
       "suggestReel": "If your actual expenses exceed the flat-rate deduction, the real regime could be more advantageous. Do the math!"
     },
+    "taxBaseVisualization": {
+      "title": "Tax calculation base",
+      "charges": "Charges",
+      "benefits": "Benefits",
+      "taxBase": "Tax base",
+      "taxedPortion": "Taxed portion",
+      "chargesLabel": "Business expenses and charges",
+      "benefitsLabel": "Taxable profit (benefits)",
+      "explanation": {
+        "full": "With MICRO regime, your entire turnover is the tax base. A flat-rate deduction is then applied to estimate your taxable profit.",
+        "benefitsOnly": "With RÉEL regime, only your actual profit (turnover minus actual expenses) is taxable."
+      }
+    },
+    "socialBaseVisualization": {
+      "title": "Contribution calculation base",
+      "charges": "Charges",
+      "benefits": "Benefits",
+      "taxBase": "Contribution base",
+      "chargesLabel": "Business expenses and charges",
+      "benefitsLabel": "Net profit (benefits)",
+      "explanation": {
+        "full": "With MICRO-SOCIAL regime, your contributions are calculated on your entire turnover at a flat rate.",
+        "benefitsOnly": "With TNS CLASSIQUE regime, your contributions are calculated on your actual profit (turnover minus expenses)."
+      }
+    },
     "characteristics": {
       "title": "Regime characteristics",
       "benefitType": {
