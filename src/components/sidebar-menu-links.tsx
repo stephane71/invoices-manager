@@ -72,22 +72,22 @@ export function SidebarMenuLinks() {
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            asChild
-            isActive={isActive(`/${APP_PREFIX}/simulateur-ei`)}
-            onClick={handleItemClick}
-          >
-            <Link href={`/${APP_PREFIX}/simulateur-ei`}>
-              <Calculator />
-              <span>{t("simulateur")}</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
 
       <div className="mt-auto mb-4">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive(`/${APP_PREFIX}/simulateur-ei`)}
+              onClick={handleItemClick}
+            >
+              <Link href={`/${APP_PREFIX}/simulateur-ei`}>
+                <Calculator />
+                <span>{t("simulateur")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild

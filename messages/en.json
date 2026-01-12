@@ -62,7 +62,7 @@
     "invoices": "Invoices",
     "clients": "Clients",
     "products": "Products",
-    "simulateur": "EI Simulator",
+    "simulateur": "My EI",
     "contact": "Contact me",
     "signIn": "Sign in"
   },
@@ -330,7 +330,7 @@
   },
   "SimulateurEI": {
     "page": {
-      "title": "Sole Proprietorship Simulator",
+      "title": "My Sole Proprietorship",
       "subtitle": "Understand your obligations and estimate your income based on your tax and social regime choices.",
       "reset": "Reset",
       "disclaimer": "The results of this simulator are provided for informational purposes only and do not constitute tax or legal advice. Consult an accountant for a personalized analysis of your situation.",
