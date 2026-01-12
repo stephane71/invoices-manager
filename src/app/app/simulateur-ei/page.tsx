@@ -105,7 +105,7 @@ export default function SimulateurEIPage() {
       )}
 
       {/* Fixed Navigation Footer */}
-      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur">
+      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur md:left-[var(--sidebar-width)]">
         <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-3">
           {/* Reset button on the left */}
           <Button
