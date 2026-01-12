@@ -7,8 +7,8 @@ import {
   BookOpen,
   Calculator,
   CheckCircle2,
-  Clock,
   FileText,
+  Scan,
   Shield,
   Wallet,
 } from "lucide-react";
@@ -426,7 +426,7 @@ export const getVatRegimeCharacteristics = (
       },
       {
         titleKey: "characteristics.vatRegime.limits.title",
-        icon: createElement(Clock, { className: iconClasses }),
+        icon: createElement(Scan, { className: iconClasses }),
         items: [
           {
             labelKey: "characteristics.vatRegime.limits.noRecovery",
@@ -525,47 +525,21 @@ export const getBenefitTypeCharacteristics = (
 ): CharacteristicSection[] => {
   const sections: CharacteristicSection[] = [];
 
-  sections.push(
-    {
-      titleKey: "characteristics.benefitType.category.title",
-      icon: createElement(BookOpen, { className: iconClasses }),
-      defaultOpen: true,
-      items: [
-        {
-          labelKey: "characteristics.benefitType.category.type",
-          valueKey: `characteristics.benefitType.${benefitType}.category`,
-        },
-        {
-          labelKey: "characteristics.benefitType.category.examples",
-          valueKey: `characteristics.benefitType.${benefitType}.examples`,
-        },
-      ],
-    },
-    {
-      titleKey: "characteristics.benefitType.thresholds.title",
-      icon: createElement(Calculator, { className: iconClasses }),
-      items: [
-        {
-          labelKey: "characteristics.benefitType.thresholds.micro",
-          valueKey: `characteristics.benefitType.${benefitType}.microThreshold`,
-        },
-        {
-          labelKey: "characteristics.benefitType.thresholds.abattement",
-          valueKey: `characteristics.benefitType.${benefitType}.abattement`,
-        },
-      ],
-    },
-    {
-      titleKey: "characteristics.benefitType.social.title",
-      icon: createElement(Shield, { className: iconClasses }),
-      items: [
-        {
-          labelKey: "characteristics.benefitType.social.rate",
-          valueKey: `characteristics.benefitType.${benefitType}.socialRate`,
-        },
-      ],
-    },
-  );
+  sections.push({
+    titleKey: "characteristics.benefitType.category.title",
+    icon: createElement(BookOpen, { className: iconClasses }),
+    defaultOpen: true,
+    items: [
+      {
+        labelKey: "characteristics.benefitType.category.type",
+        valueKey: `characteristics.benefitType.${benefitType}.category`,
+      },
+      {
+        labelKey: "characteristics.benefitType.category.examples",
+        valueKey: `characteristics.benefitType.${benefitType}.examples`,
+      },
+    ],
+  });
 
   return sections;
 };

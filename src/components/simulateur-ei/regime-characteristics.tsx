@@ -5,7 +5,6 @@ import {
   Calculator,
   CheckCircle2,
   ChevronDown,
-  Clock,
   FileText,
   HelpCircle,
   Info,
@@ -44,6 +43,7 @@ export interface CharacteristicSection {
 
 interface RegimeCharacteristicsProps {
   sections: CharacteristicSection[];
+  description: string;
   className?: string;
 }
 
@@ -155,6 +155,7 @@ const CharacteristicSectionComponent = ({
 
 export const RegimeCharacteristics = ({
   sections,
+  description,
   className,
 }: RegimeCharacteristicsProps) => {
   const t = useTranslations("SimulateurEI");
@@ -170,12 +171,7 @@ export const RegimeCharacteristics = ({
         className,
       )}
     >
-      <div className="flex items-center gap-2 px-3 py-2">
-        <Clock className="text-muted-foreground h-4 w-4" />
-        <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-          {t("characteristics.title")}
-        </span>
-      </div>
+      <div className="px-3 py-2">{description}</div>
       {sections.map((section, index) => (
         <CharacteristicSectionComponent key={index} section={section} t={t} />
       ))}

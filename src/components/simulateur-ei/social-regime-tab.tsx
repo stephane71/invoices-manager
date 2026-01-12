@@ -83,25 +83,17 @@ export const SocialRegimeTab = ({
             ))}
           </RadioGroup>
 
-          {/* Display selected social regime description */}
-          {config.socialRegime && (
-            <div className="bg-muted/30 mt-3 rounded-lg p-3">
-              <p className="text-muted-foreground text-sm">
-                {t(
-                  SOCIAL_REGIME_OPTIONS.find(
-                    (opt) => opt.value === config.socialRegime,
-                  )?.descriptionKey || "",
-                )}
-              </p>
-            </div>
-          )}
-
           {/* Display social regime characteristics */}
           {config.socialRegime && (
             <RegimeCharacteristics
               sections={getSocialRegimeCharacteristics(
                 config.socialRegime,
                 config.benefitType,
+              )}
+              description={t(
+                SOCIAL_REGIME_OPTIONS.find(
+                  (opt) => opt.value === config.socialRegime,
+                )?.descriptionKey || "",
               )}
             />
           )}

@@ -80,23 +80,15 @@ export const BenefitTypeTab = ({
             ))}
           </RadioGroup>
 
-          {/* Display selected benefit type description */}
-          {config.benefitType && (
-            <div className="bg-muted/30 mt-3 rounded-lg p-3">
-              <p className="text-muted-foreground text-sm">
-                {t(
-                  BENEFIT_TYPE_OPTIONS.find(
-                    (opt) => opt.value === config.benefitType,
-                  )?.descriptionKey || "",
-                )}
-              </p>
-            </div>
-          )}
-
           {/* Display benefit type characteristics */}
           {config.benefitType && (
             <RegimeCharacteristics
               sections={getBenefitTypeCharacteristics(config.benefitType)}
+              description={t(
+                BENEFIT_TYPE_OPTIONS.find(
+                  (opt) => opt.value === config.benefitType,
+                )?.descriptionKey || "",
+              )}
             />
           )}
         </Field>

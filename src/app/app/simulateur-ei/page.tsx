@@ -42,20 +42,6 @@ export default function SimulateurEIPage() {
 
   return (
     <div className="min-h-screen pb-24">
-      {/* Hero Section */}
-      <div className="mb-6 space-y-2">
-        <p className="text-muted-foreground max-w-2xl">{t("page.subtitle")}</p>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleReset}
-          className="gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          {t("page.reset")}
-        </Button>
-      </div>
-
       {/* Step 1: Configuration */}
       {currentStep === "configuration" && (
         <Tabs defaultValue="benefitType" className="w-full">
@@ -72,7 +58,7 @@ export default function SimulateurEIPage() {
             </TabsList>
           </div>
 
-          <div className="mx-auto max-w-2xl">
+          <div>
             <TabsContent value="benefitType" className="mt-0">
               <BenefitTypeTab config={config} onConfigChange={setConfig} />
             </TabsContent>
@@ -120,34 +106,48 @@ export default function SimulateurEIPage() {
 
       {/* Fixed Navigation Footer */}
       <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur">
-        <div className="container mx-auto flex items-center justify-center gap-2 px-4 py-3">
+        <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-3">
+          {/* Reset button on the left */}
           <Button
-            variant={currentStep === "configuration" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setCurrentStep("configuration")}
-            className="flex-1 gap-2 sm:flex-none"
+            variant="outline"
+            size="lg"
+            onClick={handleReset}
+            className="h-9 w-9 p-0"
+            aria-label={t("page.reset")}
           >
-            <Building2 className="h-4 w-4" />
-            <span className="hidden sm:inline">{t("navigation.company")}</span>
+            <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button
-            variant={currentStep === "simulation" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setCurrentStep("simulation")}
-            className="flex-1 gap-2 sm:flex-none"
-          >
-            <Wallet className="h-4 w-4" />
-            <span className="hidden sm:inline">{t("navigation.turnover")}</span>
-          </Button>
-          <Button
-            variant={currentStep === "results" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setCurrentStep("results")}
-            className="flex-1 gap-2 sm:flex-none"
-          >
-            <ChartColumn className="h-4 w-4" />
-            <span className="hidden sm:inline">{t("navigation.results")}</span>
-          </Button>
+
+          {/* Navigation buttons centered on the right */}
+          <div className="flex flex-grow items-center justify-center gap-2">
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => setCurrentStep("configuration")}
+              className={`flex flex-col gap-1 ${currentStep === "configuration" ? "bg-accent" : ""}`}
+            >
+              <Building2 className="h-5 w-5" />
+              <span className="text-xs">{t("navigation.company")}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => setCurrentStep("simulation")}
+              className={`flex flex-col gap-1 ${currentStep === "simulation" ? "bg-accent" : ""}`}
+            >
+              <Wallet className="h-5 w-5" />
+              <span className="text-xs">{t("navigation.turnover")}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => setCurrentStep("results")}
+              className={`flex flex-col gap-1 ${currentStep === "results" ? "bg-accent" : ""}`}
+            >
+              <ChartColumn className="h-5 w-5" />
+              <span className="text-xs">{t("navigation.results")}</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

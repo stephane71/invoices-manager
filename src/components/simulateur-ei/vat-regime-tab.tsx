@@ -22,8 +22,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   type ConfigState,
-  getVatFranchiseThresholds,
-  getVatReelThresholds,
   getVatRegimeCharacteristics,
   VAT_REGIME_OPTIONS,
   type VatRegime,
@@ -82,54 +80,16 @@ export const VatRegimeTab = ({ config, onConfigChange }: VatRegimeTabProps) => {
             ))}
           </RadioGroup>
 
-          {/* Display selected VAT regime description */}
-          {config.vatRegime && (
-            <div className="bg-muted/30 mt-3 space-y-2 rounded-lg p-3">
-              <p className="text-muted-foreground text-sm">
-                {t(
-                  VAT_REGIME_OPTIONS.find(
-                    (opt) => opt.value === config.vatRegime,
-                  )?.descriptionKey || "",
-                )}
-              </p>
-              {/* Dynamic thresholds based on VAT regime and benefit type */}
-              {config.vatRegime === "FRANCHISE_BASE" &&
-                (() => {
-                  const franchiseThresholds = getVatFranchiseThresholds(
-                    config.benefitType,
-                  );
-                  return (
-                    <p className="text-muted-foreground text-sm font-medium">
-                      {t("vatRegime.thresholds.franchiseBase", {
-                        base: franchiseThresholds.base,
-                        majore: franchiseThresholds.majore,
-                      })}
-                    </p>
-                  );
-                })()}
-              {config.vatRegime === "REEL_SIMPLIFIE_TVA" && (
-                <p className="text-muted-foreground text-sm font-medium">
-                  {t("vatRegime.thresholds.reelSimplifie", {
-                    threshold: getVatReelThresholds(config.benefitType),
-                  })}
-                </p>
-              )}
-              {config.vatRegime === "REEL_NORMAL_TVA" && (
-                <p className="text-muted-foreground text-sm font-medium">
-                  {t("vatRegime.thresholds.reelNormal", {
-                    threshold: getVatReelThresholds(config.benefitType),
-                  })}
-                </p>
-              )}
-            </div>
-          )}
-
           {/* Display VAT regime characteristics */}
           {config.vatRegime && (
             <RegimeCharacteristics
               sections={getVatRegimeCharacteristics(
                 config.vatRegime,
                 config.benefitType,
+              )}
+              description={t(
+                VAT_REGIME_OPTIONS.find((opt) => opt.value === config.vatRegime)
+                  ?.descriptionKey || "",
               )}
             />
           )}

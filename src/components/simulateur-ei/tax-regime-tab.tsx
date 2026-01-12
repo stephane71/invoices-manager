@@ -23,9 +23,7 @@ import {
 import {
   type ConfigState,
   getAvailableTaxRegimes,
-  getMicroThreshold,
   getTaxRegimeCharacteristics,
-  getVatReelThresholds,
   TAX_REGIME_OPTIONS,
   type TaxRegime,
 } from "@/lib/simulateur-ei";
@@ -83,48 +81,16 @@ export const TaxRegimeTab = ({ config, onConfigChange }: TaxRegimeTabProps) => {
             ))}
           </RadioGroup>
 
-          {/* Display selected tax regime description */}
-          {config.taxRegime && (
-            <div className="bg-muted/30 mt-3 space-y-2 rounded-lg p-3">
-              <p className="text-muted-foreground text-sm">
-                {t(
-                  TAX_REGIME_OPTIONS.find(
-                    (opt) => opt.value === config.taxRegime,
-                  )?.descriptionKey || "",
-                )}
-              </p>
-              {/* Dynamic thresholds based on tax regime and benefit type */}
-              {config.taxRegime === "MICRO" && (
-                <p className="text-muted-foreground text-sm font-medium">
-                  {t("taxRegime.thresholds.micro", {
-                    threshold: getMicroThreshold(config.benefitType),
-                  })}
-                </p>
-              )}
-              {(config.taxRegime === "REEL_SIMPLIFIE" ||
-                config.taxRegime === "DECLARATION_CONTROLEE") && (
-                <p className="text-muted-foreground text-sm font-medium">
-                  {t("taxRegime.thresholds.reelSimplifie", {
-                    threshold: getMicroThreshold(config.benefitType),
-                  })}
-                </p>
-              )}
-              {config.taxRegime === "REEL_NORMAL" && (
-                <p className="text-muted-foreground text-sm font-medium">
-                  {t("taxRegime.thresholds.reelNormal", {
-                    threshold: getVatReelThresholds(config.benefitType),
-                  })}
-                </p>
-              )}
-            </div>
-          )}
-
           {/* Display tax regime characteristics */}
           {config.taxRegime && (
             <RegimeCharacteristics
               sections={getTaxRegimeCharacteristics(
                 config.taxRegime,
                 config.benefitType,
+              )}
+              description={t(
+                TAX_REGIME_OPTIONS.find((opt) => opt.value === config.taxRegime)
+                  ?.descriptionKey || "",
               )}
             />
           )}
