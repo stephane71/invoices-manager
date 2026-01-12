@@ -360,8 +360,6 @@
     "benefitType": {
       "label": "Type of income",
       "tabDescription": "The type of income depends on the nature of your professional activity.",
-      "selectLabel": "What is the nature of your activity?",
-      "tooltip": "The type of income depends on the nature of your activity: sale of goods, commercial or craft services, or liberal profession.",
       "bicVente": "BIC — Sale of goods",
       "bicVenteDesc": "Buy-sell, supplies, food service",
       "bicService": "BIC — Services",
@@ -372,8 +370,6 @@
     "taxRegime": {
       "label": "Tax regime",
       "tabDescription": "Choose how your taxable profit will be calculated.",
-      "selectLabel": "Which tax regime do you want?",
-      "tooltip": "The tax regime determines how your taxable profit is calculated: flat-rate (micro) or based on your actual expenses (real).",
       "micro": "Micro-fiscal regime",
       "microDesc": "Simplified calculation with flat-rate deduction. Ideal to start without complex accounting.",
       "reelSimplifie": "Simplified real",
@@ -391,8 +387,6 @@
     "socialRegime": {
       "label": "Social regime",
       "tabDescription": "Define how your social contributions will be calculated.",
-      "selectLabel": "Which social regime do you want?",
-      "tooltip": "The social regime determines how your social contributions are calculated: flat-rate on revenue (micro-social) or on actual profit (classic TNS).",
       "microSocial": "Simplified micro-social",
       "microSocialDesc": "Contributions calculated on revenue with a flat rate. Simple and predictable, ideal for small activities.",
       "tnsClassique": "Classic TNS",
@@ -401,8 +395,6 @@
     "vatRegime": {
       "label": "VAT regime",
       "tabDescription": "Choose your VAT regime based on your situation.",
-      "selectLabel": "Which VAT regime do you want?",
-      "tooltip": "The VAT regime is independent of your tax regime. You can be under micro-fiscal while being subject to VAT if you exceed the franchise thresholds.",
       "franchiseBase": "VAT franchise",
       "franchiseBaseDesc": "No VAT to charge or declare.",
       "reelSimplifie": "Simplified VAT",

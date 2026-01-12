@@ -1,8 +1,6 @@
 "use client";
 
-import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-
 import { RegimeCharacteristics } from "./regime-characteristics";
 import {
   Card,
@@ -11,15 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   type ConfigState,
   getSocialRegimeCharacteristics,
@@ -40,27 +32,15 @@ export const SocialRegimeTab = ({
 
   return (
     <Card className="border-none bg-transparent p-0 shadow-none">
-      <CardHeader className="px-0 pt-0">
+      <CardHeader className="px-0">
         <CardTitle className="flex items-center gap-2 text-lg">
           {t("socialRegime.label")}
         </CardTitle>
         <CardDescription>{t("socialRegime.tabDescription")}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6 px-0">
+
+      <CardContent className="px-0">
         <Field>
-          <FieldLabel className="flex items-center gap-2">
-            {t("socialRegime.selectLabel")}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="text-muted-foreground h-4 w-4 cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p>{t("socialRegime.tooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </FieldLabel>
           <RadioGroup
             value={config.socialRegime}
             onValueChange={(value) =>

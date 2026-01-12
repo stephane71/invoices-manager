@@ -360,8 +360,6 @@
     "benefitType": {
       "label": "Type de bénéfices",
       "tabDescription": "Le type de bénéfices dépend de la nature de votre activité professionnelle.",
-      "selectLabel": "Quelle est la nature de votre activité ?",
-      "tooltip": "Le type de bénéfices dépend de la nature de votre activité : vente de marchandises, prestations de services commerciales ou artisanales, ou activité libérale.",
       "bicVente": "BIC — Vente de marchandises",
       "bicVenteDesc": "Achat-revente, fournitures, vente à consommer sur place",
       "bicService": "BIC — Prestations de services",
@@ -372,8 +370,6 @@
     "taxRegime": {
       "label": "Régime fiscal",
       "tabDescription": "Choisissez comment votre bénéfice imposable sera calculé.",
-      "selectLabel": "Quel régime fiscal souhaitez-vous ?",
-      "tooltip": "Le régime fiscal détermine comment votre bénéfice imposable est calculé : forfaitairement (micro) ou sur la base de vos charges réelles (réel).",
       "micro": "Régime micro-fiscal",
       "microDesc": "Calcul simplifié avec abattement forfaitaire. Idéal pour démarrer sans comptabilité complexe.",
       "reelSimplifie": "Réel simplifié",
@@ -391,8 +387,6 @@
     "socialRegime": {
       "label": "Régime social",
       "tabDescription": "Définissez comment vos cotisations sociales seront calculées.",
-      "selectLabel": "Quel régime social souhaitez-vous ?",
-      "tooltip": "Le régime social détermine comment vos cotisations sociales sont calculées : forfaitairement sur le CA (micro-social) ou sur le bénéfice réel (TNS classique).",
       "microSocial": "Micro-social simplifié",
       "microSocialDesc": "Cotisations calculées sur le chiffre d'affaires avec un taux forfaitaire. Simple et prévisible, idéal pour les petites activités.",
       "tnsClassique": "TNS classique",
@@ -401,8 +395,6 @@
     "vatRegime": {
       "label": "Régime de TVA",
       "tabDescription": "Choisissez votre régime de TVA selon votre situation.",
-      "selectLabel": "Quel régime de TVA souhaitez-vous ?",
-      "tooltip": "Le régime de TVA est indépendant de votre régime fiscal. Vous pouvez être au micro-fiscal tout en étant assujetti à la TVA si vous dépassez les seuils de franchise.",
       "franchiseBase": "Franchise en base de TVA",
       "franchiseBaseDesc": "Pas de TVA à facturer ni à déclarer.",
       "reelSimplifie": "Réel simplifié TVA",
