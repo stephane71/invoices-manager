@@ -6,6 +6,7 @@ import {
   type TaxBaseHighlight,
   TaxBaseVisualizationBar,
 } from "./tax-base-visualization-bar";
+import { TaxRegimeThreshold } from "./tax-regime-threshold";
 import {
   Card,
   CardContent,
@@ -81,6 +82,15 @@ export const TaxRegimeTab = ({ config, onConfigChange }: TaxRegimeTabProps) => {
           {config.taxRegime && (
             <TaxBaseVisualizationBar
               highlightMode={getHighlightMode(config.taxRegime)}
+              className="mt-4"
+            />
+          )}
+
+          {/* Threshold display */}
+          {config.taxRegime && (
+            <TaxRegimeThreshold
+              taxRegime={config.taxRegime}
+              benefitType={config.benefitType}
               className="mt-4"
             />
           )}

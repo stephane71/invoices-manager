@@ -380,6 +380,7 @@
       "declarationControleeDesc": "Régime réel pour les BNC. Déduction des charges réelles avec obligations comptables adaptées aux professions libérales.",
       "thresholds": {
         "micro": "📊 Seuil 2025 : {threshold}",
+        "reel": "📊 Pas de plafond de chiffre d'affaires",
         "reelSimplifie": "📊 Accessible dès le démarrage, obligatoire si CA > {threshold}",
         "reelNormal": "📊 Obligatoire si CA > {threshold}"
       }

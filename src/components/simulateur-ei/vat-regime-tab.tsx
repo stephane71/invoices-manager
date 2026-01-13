@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { RegimeCharacteristics } from "./regime-characteristics";
+import { VatRegimeThreshold } from "./vat-regime-threshold";
 import {
   Card,
   CardContent,
@@ -59,6 +60,15 @@ export const VatRegimeTab = ({ config, onConfigChange }: VatRegimeTabProps) => {
               </Label>
             ))}
           </RadioGroup>
+
+          {/* Threshold display */}
+          {config.vatRegime && (
+            <VatRegimeThreshold
+              vatRegime={config.vatRegime}
+              benefitType={config.benefitType}
+              className="mt-4"
+            />
+          )}
 
           {/* Display VAT regime characteristics */}
           {config.vatRegime && (

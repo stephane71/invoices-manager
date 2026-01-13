@@ -4,5 +4,7 @@ export { ResultsDisplay } from "./results-display";
 export { SimulatorForm } from "./simulator-form";
 export { SocialRegimeTab } from "./social-regime-tab";
 export { TaxRegimeTab } from "./tax-regime-tab";
+export { TaxRegimeThreshold } from "./tax-regime-threshold";
 export { ThresholdAlerts } from "./threshold-alerts";
 export { VatRegimeTab } from "./vat-regime-tab";
+export { VatRegimeThreshold } from "./vat-regime-threshold";

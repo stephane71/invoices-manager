@@ -380,6 +380,7 @@
       "declarationControleeDesc": "Real regime for BNC. Deduction of actual expenses with accounting obligations adapted to liberal professions.",
       "thresholds": {
         "micro": "📊 2025 threshold: {threshold}",
+        "reel": "📊 No revenue ceiling",
         "reelSimplifie": "📊 Available from the start, mandatory if revenue > {threshold}",
         "reelNormal": "📊 Mandatory if revenue > {threshold}"
       }
