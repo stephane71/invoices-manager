@@ -62,6 +62,7 @@
     "invoices": "Invoices",
     "clients": "Clients",
     "products": "Products",
+    "simulateur": "My EI",
     "contact": "Contact me",
     "signIn": "Sign in"
   },
@@ -325,6 +326,449 @@
       "save": "Save error ({status})",
       "unknown": "Unknown error",
       "invalidPhone": "Invalid phone number format. Use international format (e.g., +33612345678)"
+    }
+  },
+  "SimulateurEI": {
+    "page": {
+      "title": "My Sole Proprietorship",
+      "subtitle": "Understand your obligations and estimate your income based on your tax and social regime choices.",
+      "reset": "Reset",
+      "disclaimer": "The results of this simulator are provided for informational purposes only and do not constitute tax or legal advice. Consult an accountant for a personalized analysis of your situation.",
+      "dataYear": "Data based on 2025 rates and thresholds"
+    },
+    "steps": {
+      "configure": "Configure your situation",
+      "understand": "Understand the implications",
+      "simulate": "Simulate your income",
+      "results": "Your results"
+    },
+    "tabs": {
+      "benefitType": "Activity",
+      "taxRegime": "Tax",
+      "socialRegime": "Social",
+      "vatRegime": "VAT"
+    },
+    "navigation": {
+      "company": "Company",
+      "turnover": "Turnover",
+      "results": "Results"
+    },
+    "configuration": {
+      "title": "Your configuration",
+      "description": "Select the regimes that match your activity."
+    },
+    "benefitType": {
+      "label": "Type of income",
+      "tabDescription": "The type of income depends on the nature of your professional activity.",
+      "bicVente": "BIC — Sale of goods",
+      "bicVenteDesc": "Buy-sell, supplies, food service",
+      "bicService": "BIC — Services",
+      "bicServiceDesc": "Crafts, commercial services, and mixed activities",
+      "bnc": "BNC — Liberal professions",
+      "bncDesc": "Regulated and unregulated liberal professions"
+    },
+    "taxRegime": {
+      "label": "Tax regime",
+      "tabDescription": "Choose how your taxable profit will be calculated.",
+      "micro": "Micro-fiscal regime",
+      "microDesc": "Simplified calculation with flat-rate deduction. Ideal to start without complex accounting.",
+      "reelSimplifie": "Simplified real",
+      "reelSimplifieDesc": "Deduction of actual expenses with simplified accounting obligations. Recommended if your expenses exceed the flat-rate deduction.",
+      "reelNormal": "Normal real",
+      "reelNormalDesc": "Deduction of actual expenses with full accounting obligations.",
+      "declarationControlee": "Controlled declaration",
+      "declarationControleeDesc": "Real regime for BNC. Deduction of actual expenses with accounting obligations adapted to liberal professions.",
+      "thresholds": {
+        "micro": "📊 2025 threshold: {threshold}",
+        "reel": "📊 No revenue ceiling",
+        "reelSimplifie": "📊 Available from the start, mandatory if revenue > {threshold}",
+        "reelNormal": "📊 Mandatory if revenue > {threshold}"
+      }
+    },
+    "socialRegime": {
+      "label": "Social regime",
+      "tabDescription": "Define how your social contributions will be calculated.",
+      "microSocial": "Simplified micro-social",
+      "microSocialDesc": "Contributions calculated on revenue with a flat rate. Simple and predictable, ideal for small activities.",
+      "tnsClassique": "Classic TNS",
+      "tnsClassiqueDesc": "Contributions calculated on actual profit (~45%). More advantageous if your expenses are high relative to your revenue."
+    },
+    "vatRegime": {
+      "label": "VAT regime",
+      "tabDescription": "Choose your VAT regime based on your situation.",
+      "franchiseBase": "VAT franchise",
+      "franchiseBaseDesc": "No VAT to charge or declare.",
+      "reelSimplifie": "Simplified VAT",
+      "reelSimplifieDesc": "VAT invoicing and recovery. Quarterly or annual declarations.",
+      "reelNormal": "Normal VAT",
+      "reelNormalDesc": "VAT invoicing and recovery. Mandatory monthly declarations.",
+      "thresholds": {
+        "franchiseBase": "📊 2025 threshold: {base} • Immediate loss if revenue > {majore}",
+        "reelSimplifie": "📊 For revenue < {threshold}",
+        "reelNormal": "📊 Mandatory if revenue > {threshold}"
+      }
+    },
+    "consequences": {
+      "title": "What this implies",
+      "description": "Here are the consequences of your current configuration.",
+      "microSeuilVente": {
+        "title": "Revenue threshold",
+        "description": "Your annual revenue (excl. VAT) must not exceed €188,700 to remain under the micro-fiscal regime. Beyond this for 2 consecutive years, you automatically switch to the simplified real regime."
+      },
+      "microSeuilService": {
+        "title": "Revenue threshold",
+        "description": "Your annual revenue (excl. VAT) must not exceed €77,700 to remain under the micro-fiscal regime."
+      },
+      "microSeuilBnc": {
+        "title": "Revenue threshold",
+        "description": "Your annual revenue (excl. VAT) must not exceed €77,700 to remain under the micro-BNC regime."
+      },
+      "microAbattementVente": {
+        "title": "71% flat-rate deduction",
+        "description": "A 71% deduction is applied to your revenue to determine your taxable profit. You cannot deduct your actual expenses."
+      },
+      "microAbattementService": {
+        "title": "50% flat-rate deduction",
+        "description": "A 50% deduction is applied to your revenue to determine your taxable profit."
+      },
+      "microAbattementBnc": {
+        "title": "34% flat-rate deduction",
+        "description": "A 34% deduction is applied to your revenue to determine your taxable profit."
+      },
+      "microComptabilite": {
+        "title": "Simplified accounting",
+        "description": "You only need to keep a chronological receipts book. No mandatory balance sheet or income statement."
+      },
+      "reelComptabilite": {
+        "title": "Mandatory accounting",
+        "description": "You must maintain complete accounting: journal, ledger, annual inventory, balance sheet, and income statement."
+      },
+      "reelDeficit": {
+        "title": "Carryforward deficit",
+        "description": "In case of deficit, you can carry it forward for 6 years and deduct it from your future profits."
+      },
+      "reelCharges": {
+        "title": "Actual expenses deduction",
+        "description": "You can deduct all your justified professional expenses: purchases, rent, insurance, travel expenses, etc."
+      },
+      "socialMicro": {
+        "title": "Contributions on revenue",
+        "description": "Your social contributions are calculated on your collected revenue at a flat rate. If revenue = €0, contributions = €0."
+      },
+      "socialTns": {
+        "title": "Contributions on profit",
+        "description": "Your social contributions (~45% of profit) are calculated on your taxable profit. They are collected through provisional installments with annual adjustment. Minimum contributions are due even if profit = €0."
+      },
+      "tvaFranchiseVente": {
+        "title": "VAT franchise thresholds",
+        "description": "You benefit from the franchise as long as your revenue remains ≤ €91,900. Beyond €101,000, you immediately lose the franchise."
+      },
+      "tvaFranchiseService": {
+        "title": "VAT franchise thresholds",
+        "description": "You benefit from the franchise as long as your revenue remains ≤ €36,800. Beyond €39,100, you immediately lose the franchise."
+      },
+      "tvaFranchiseMention": {
+        "title": "Mandatory invoice mention",
+        "description": "You must indicate on your invoices: 'VAT not applicable, article 293 B of the General Tax Code'."
+      },
+      "tvaFranchiseNoDeduction": {
+        "title": "No VAT recovery",
+        "description": "You cannot recover VAT on your purchases and investments."
+      },
+      "tvaReelSimplifie": {
+        "title": "Simplified VAT declaration",
+        "description": "You must pay 2 semi-annual installments (July and December) and file an annual CA12 declaration. Note: this regime will be discontinued in 2027."
+      },
+      "tvaReelNormal": {
+        "title": "Monthly VAT declaration",
+        "description": "You must file a CA3 declaration each month (or quarterly if VAT < €4,000/year)."
+      },
+      "alertMicroTvaReel": {
+        "title": "Atypical configuration",
+        "description": "You are under the micro-fiscal regime but subject to VAT. This is possible (if you exceed VAT franchise thresholds) but rare. Verify this is indeed your situation."
+      }
+    },
+    "simulator": {
+      "title": "Financial simulation",
+      "description": "Enter your projected revenue to estimate your income.",
+      "turnover": "Annual revenue",
+      "turnoverTooltip": "Your projected or actual annual revenue excluding VAT.",
+      "expenses": "Deductible expenses",
+      "expensesTooltip": "Total of your deductible professional expenses: purchases, rent, insurance, travel expenses, etc.",
+      "expensesDescription": "Only justified and deductible professional expenses."
+    },
+    "results": {
+      "title": "Simulation results",
+      "subtitle": "Estimate based on 2025 rates",
+      "enterTurnover": "Enter revenue",
+      "enterTurnoverHint": "Use the slider or enter an amount to see your results.",
+      "turnover": "Revenue",
+      "flatRateDeduction": "Flat-rate deduction",
+      "deductibleExpenses": "Deductible expenses",
+      "taxableProfit": "Taxable profit",
+      "taxableProfitHint": "Income tax base",
+      "socialContributions": "Social contributions",
+      "ofTurnover": "of revenue",
+      "ofProfit": "of profit",
+      "estimatedAmount": "Estimated amount",
+      "availableIncome": "Available income before IT",
+      "beforeIncomeTax": "Before income tax",
+      "incomeTaxNote": "Income tax will be calculated on your taxable profit of {amount}, added to your household's other income (progressive scale)."
+    },
+    "alertTitles": {
+      "info": "Information",
+      "warning": "Warning",
+      "error": "Alert"
+    },
+    "alerts": {
+      "exceedMicroBicVente": "Your revenue exceeds the micro-fiscal threshold of €188,700. You will need to switch to the real regime if this excess repeats for 2 consecutive years.",
+      "exceedMicroService": "Your revenue exceeds the micro-fiscal threshold of €77,700. You will need to switch to the real regime if this excess repeats for 2 consecutive years.",
+      "exceedFranchiseVente": "Your revenue exceeds the VAT franchise threshold (€91,900). You may need to become subject to VAT.",
+      "exceedFranchiseVenteMajore": "Your revenue exceeds the increased threshold of €101,000. You immediately lose the VAT franchise from the 1st day of exceeding.",
+      "exceedFranchiseService": "Your revenue exceeds the VAT franchise threshold (€36,800). You may need to become subject to VAT.",
+      "exceedFranchiseServiceMajore": "Your revenue exceeds the increased threshold of €39,100. You immediately lose the VAT franchise.",
+      "suggestReel": "If your actual expenses exceed the flat-rate deduction, the real regime could be more advantageous. Do the math!"
+    },
+    "taxBaseVisualization": {
+      "title": "Tax calculation base",
+      "charges": "Charges",
+      "benefits": "Benefits",
+      "taxBase": "Tax base",
+      "taxedPortion": "Taxed portion",
+      "chargesLabel": "Business expenses and charges",
+      "benefitsLabel": "Taxable profit (benefits)",
+      "explanation": {
+        "full": "With MICRO regime, your entire turnover is the tax base. A flat-rate deduction is then applied to estimate your taxable profit.",
+        "benefitsOnly": "With RÉEL regime, only your actual profit (turnover minus actual expenses) is taxable."
+      }
+    },
+    "socialBaseVisualization": {
+      "title": "Contribution calculation base",
+      "charges": "Charges",
+      "benefits": "Benefits",
+      "taxBase": "Contribution base",
+      "chargesLabel": "Business expenses and charges",
+      "benefitsLabel": "Net profit (benefits)",
+      "explanation": {
+        "full": "With MICRO-SOCIAL regime, your contributions are calculated on your entire turnover at a flat rate.",
+        "benefitsOnly": "With TNS CLASSIQUE regime, your contributions are calculated on your actual profit (turnover minus expenses)."
+      }
+    },
+    "characteristics": {
+      "title": "Regime characteristics",
+      "benefitType": {
+        "category": {
+          "title": "Tax category",
+          "type": "Income type",
+          "examples": "Activity examples"
+        },
+        "thresholds": {
+          "title": "Applicable thresholds",
+          "micro": "Micro-enterprise threshold",
+          "abattement": "Flat-rate deduction"
+        },
+        "social": {
+          "title": "Social contributions",
+          "rate": "Micro-social rate"
+        },
+        "BIC_VENTE": {
+          "category": "BIC (Industrial and Commercial Profits)",
+          "examples": "Retail sales, supplies, food service, retail commerce",
+          "microThreshold": "€188,700 annual revenue excl. VAT",
+          "abattement": "71% flat-rate deduction",
+          "socialRate": "12.3% of revenue"
+        },
+        "BIC_SERVICE": {
+          "category": "BIC (Industrial and Commercial Profits)",
+          "examples": "Craftsmanship, commercial services, repair, catering, accommodation",
+          "microThreshold": "€77,700 annual revenue excl. VAT",
+          "abattement": "50% flat-rate deduction",
+          "socialRate": "21.2% of revenue"
+        },
+        "BNC": {
+          "category": "BNC (Non-Commercial Profits)",
+          "examples": "Liberal professions, consultants, trainers, developers, graphic designers",
+          "microThreshold": "€77,700 annual revenue excl. VAT",
+          "abattement": "34% flat-rate deduction",
+          "socialRate": "23.1% of revenue"
+        }
+      },
+      "taxRegime": {
+        "calculation": {
+          "title": "Calculation method",
+          "method": "Method",
+          "rate": "Applicable rate",
+          "deductions": "Possible deductions"
+        },
+        "accounting": {
+          "title": "Accounting",
+          "type": "Accounting type",
+          "documents": "Required documents"
+        },
+        "declaration": {
+          "title": "Declarations",
+          "form": "Forms",
+          "frequency": "Frequency",
+          "deadline": "Deadline",
+          "transmission": "Transmission method"
+        },
+        "options": {
+          "title": "Available options"
+        },
+        "micro": {
+          "calculationMethod": "Flat-rate deduction on revenue",
+          "abattement": {
+            "BIC_VENTE": "71% deduction (taxed on 29% of revenue)",
+            "BIC_SERVICE": "50% deduction (taxed on 50% of revenue)",
+            "BNC": "34% deduction (taxed on 66% of revenue)"
+          },
+          "accountingType": "Ultra-simplified accounting",
+          "documents": "Revenue book + purchase register (for sales)",
+          "form": "Form 2042-C-PRO",
+          "frequency": "Annual declaration",
+          "deadline": "May-June (with income tax return)",
+          "options": {
+            "vfl": "Liberating payment of IT",
+            "vflDesc": "Pay income tax together with social contributions (flat rate)",
+            "vflTooltip": "Conditions: tax reference income N-2 ≤ €28,797 for 1 share. Option to be formulated at creation or before September 30.",
+            "optionReel": "Option for real regime",
+            "optionReelDesc": "Possibility to opt for the real regime if your actual expenses are high"
+          }
+        },
+        "reelSimplifie": {
+          "calculationMethod": "Deduction of actual expenses",
+          "deductions": "All justified professional expenses: purchases, rent, insurance, travel costs...",
+          "accountingType": "Simplified real accounting",
+          "documents": "Journal, general ledger, inventory book, simplified annual accounts",
+          "form": "2042-C-PRO + Results declaration (2031 BIC / 2035 BNC) + Annexes 2033",
+          "frequency": "Annual declaration",
+          "deadline": "2nd working day after May 1st + 15 days",
+          "transmission": "Mandatory electronic transmission (EFI or EDI mode)",
+          "options": {
+            "is": "Option for corporate tax",
+            "isDesc": "Possibility to be taxed at corporate tax (15% then 25%)",
+            "isTooltip": "Available since 2022 for EI. Assimilation to an EURL. Irrevocable option except transformation.",
+            "deficit": "Deficit carryforward",
+            "deficitDesc": "In case of deficit, possible carryforward to the next 6 years"
+          }
+        },
+        "declarationControlee": {
+          "form": "2042-C-PRO + Declaration 2035 + Annexes"
+        },
+        "reelNormal": {
+          "calculationMethod": "Full accrual accounting",
+          "deductions": "Full deduction of actual expenses with detailed accounting",
+          "accountingType": "Complete accounting",
+          "documents": "Journal, general ledger, inventory book, balance sheet, income statement, accounting annexes",
+          "form": "2042-C-PRO + Complete tax package (2050-2059) + Monthly CA3 VAT",
+          "frequency": "Annual for IT, monthly for VAT",
+          "transmission": "Mandatory electronic transmission (EDI mode)"
+        }
+      },
+      "socialRegime": {
+        "calculation": {
+          "title": "Calculation method",
+          "base": "Calculation base",
+          "rate": "Contribution rate",
+          "reform": "2026 Reform"
+        },
+        "declaration": {
+          "title": "Declarations",
+          "frequency": "Frequency",
+          "mechanism": "Mechanism",
+          "organism": "Collecting organization"
+        },
+        "exonerations": {
+          "title": "Possible exemptions",
+          "acre": "ACRE",
+          "other": "Other exemptions"
+        },
+        "protection": {
+          "title": "Social protection",
+          "health": "Health-maternity",
+          "retirement": "Retirement",
+          "exclusions": "Exclusions",
+          "recommended": "Recommended supplements"
+        },
+        "micro": {
+          "calculationBase": "Actual collected revenue",
+          "rate": {
+            "BIC_VENTE": "12.3% of revenue (sale of goods)",
+            "BIC_SERVICE": "21.2% of revenue (BIC services)",
+            "BNC": "23.1% of revenue (BNC liberal activities)"
+          },
+          "frequency": "Monthly or quarterly at choice",
+          "organism": "URSSAF (sole collector)",
+          "acre": "ACRE: 50% reduction in 1st year",
+          "acreTooltip": "Conditions: first year of activity, no ACRE in the last 3 years. Request at registration or within 45 days.",
+          "health": "Reimbursements identical to general scheme",
+          "retirement": "Quarters validated based on revenue achieved",
+          "exclusions": "No unemployment insurance or work accident coverage"
+        },
+        "tns": {
+          "calculationBase": "Taxable profit (professional income)",
+          "rate": "Approximately 45% of profit",
+          "reform2026": "26% deduction on base (2026 reform)",
+          "reform2026Tooltip": "From 2026, contributions will be calculated on gross income reduced by 26%, thus reducing the contribution base.",
+          "frequency": "Provisional payments + annual adjustment",
+          "mechanism": "Contributions based on N-2 income, adjusted after tax return",
+          "organism": "URSSAF (sole collector)",
+          "acre": "ACRE: partial exemption over 24 months",
+          "otherExonerations": "JEI/JEU, ZFU depending on eligibility",
+          "health": "Reimbursements identical to general scheme",
+          "retirement": "Quarters validated based on contributions paid",
+          "recommended": "Madelin mutual, providence, optional supplementary retirement"
+        }
+      },
+      "vatRegime": {
+        "obligations": {
+          "title": "Obligations",
+          "billing": "Billing",
+          "mention": "Required mentions",
+          "declaration": "Declaration",
+          "payment": "Payment",
+          "frequency": "Frequency"
+        },
+        "advantages": {
+          "title": "Advantages"
+        },
+        "limits": {
+          "title": "Limits",
+          "noRecovery": "VAT recovery",
+          "threshold": "Maintenance threshold"
+        },
+        "franchise": {
+          "billing": "No VAT to charge to clients",
+          "mention": "\"VAT not applicable, art. 293 B of CGI\"",
+          "declaration": "No VAT declaration",
+          "advantage1": "Administrative simplicity",
+          "advantage1Desc": "No VAT declaration to file",
+          "advantage2": "Competitive prices",
+          "advantage2Desc": "More attractive rates for individual clients",
+          "noRecovery": "No VAT recovery on your purchases",
+          "threshold": {
+            "BIC_VENTE": "Maintained if revenue ≤ €91,900 • Immediate loss if revenue > €101,000",
+            "BIC_SERVICE": "Maintained if revenue ≤ €36,800 • Immediate loss if revenue > €39,100",
+            "BNC": "Maintained if revenue ≤ €36,800 • Immediate loss if revenue > €39,100"
+          }
+        },
+        "reelSimplifie": {
+          "billing": "VAT charged and recoverable",
+          "declaration": "Annual CA12 declaration + 2 semi-annual installments",
+          "payment": "Installments in July and December",
+          "advantage1": "VAT recovery",
+          "advantage1Desc": "Possibility to recover VAT on all your professional purchases",
+          "advantage2": "Simplified declarations",
+          "advantage2Desc": "Only 2 installments + 1 annual declaration"
+        },
+        "reelNormal": {
+          "billing": "VAT charged and recoverable",
+          "declaration": "Monthly CA3 declaration",
+          "frequency": "Monthly (or quarterly if VAT < €4,000/year)",
+          "advantage1": "Precise cash flow tracking",
+          "advantage1Desc": "Monthly declarations allowing better VAT tracking"
+        }
+      }
     }
   },
   "Validation": {
